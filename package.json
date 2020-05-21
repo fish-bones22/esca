@@ -1,0 +1,24 @@
+{
+  "name": "ekna",
+  "version": "0.0.1",
+  "description": "Electronic Song-Keeping Assistant.",
+  "main": "index",
+  "scripts": {
+    "test": "echo Test",
+    "dev": "uglifyjs proto/src/index.js -m -o proto/build/script.min.js",
+    "build": "webpack --config webpack.config.js"
+  },
+  "author": "Fishbones",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.5.1",
+    "uglify-js": "^3.9.3",
+    "webpack": "^4.43.0"
+  },
+  "devDependencies": {
+    "jshint": "^2.11.1",
+    "lite-server": "^2.5.4",
+    "node-sass": "^4.14.1",
+    "webpack-cli": "^3.3.11"
+  }
+}

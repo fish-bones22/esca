@@ -1,0 +1,41 @@
+.content {
+    width: 50em;
+}
+.content .song-line {
+    display: flex;
+}
+.content .song-line input, .content .song-line span {
+    font-family: 'Consolas', 'Courier New', Courier, monospace;
+    font-size: 20px;
+    width: 100%;
+}
+
+.content .song-line input {
+    border: none;
+    border-bottom: solid 1px gray;
+}
+.content .song-line input:focus {
+    background-color: #fafafa;
+    outline: none;
+}
+.content .song-line.chords span {
+    font-weight: bold;
+    width: 0;
+}
+
+/* Buttons */
+.content .song-line:hover .close {
+    display: block;
+}
+.close {
+    background-color: #f0f0f0;
+    border:none;
+    display:none;
+}
+.close:hover {
+    background-color: #efefef;
+    border:none;
+}
+.close:focus, .close:active {
+    outline:none;
+}

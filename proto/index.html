@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Electronic Song-Keeping Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+</head>
+<body>
+    <div class="intro">
+        <h5>Start typing the lyrics</h5>
+    </div>
+    <div class="content-prototype" style="display:none">
+        <div class="song-line lyrics">
+            <input type="text" value="" />
+            <button class="delete-line close" tabindex="-1">&times;</button>
+        </div>
+    </div>
+    <div class="content" id="stanza1">
+    </div> 
+    <div class="actions-container stanza-actions">
+        <a href=# class="add-stanza" data-target="#stanza1">Add new line</a>
+    </div>
+    <script src="build/script.min.js"></script>
+</body>
+</html>
