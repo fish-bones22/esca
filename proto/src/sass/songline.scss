@@ -1,0 +1,21 @@
+.song-line {
+    .song-line-actions {
+        display: none;
+        float: right;
+    }
+    &:hover, &.ui-draggale-dragging {
+        .song-line-actions {
+            display: flex;
+            span {
+                font-size: 20px;
+            }
+            .close {
+                float: unset;
+            }
+            .move-handle {
+                color: gray;
+                cursor: move;
+            }
+        }
+    }
+}

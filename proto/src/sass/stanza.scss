@@ -1,0 +1,31 @@
+.stanza-container {
+    width: 50em;
+    
+    .song-line {
+
+        display: flex;
+
+        &:hover {
+            input:not(:focus) {
+                background-color: #dcf9ff;
+                cursor: pointer;
+            }
+        }
+        
+        input {
+            border: none;
+            border-bottom: solid 1px gray;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 20px;
+            width: 100%;
+            &:focus {
+                background-color: #fafafa;
+                outline: none;
+            }
+        }
+    }
+    
+    .actions-container {
+        margin: 10px 0;
+    }
+}

@@ -1,0 +1,14 @@
+// action buttons
+.btn-action { 
+    background-color: transparent;
+    border:none;
+    color: gray;
+    float: right;
+    &:hover {
+        color: darkgray;
+        border:none;
+    }
+    &:focus, &:active {
+        outline:none;
+    }
+}

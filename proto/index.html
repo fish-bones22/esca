@@ -5,22 +5,65 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Electronic Song-Keeping Assistant</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="build/main.css" />
 </head>
 <body>
-    <div class="intro">
-        <h5>Start typing the lyrics</h5>
-    </div>
+    <!-- Templates -->
     <div class="content-prototype" style="display:none">
         <div class="song-line lyrics">
-            <input type="text" value="" />
-            <button class="delete-line close" tabindex="-1">&times;</button>
+            <input type="text" placeholder="Click to add lyrics" />
+            <span class="song-line-actions">
+                <button class="delete-line close btn-action" tabindex="-1"><span class="material-icons">clear</span></button>
+                <span class="move-handle material-icons" tabindex="-1">drag_handle</span>
+            </span>
         </div>
     </div>
-    <div class="content" id="stanza1">
-    </div> 
-    <div class="actions-container stanza-actions">
-        <a href=# class="add-stanza" data-target="#stanza1">Add new line</a>
+    <div class="song-part-template" style="display:none">
+        <div class="song-part">
+            <button class="more btn-action" tabindex="-1"><span class="material-icons">more_vert</span></button>
+            <button class="fold btn-action" tabindex="-1"><span class="material-icons">expand_less</span></button>
+            <button class="expand btn-action" tabindex="-1" style="display: none"><span class="material-icons">expand_more</span></button>
+            <div class="song-part-title">
+                <select>
+                    <option>Prelude</option>
+                    <option>Intro</option>
+                    <option selected>Verse</option>
+                    <option>Interlude</option>
+                    <option>Chorus</option>
+                    <option>Refrain</option>
+                    <option>Instrumentals</option>
+                    <option>Bridge</option>
+                    <option>Coda</option>
+                    <option>Last Three</option>
+                    <option>Outro</option>
+                </select>
+                <input type="number" min="1" value="1" />
+            </div>
+            <div class="stanza-container">
+                <div class="stanza"></div>
+                <div class="actions-container stanza-actions">
+                    <a href=# class="add-stanza" data-target=".stanza">Add new line</a>
+                </div>
+            </div>
+            <div class="expanded-menu">
+                <ul>
+                    <li class="delete-line"><span class="material-icons">clear</span> Delete</li>
+                    <li class="insert-below"><span class="material-icons">add</span> Insert below</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Content -->
+    <div class="container">
+        <div class="intro">
+            <h3>Start typing the lyrics</h3>
+        </div>
+        <div class="song-part-container">
+            <div id="songParts"></div>
+            <div class="actions-container song-part-actions">
+                <a href=# class="add-songpart" data-target="#songParts">Add new song part</a>
+            </div>
+        </div>
     </div>
     <script src="build/script.min.js"></script>
 </body>

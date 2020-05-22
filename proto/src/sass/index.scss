@@ -1,0 +1,15 @@
+$material-icons-font-path: '~material-icons/iconfont/';
+@import '~material-icons/iconfont/material-icons.scss';
+
+html {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.container {
+    width: 60em;
+    margin:auto;
+}
+
+@import 'buttons.scss';
+@import 'songline.scss';
+@import 'stanza.scss';
+@import 'songpart.scss';

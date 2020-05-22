@@ -4,9 +4,10 @@ var defaults = {
     key: "panel",
     panelAction: ".panel-actions",
     startCount: 1,
-    panelId: "panel",
     navigateByArrowKeys: true,
-    newPanelKeys: [13]
+    newPanelKeys: [13],
+    draggable: true,
+    autoformatPaste: false
 };
 
 var panelSelector = ".panel-item";
@@ -17,9 +18,6 @@ var panelClass = panelSelector.replace(/[.,#]*/g, '');
  * @param {Object} options 
  */
 function initOptions(options) {
-    if (!options.hasOwnProperty('panelId') || options['panelId'] == '') {
-        options['panelId'] = options.hasOwnProperty('key') ? options.key : defaults.key;
-    }
     if (!options.hasOwnProperty('panelAction') || options['panelAction'] == '') {
         options['panelAction'] = options.hasOwnProperty('key') ?  "." + options.key + "-actions" : defaults.panelAction;
     }
@@ -68,19 +66,18 @@ function insertPanel(obj, index) {
         index = panelCount;
     }
     // Get next sibling panel
-    var nextPanel = $(obj).find(panelSelector+'[data-order="' + (index+1) + '"]');
+    var nextPanel = $(obj).children(panelSelector+'[data-order="' + (index+1) + '"]').first();
     var firstSibling = nextPanel;
     // Adjust order of succeeding panels first
     while (nextPanel.length > 0) {
         var currOrder = nextPanel.attr('data-order')*1;
-        nextPanel.attr('id', getOption(obj, 'panelId') + (currOrder+1))
-        .attr('data-order', currOrder+1);
+        nextPanel.attr('data-order', currOrder+1);
         nextPanel = nextPanel.next(panelSelector);
     }
     // Get panel template selector
     var panelTemplateSelector = $(getOption(obj, 'panelTemplate'));
     // Set up attributes
-    var panel = $($(panelTemplateSelector).html()).attr('id', getOption(obj, 'panelId') + (index+1))
+    var panel = $($(panelTemplateSelector).html())
     .attr('data-order', index+1)
     .addClass(panelClass);
     // Get delete selector from options
@@ -97,7 +94,17 @@ function insertPanel(obj, index) {
             navigatePanelByKey(panel, event.which == 38 ? 'up' : 'down');
         }
     });
-    
+    // Draggable
+    var draggable = getOption(obj, 'draggable');
+    if (draggable) {
+        panel.draggable({
+            addClasses: false,
+            connectToSortable: '#' + $(obj).attr('id'),
+            handle: panel.find('.move-handle'),
+            revert: true,
+            revertDuration: 0,
+        })
+    }
     // Add to panel container
     if (firstSibling.length <= 0) {
         // Get container selector from options
@@ -112,6 +119,8 @@ function insertPanel(obj, index) {
     }
     // Set panel count
     setOption(obj, 'panelCount', ++panelCount);
+
+    $(obj).trigger('dynamicPanel:insert', [ panel ]);
 
     return panel;
 }
@@ -165,7 +174,7 @@ function removePanel(obj, index) {
     if (index == undefined || index > panelCount) {
         index = panelCount - 1;
     }
-    var panel = $(obj).find(panelSelector + '[data-order="' + (index + 1) + '"]');
+    var panel = $(obj).children(panelSelector + '[data-order="' + (index + 1) + '"]').first();
     // Get next sibling item
     var next = panel.next(panelSelector);
     panel.remove();
@@ -174,8 +183,7 @@ function removePanel(obj, index) {
         // Get current order of the next sibling panel
         currentOrder = panel.attr('data-order')*1 - 1;
         // Set order of the item
-        panel.attr('id', getOption(obj, 'panelId') + currentOrder)
-             .attr('data-order', currentOrder);
+        panel.attr('data-order', currentOrder);
         // Get next sibling item
         panel = panel.next(panelSelector);
     }
@@ -206,18 +214,67 @@ $.fn.dynamicPanel = function(command, option, val) {
             let settings = $.extend({}, defaults, initOptions(command));
             $(this).data('dynamicPanel-options', settings);
 
-            // Create panels
-            for (var i = 0; i < settings.startCount; i++) {
-                insertPanel(self);
+            // Set draggable
+            if (settings.draggable) {
+                $(self).sortable({
+                    addClasses: false,
+                    stop: function(event, ui) {
+                        // Resort panel after sorting
+                        var index = 1;
+                        $(self).children(panelSelector).each(function() {
+                            if (index !== $(this).attr('data-order')*1) { 
+                                $(this).attr('data-order', index);
+                            }
+                            index++;
+                        });
+                    }
+                });
             }
 
             /** Event listeners **/
 
             // Add panels button
-            $(document).on('click', settings.adderSelector + ',  ' + '[data-target="#' + $(self).attr('id') + '"]',function() {
+            $(document).on('click', settings.adderSelector + ',  ' + '[data-target="#' + $(self).attr('id') + '"]' ,function() {
                 // Create panel then focus on the closest text input
                 insertPanel(self).find('input[type="text"]').focus();
             });
+
+            // paste event
+            if (settings.autoformatPaste) {
+                $(document).on('paste', '#' + $(self).attr('id') + '>' + panelSelector + ' input[type="text"]', function(event) {
+                    // Get clipboard data
+                    var clipboardData = event.originalEvent.clipboardData.getData('text');
+                    if (clipboardData == undefined) return true;
+                    // Split clipboard data by newline
+                    var lines = clipboardData.split('\n');
+                    if (lines == undefined || lines.length <= 0) return true;
+                    event.preventDefault();
+                    // Process clipboard data, creating new panel per line of text
+                    let panelInput = $(this);
+                    panelInput.val(lines[0].trim());
+                    for (var i = 1; i < lines.length; i++) {
+                        panelInput = panelInput.closest(panelSelector).next(panelSelector).find('input[type="text"]');
+                        if (panelInput.length <= 0) {
+                            panelInput = insertPanel(self).find('input[type="text"]');
+                        }
+                        panelInput.val(lines[i].trim());
+                    }
+            });
+
+            }
+           
+            /** Custom events */ 
+
+            // onInsert
+            if (settings.hasOwnProperty('onInsert') && settings.onInsert != undefined) {
+                $(self).on('dynamicPanel:insert', settings.onInsert);
+            }
+
+            // Create panels
+            for (var i = 0; i < settings.startCount; i++) {
+                insertPanel(self);
+            }
+            
         });
     }
 

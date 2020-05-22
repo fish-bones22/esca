@@ -11,14 +11,23 @@
   "author": "Fishbones",
   "license": "MIT",
   "dependencies": {
+    "file-loader": "^6.0.0",
     "jquery": "^3.5.1",
+    "jquery-ui-dist": "^1.12.1",
+    "material-icons": "^0.3.1",
+    "svg-loader": "0.0.2",
     "uglify-js": "^3.9.3",
+    "uuid": "^8.1.0",
     "webpack": "^4.43.0"
   },
   "devDependencies": {
+    "css-loader": "^3.5.3",
     "jshint": "^2.11.1",
     "lite-server": "^2.5.4",
+    "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1",
     "webpack-cli": "^3.3.11"
   }
 }
