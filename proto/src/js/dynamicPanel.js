@@ -6,7 +6,8 @@ var defaults = {
     startCount: 1,
     navigateByArrowKeys: true,
     newPanelKeys: [13],
-    draggable: true,
+    isDraggable: true,
+    draggable: {},
     autoformatPaste: false
 };
 
@@ -95,7 +96,7 @@ function insertPanel(obj, index) {
         }
     });
     // Draggable
-    var draggable = getOption(obj, 'draggable');
+    var draggable = getOption(obj, 'isDraggable');
     if (draggable) {
         panel.draggable({
             addClasses: false,
@@ -103,7 +104,7 @@ function insertPanel(obj, index) {
             handle: panel.find('.move-handle'),
             revert: true,
             revertDuration: 0,
-        })
+        });
     }
     // Add to panel container
     if (firstSibling.length <= 0) {
@@ -215,9 +216,12 @@ $.fn.dynamicPanel = function(command, option, val) {
             $(this).data('dynamicPanel-options', settings);
 
             // Set draggable
+            var dragOpt = settings.draggable;
+            var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];
             if (settings.draggable) {
                 $(self).sortable({
                     addClasses: false,
+                    cancel: ['input', 'a'].concat(cancelOpt).join(','),
                     stop: function(event, ui) {
                         // Resort panel after sorting
                         var index = 1;
@@ -227,6 +231,7 @@ $.fn.dynamicPanel = function(command, option, val) {
                             }
                             index++;
                         });
+                        $(ui.item).removeAttr('style');
                     }
                 });
             }

@@ -2,6 +2,9 @@ window.$ = window.jQuery = require('jquery');
 require('./dynamicPanel');
 require('jquery-ui-dist/jquery-ui');
 
+require('./outline');
+require('./chordsLine');
+
 import { v4 as uuidv4 } from 'uuid';
 
 $(document).ready(function(){
@@ -39,6 +42,10 @@ $(document).ready(function(){
         'key': 'songPart',
         'panelTemplate': '.song-part-template',
         'removerSelector': '.delete-line',
+        // Draggable options
+        'draggable': {
+            'cancel': ['.chord-cursor', '.chord']
+        },
         'onInsert': function (event, panel) {
             // Generate GUID and create id for stanza
             var uuid = uuidv4().replace(/[{,},-]*/g, '');
@@ -48,7 +55,17 @@ $(document).ready(function(){
                 'key': 'stanza',
                 'panelTemplate': '.content-prototype',
                 'removerSelector': '.delete-line',
-                'autoformatPaste': true
+                'autoformatPaste': true,
+                // Draggable options
+                'draggable': {
+                    'cancel': ['.chord-cursor', '.chord']
+                }, 
+                'onInsert': function (innerEv, songlinePanel) {
+                    if ($('#processing').val() == 'chords') {
+                        console.log('test');
+                        songlinePanel.find('.chords').chordsLine();
+                    }
+                }
             });
             // Set add stanza button target
             panel.find('.add-stanza').attr('data-target', '#'+id);

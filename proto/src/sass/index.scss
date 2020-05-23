@@ -5,10 +5,11 @@ html {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 .container {
-    width: 60em;
+    width: 48em;
     margin:auto;
 }
 
+@import 'outline.scss';
 @import 'buttons.scss';
 @import 'songline.scss';
 @import 'stanza.scss';

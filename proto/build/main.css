@@ -31,8 +31,34 @@ html {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
 .container {
-  width: 60em;
+  width: 48em;
   margin: auto; }
+
+.step-outline {
+  display: flex;
+  margin: 20px 0; }
+  .step-outline .step {
+    padding: 5px 28px 5px 35px;
+    text-align: center;
+    background-color: #fafafa; }
+    .step-outline .step.current {
+      background-color: lightgray; }
+      .step-outline .step.current::after {
+        background-color: lightgray; }
+    .step-outline .step a {
+      text-decoration: none; }
+    .step-outline .step::after {
+      content: ' ';
+      height: 21px;
+      width: 21px;
+      position: absolute;
+      transform: translateX(18px) rotate(45deg);
+      background-color: #fafafa;
+      border: 1px solid lightgray;
+      border-left: none;
+      border-bottom: none; }
+    .step-outline .step:last-child::after {
+      content: none; }
 
 .btn-action {
   background-color: transparent;
@@ -45,42 +71,61 @@ html {
   .btn-action:focus, .btn-action:active {
     outline: none; }
 
-.song-line .song-line-actions {
-  display: none;
-  float: right; }
-
-.song-line:hover .song-line-actions, .song-line.ui-draggale-dragging .song-line-actions {
-  display: flex; }
-  .song-line:hover .song-line-actions span, .song-line.ui-draggale-dragging .song-line-actions span {
+.song-line {
+  display: flex;
+  position: relative; }
+  .song-line .song-line-content {
+    flex-grow: 1; }
+    .song-line .song-line-content .chords .chord-cursor {
+      cursor: pointer;
+      position: absolute; }
+    .song-line .song-line-content .chords:hover .chord-cursor {
+      background-color: #cfcfcf; }
+    .song-line .song-line-content .chords .chord {
+      cursor: pointer;
+      position: absolute;
+      border-radius: 2px;
+      z-index: 0; }
+      .song-line .song-line-content .chords .chord:hover {
+        background-color: #fafafa;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        z-index: 1; }
+    .song-line .song-line-content .lyrics {
+      margin-left: 50px; }
+      .song-line .song-line-content .lyrics input {
+        border: none;
+        border-bottom: solid 1px gray;
+        width: 100%; }
+        .song-line .song-line-content .lyrics input:focus {
+          background-color: #fafafa;
+          outline: none; }
+    .song-line .song-line-content input, .song-line .song-line-content div {
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+      font-size: 20px; }
+  .song-line .song-line-actions {
+    display: flex;
+    float: right;
     font-size: 20px; }
-  .song-line:hover .song-line-actions .close, .song-line.ui-draggale-dragging .song-line-actions .close {
-    float: unset; }
-  .song-line:hover .song-line-actions .move-handle, .song-line.ui-draggale-dragging .song-line-actions .move-handle {
-    color: gray;
-    cursor: move; }
+    .song-line .song-line-actions span {
+      color: #e0e0e0; }
+    .song-line .song-line-actions .close {
+      cursor: pointer; }
+    .song-line .song-line-actions .move-handle {
+      cursor: move; }
+  .song-line:hover input:not(:focus), .song-line.ui-draggale-dragging input:not(:focus) {
+    background-color: #dcf9ff;
+    cursor: pointer; }
+  .song-line:hover .song-line-actions span, .song-line.ui-draggale-dragging .song-line-actions span {
+    color: lightgray; }
 
 .stanza-container {
-  width: 50em; }
-  .stanza-container .song-line {
-    display: flex; }
-    .stanza-container .song-line:hover input:not(:focus) {
-      background-color: #dcf9ff;
-      cursor: pointer; }
-    .stanza-container .song-line input {
-      border: none;
-      border-bottom: solid 1px gray;
-      font-family: 'Consolas', 'Courier New', Courier, monospace;
-      font-size: 20px;
-      width: 100%; }
-      .stanza-container .song-line input:focus {
-        background-color: #fafafa;
-        outline: none; }
+  width: 45em; }
   .stanza-container .actions-container {
     margin: 10px 0; }
 
 .song-part-container .song-part {
   background-color: white;
-  border: 1px solid gray;
+  border: 1px solid lightgray;
   margin-bottom: 10px;
   padding: 10px; }
 

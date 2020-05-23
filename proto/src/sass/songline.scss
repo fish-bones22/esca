@@ -1,20 +1,78 @@
 .song-line {
-    .song-line-actions {
-        display: none;
-        float: right;
+    display: flex;
+    position: relative;
+
+    .song-line-content {
+        flex-grow: 1;
+
+        .chords {
+            .chord-cursor {
+                cursor: pointer;
+                position: absolute;
+            }
+            &:hover {
+                .chord-cursor {
+                    background-color: #cfcfcf;
+                }
+            }
+            .chord {
+                cursor: pointer;
+                position: absolute;
+                border-radius: 2px;
+                z-index: 0;
+                &:hover {
+                    background-color: #fafafa;
+                    box-shadow: 1px 1px 5px rgba($color: #000000, $alpha: 0.5);
+                    z-index: 1;
+                }
+            }
+        }
+
+        .lyrics {
+            margin-left: 50px;
+        
+            input {
+                border: none;
+                border-bottom: solid 1px gray;
+                width: 100%;
+                &:focus {
+                    background-color: #fafafa;
+                    outline: none;
+                }
+            }
+        }
+        
+        input, div {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 20px;
+        }
     }
+    
+    .song-line-actions {
+        display: flex;
+        float: right;
+        font-size: 20px;
+        span {
+            color: #e0e0e0;
+        }
+        .close {
+            cursor: pointer;
+        }
+        .move-handle {
+            cursor: move;
+        }
+    }
+
     &:hover, &.ui-draggale-dragging {
+        
+        input:not(:focus) {
+            background-color: #dcf9ff;
+            cursor: pointer;
+        }
+
         .song-line-actions {
-            display: flex;
             span {
-                font-size: 20px;
-            }
-            .close {
-                float: unset;
-            }
-            .move-handle {
-                color: gray;
-                cursor: move;
+                color: lightgray;
             }
         }
     }

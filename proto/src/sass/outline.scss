@@ -1,0 +1,32 @@
+.step-outline {
+    display: flex;
+    margin: 20px 0;
+    .step {
+        padding: 5px 28px 5px 35px;
+        text-align: center;
+        background-color: #fafafa;
+        &.current {
+            background-color: lightgray;
+            &::after {
+                background-color: lightgray;
+            }
+        }
+        a {
+            text-decoration: none;
+        }
+        &::after {
+            content: ' ';
+            height: 21px;
+            width: 21px;
+            position: absolute;
+            transform: translateX(18px) rotate(45deg);
+            background-color: #fafafa;
+            border: 1px solid lightgray;
+            border-left: none;
+            border-bottom: none;
+        }
+        &:last-child::after {
+            content:none;
+        }
+    }
+}
