@@ -1,0 +1,54 @@
+.chord-selection-menu {
+    background-color: white;
+    border: 1px solid lightgray;
+    padding: 5px;
+    position: absolute;
+    z-index: 2;
+    .content {
+        margin: 20px;
+        h3 {
+            margin: 0;
+        }
+        .details {
+            color: gray;
+            font-size: 13px;
+        }
+        .preview {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 30px;
+            height: 50px;
+        }
+        .body {
+            background-color: #fafafa;
+            height: 25em;
+            overflow-y: auto;
+            padding: 10px;
+            width: 15.7em;
+            .section {
+                display: flex;
+                flex-wrap: wrap;
+                .item {
+                    background-color: white;
+                    border:1px solid lightgray;
+                    cursor: pointer;
+                    font-family: 'Consolas', 'Courier New', Courier, monospace;
+                    font-size: 18px;
+                    user-select: none;
+                    margin:8px;
+                    padding: 8px 0;
+                    text-align: center;
+                    width: 40px;
+                    &:hover {
+                        box-shadow: 1px 1px 2px rgba($color: #000000, $alpha: 0.2);
+                    }
+                    &.selected {
+                        background-color: lightgray;
+                        &:hover {
+                            box-shadow: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

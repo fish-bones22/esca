@@ -8,7 +8,8 @@ var defaults = {
     newPanelKeys: [13],
     isDraggable: true,
     draggable: {},
-    autoformatPaste: false
+    autoformatPaste: false,
+    getChildOfTemplate: true,
 };
 
 var panelSelector = ".panel-item";
@@ -76,10 +77,15 @@ function insertPanel(obj, index) {
         nextPanel = nextPanel.next(panelSelector);
     }
     // Get panel template selector
-    var panelTemplateSelector = $(getOption(obj, 'panelTemplate'));
+    var panelTemplateSelector = getOption(obj, 'panelTemplate');
+    var panel;
+    if (getOption(obj, 'getChildOfTemplate')) {
+        panel = $($(panelTemplateSelector).html());
+    } else {
+        panel = $(panelTemplateSelector).clone();
+    }
     // Set up attributes
-    var panel = $($(panelTemplateSelector).html())
-    .attr('data-order', index+1)
+    panel.attr('data-order', index+1)
     .addClass(panelClass);
     // Get delete selector from options
     // then set event listener for delete
@@ -221,7 +227,8 @@ $.fn.dynamicPanel = function(command, option, val) {
             if (settings.draggable) {
                 $(self).sortable({
                     addClasses: false,
-                    cancel: ['input', 'a'].concat(cancelOpt).join(','),
+                    cancel: ['input', 'a', 'select'].concat(cancelOpt).join(','),
+                    cursor: 'grabbing',
                     stop: function(event, ui) {
                         // Resort panel after sorting
                         var index = 1;
@@ -286,10 +293,14 @@ $.fn.dynamicPanel = function(command, option, val) {
     /** ACTIONS */
     if (typeof command === 'string') {
         switch(command.toLowerCase()) {
+            case 'option':
+                return getOption(this, option);
             case 'insert':
-                return this.each(function() {
-                    insertPanel(this, option);
+                var panel;
+                this.each(function() {
+                    panel = insertPanel(this, option);
                 });
+                return panel;
             case 'remove':
                 return this.each(function() {
                     removePanel(this, option);

@@ -1,0 +1,37 @@
+nav {
+    background-color: white;
+    padding: 5px 20px;
+    position: fixed;
+    top:0;
+    width: 100%;
+    z-index: 1;
+    .song-information {
+        display: flex;
+        .song-title {
+            input {
+                border: 1px solid white;
+                font-size: 20px;
+                padding: 5px 10px;
+                width: 250px;
+                &:focus {
+                    border: 1px solid lightgray;
+                    outline: none;
+                }
+            }
+        }
+        .song-key {
+            select {
+                border: 1px solid white;
+                font-size: 20px;
+                padding: 5px 10px;
+                &:focus {
+                    border: 1px solid lightgray;
+                    outline: none;
+                }
+                option {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}

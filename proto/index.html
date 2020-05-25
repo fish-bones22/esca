@@ -18,9 +18,9 @@
                     <input type="text" placeholder="Click to add lyrics" />
                 </div>
             </div>
-            <span class="song-line-actions">
+            <span class="song-line-actions" tabindex="-1">
                 <button class="delete-line close btn-action" tabindex="-1"><span class="material-icons">clear</span></button>
-                <button class="move-handle btn-action"><span class="material-icons" tabindex="-1">drag_handle</span></button>
+                <button class="move-handle btn-action" tabindex="-1"><span class="material-icons" tabindex="-1">drag_handle</span></button>
             </span>
         </div>
     </div>
@@ -59,18 +59,94 @@
             </div>
         </div>
     </div>
+    <div class="sequence-item-template" style="display: none;">
+        <div class="sequence-item">
+            <select></select>
+            <label>Repeat: </label>
+            <input type="number" />
+            <div class="sequence-item-actions">
+                <button class="option-sequence btn-action" tabindex="-1"><span class="material-icons">more_vert</span></button>
+                <button class="move-handle btn-action" tabindex="-1"><span class="material-icons" tabindex="-1">drag_handle</span></button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sequence-expanded-menu" style="display: none;">
+        <ul>
+            <li class="delete-sequence">Delete</li>
+            <li class="insert-sequence">Insert below</li>
+        </ul>
+    </div>
+
+    <div class="chord-context-menu" style="display: none;">
+        <ul>
+            <li class="change-chord">Change</li>
+            <li class="delete-chord">Delete</li>
+        </ul>
+    </div>
+
+    <div class="chord-selection-menu chord-builder" style="display: none;">
+        <button class="btn-action close"><span class="material-icons">clear</span></button>
+        <div class="content">
+            <h3>Select chord</h3>
+            <div class="details">Key of <span class="key-view-root"></span>&nbsp;<span class="key-view-scale"></span></div>
+            <div class="preview"><span class="selected-chord"></span><button class="btn-action primary select-chord"><span class="material-icons">check</span></button></div>
+            <div class="body">
+                <label>Measure</label>
+                <div class="section measures"></div>
+                <label>Root</label>
+                <div class="section chord-roots"></div>
+                <label>Variations</label>
+                <div class="section chord-variations"></div>
+                <label>Other variations</label>
+                <div class="section chord-others"></div>
+                <label>Bass</label>
+                <div class="section chord-bass"></div>
+            </div>
+        </div>
+    </div>
     <!-- Content -->
+    <nav>
+        <div class="home"><a href="#"></a></div>
+        <div class="song-information">
+            <div class="song-title"><input type="text" placeholder="Song Title"/></div>
+            <div class="song-key">
+                <select id="mainKey">
+                    <option>Select key</option>
+                    <option value="C" data-scale="Major">Key of C</option>
+                    <option value="C#" data-scale="Major">Key of C♯</option>
+                    <option value="D" data-scale="Major">Key of D</option>
+                    <option value="D#" data-scale="Major">Key of D♯</option>
+                    <option value="E" data-scale="Major">Key of E</option>
+                    <option value="F" data-scale="Major">Key of F</option>
+                    <option value="F#" data-scale="Major">Key of F♯</option>
+                    <option value="G" data-scale="Major">Key of G</option>
+                    <option value="G#" data-scale="Major">Key of G♯</option>
+                    <option value="A" data-scale="Major">Key of A</option>
+                    <option value="A#" data-scale="Major">Key of A♯</option>
+                    <option value="B" data-scale="Major">Key of B</option>
+                </select>
+            </div>
+        </div>
+    </nav>
     <div class="container">
         <div class="step-outline">
             <div class="step"><a href='#' role="button" id="addDetails">Add details</a></div>
             <div class="step current"><a href='#' role="button" id="addLyrics">Add lyrics</a></div>
             <div class="step"><a href='#' role="button" id="addChords">Add chords</a></div>
-            <div class="step"><a href='#' role="button" id="createSequence">Create sequence</a></div>
+            <div class="step"><a href='#' role="button" id="createSequence">Set sequence</a></div>
         </div>
         <div class="song-part-container">
             <div id="songParts"></div>
             <div class="actions-container song-part-actions">
                 <a href=# class="add-songpart" data-target="#songParts">Add new song part</a>
+            </div>
+        </div>
+        <div class="sequence-container" style="display: none;">
+            <div class="sequence-details">Drag song parts to desired position.</div>
+            <div id="sequenceBox"></div>
+            <div class="action-box sequence-actions">
+                <a href="#" class="add-sequence" data-target="#sequenceBox" >Add song part</a>
             </div>
         </div>
     </div>

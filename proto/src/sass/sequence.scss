@@ -1,0 +1,63 @@
+.sequence-container {
+    border: 1px solid lightgray;
+    margin: 20px 0;
+    padding: 10px;
+    .sequence-details {
+       margin: 0 0 20px 0;
+    }
+    #sequenceBox {
+        margin-left: 20px;
+        .sequence-item {
+            display: flex;
+            select {
+                border: 1px solid lightgray;
+                font-size: 20px;
+                width: 180px;
+                option {
+                    font-size: 14px;
+                }
+                &:focus {
+                    outline: none;
+                }
+            }
+            .sequence-item-actions {
+                margin-left: auto;
+                span {
+                    color: #e0e0e0;
+                    &:hover {
+                        color: lightgray;
+                    }
+                }
+                .move-handle {
+                    cursor: move;
+                }
+            }
+        }
+    }
+    .sequence-actions {
+        margin: 10px 0;
+    }
+}
+// Context menu for chords
+.sequence-expanded-menu {
+    background: white;
+    border: 1px solid rgba(90, 90, 90, 0.5);
+    position: absolute;
+    width: 140px;
+    z-index: 2;
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li {
+            cursor: pointer;
+            padding: 7px 10px;
+            &:hover {
+                background-color: aquamarine;
+            }
+            span {
+                font-size: 13px;
+            }
+        }
+    }
+}

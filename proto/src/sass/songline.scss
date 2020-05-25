@@ -9,21 +9,24 @@
             .chord-cursor {
                 cursor: pointer;
                 position: absolute;
-            }
-            &:hover {
-                .chord-cursor {
+                user-select: none;
+                &:hover {
                     background-color: #cfcfcf;
                 }
             }
             .chord {
                 cursor: pointer;
-                position: absolute;
                 border-radius: 2px;
+                position: absolute;
+                user-select: none;
                 z-index: 0;
                 &:hover {
                     background-color: #fafafa;
                     box-shadow: 1px 1px 5px rgba($color: #000000, $alpha: 0.5);
                     z-index: 1;
+                }
+                &.selected {
+                    background-color: lightgray;
                 }
             }
         }
@@ -42,7 +45,7 @@
             }
         }
         
-        input, div {
+        input, .lyrics-view, .chord, .chord-cursor {
             font-family: 'Consolas', 'Courier New', Courier, monospace;
             font-size: 20px;
         }
@@ -57,6 +60,9 @@
         }
         .close {
             cursor: pointer;
+            .selected {
+                background-color: #fafafa;
+            }
         }
         .move-handle {
             cursor: move;
@@ -73,6 +79,30 @@
         .song-line-actions {
             span {
                 color: lightgray;
+            }
+        }
+    }
+}
+
+// Context menu for chords
+.chord-context-menu {
+    background: white;
+    border: 1px solid rgba(90, 90, 90, 0.5);
+    position: absolute;
+    width: 140px;
+    z-index: 2;
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        li {
+            cursor: pointer;
+            padding: 7px 10px;
+            &:hover {
+                background-color: aquamarine;
+            }
+            span {
+                font-size: 13px;
             }
         }
     }
