@@ -15,10 +15,10 @@ $(document).ready(function() {
             {
                 'name': 'update',
                 'selector': '.change-chord',
-                'action': function(ev) {
-                    var target = $(ev.data.obj).data('target');
-                    $(target).closest('.chords').chordsLine('select', target);
+                'action': function(ev, obj, target) {
+                    $(target).chordMarker('select');
                     $(chordSelectionSelector).chordBuilder('show', target);
+                    $(chordSelectionSelector).chordBuilder('setTarget', target, true);
                 }
             }
         ] 
@@ -27,6 +27,12 @@ $(document).ready(function() {
     // Set up chord builder
     $(chordSelectionSelector).chordBuilder({
         'keySelector': '#mainKey',
+        'changeTargetOnChordChange': true,
+        'setTargetValue': function(ev, target, value) {
+            if (target != undefined) {
+                $(target).chordMarker('chordValue', value);
+            }
+        }
     });
 
     $('#sequenceBox').sequenceBuilder({

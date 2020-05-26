@@ -93,11 +93,11 @@
             <div class="preview"><span class="selected-chord"></span><button class="btn-action primary select-chord"><span class="material-icons">check</span></button></div>
             <div class="body">
                 <label>Measure</label>
-                <div class="section measures"></div>
+                <div class="section measures" data-required='true'></div>
                 <label>Root</label>
-                <div class="section chord-roots"></div>
+                <div class="section chord-roots" data-required='true'></div>
                 <label>Variations</label>
-                <div class="section chord-variations"></div>
+                <div class="section chord-variations" data-required='true'></div>
                 <label>Other variations</label>
                 <div class="section chord-others"></div>
                 <label>Bass</label>
@@ -113,7 +113,7 @@
             <div class="song-key">
                 <select id="mainKey">
                     <option>Select key</option>
-                    <option value="C" data-scale="Major">Key of C</option>
+                    <option value="C" data-scale="Major" selected>Key of C</option>
                     <option value="C#" data-scale="Major">Key of C♯</option>
                     <option value="D" data-scale="Major">Key of D</option>
                     <option value="D#" data-scale="Major">Key of D♯</option>

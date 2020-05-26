@@ -7,8 +7,6 @@
     var cursorWidth = 0;
     var cursorHeight = 0;
 
-    var initOnceFlag = false;
-
     function getOption(obj, name) {
         let option = $(obj).data('chordsLine-options');
         if (option == undefined || !option.hasOwnProperty(name)) {
@@ -38,35 +36,6 @@
         }).appendTo(parent);
     }
 
-    /**
-     * Set chord marker as selected or unselected
-     * @param {object} obj 
-     * @param {object} marker Target chord marker
-     */
-    function selectMarker(obj, marker) {
-        let chordBuilder = getOption(obj, 'chordBuilder');
-        if ($(marker).hasClass('selected')) {
-            unselectMarker(obj, marker);
-        } else {
-            unselectMarker(obj, '.chord.selected');
-            $(marker).addClass('selected');
-            $(chordBuilder).chordBuilder('setTarget', marker);
-        }
-    }
-
-    function unselectMarker(obj, marker) {
-        if ($(marker).length <= 0) return;
-        $(marker).each(function() {
-            $(this).removeClass('selected');
-            // Remove if empty on unselect
-            if ($(this).attr('data-value') == '') {
-                $(this).remove();
-            }
-        });
-        let chordBuilder = getOption(obj, 'chordBuilder');
-        $(chordBuilder).chordBuilder('setTarget', null);
-    }
-
     $.fn.chordsLine = function(command, option, value) {
 
         if (typeof command === 'object' || command == undefined) {
@@ -88,50 +57,22 @@
 
                 var cursor = $('<span>').addClass('chord-cursor').html('&nbsp;');
                 // Click event for cursor
-                cursor.on('click', function(event) {
-                    let currCursor = $(this);
+                cursor.on('click', function() {
                     // Get position of cursor
-                    let position = currCursor.position().left;
+                    let position = cursor.position().left;
+                    let parent = cursor.parent();
                     // Create chord span and add to chords line
-                    unselectMarker(self, '.chord.selected');
-                    var chordMarker = $('<span>').addClass('chord selected');
-                    var chordValue = $(settings.chordBuilder).chordBuilder('getChord', chordMarker);
-                    chordMarker.attr('data-value', chordValue.value).html(chordValue.display == '' ? '&nbsp;' : chordValue.display);
-                    // Make chordMarker draggable
-                    chordMarker.draggable({
-                        axis: 'x',
-                        addClasses: false,
-                        containment: 'parent',
-                        grid:[cursorWidth, 0],
-                        create: function(ev, ui) {
-                            chordMarker.removeAttr('style')
-                            .css('left', position)
-                            .attr('data-position', Math.round(position/cursorWidth));
+                    $('<span>').chordMarker({
+                        chordBuilder: settings.chordBuilder,
+                        contextMenu: settings.contextMenu,
+                        dragSnap: cursorWidth,
+                        leftOffset: position,
+                        keySelector: '#mainKey',
+                        parent: parent,
+                        onDragStop: function() {
+                            sortChordMarkers($(this));
                         },
-                        stop: function(ev, ui) {
-                            let diff = Math.round(chordMarker.position().left);
-                            let remainder = diff % cursorWidth;
-                            let newPos = diff - remainder;
-                            chordMarker.removeAttr('style')
-                            .css('left', newPos)
-                            .attr('data-position', newPos/cursorWidth);
-                            sortChordMarkers(chordMarker);
-                        }
                     });
-                    chordMarker.on('click', function(ev) {
-                        selectMarker(self, this);
-                    });
-                    // Set-up context menu
-                    chordMarker.on('contextmenu', function(ev) {
-                        ev.preventDefault();
-                        $(settings.contextMenu).contextMenu('toggle', this);
-                    });
-                    // Set-up double click
-                    chordMarker.on('dblclick', function() {
-                        $(settings.chordBuilder).chordBuilder('show', this);
-                    });
-                    var parent =  $(currCursor).parent();
-                    parent.append(chordMarker);
                     // Sort chords line
                     sortChordMarkers(parent);
                 });
@@ -166,33 +107,7 @@
                 }).on('mouseout', function() {
                     $(self).off('mousemove');
                 });
-
-                // Init once the ff
-                if (!initOnceFlag) {
-                    // Remove selection when clicked outside chord markers
-                    $(document).on('click', function(ev) {
-                        if (!$(ev.target).hasClass('chord') 
-                        && !$(ev.target).hasClass('chord-cursor') 
-                        && $(ev.target).closest(settings.contextMenu).length <= 0
-                        && $(ev.target).closest(settings.chordBuilder).length <= 0) {
-                            unselectMarker(self, '.chord.selected');
-                        }
-                    });
-
-                    initOnceFlag = true;
-                }
              });
-
-
-        }
-
-        if (typeof command == 'string') {
-            switch(command.toLowerCase()) {
-                case 'select':
-                    return $(this).each(function() {
-                        selectMarker(this, option);
-                    });
-            }
         }
     }
 })(jQuery)
