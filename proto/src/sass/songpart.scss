@@ -10,12 +10,16 @@
     .song-part-title {
         margin-bottom: 10px;
 
-        select, input {
-            border: none;
+        .song-part-name {
+            border-radius: 3px;
             font-family: 'Consolas', 'Courier New', Courier, monospace;
-            &:focus {
-                background-color: #fafafa;
-                outline: none;
+            padding: 2px 10px;
+            &:hover {
+                cursor: pointer;
+                background-color: lightgray;
+            }
+            span {
+                color: gray;
             }
         }
 
@@ -58,6 +62,46 @@
                 span {
                     font-size: 13px;
                 }
+            }
+        }
+    }
+}
+
+.song-part-title-expanded-panel {
+    background-color: white;
+    border: 1px solid lightgray;
+    padding: 10px 5px;
+    position: absolute;
+    z-index: 2;
+    .panel-body {
+        display: flex;
+        margin: 25px 5px 20px 25px;
+        .song-part-name-select {
+            border: 1px solid lightgray;
+            font-size: 16px;
+            padding: 5px 10px;
+            option {
+                font-size: 14px;
+            }
+        }
+        .song-part-name-number-input {
+            border: 1px solid lightgray;
+            display: inline;
+            input {
+                border: none;
+                font-size: 16px;
+                padding: 5px 10px;
+                width: 50px;
+                &:focus {
+                    outline: none;
+                }
+            }
+            .clear {
+                span {
+                    font-size: 14px;
+                    padding-top: 5px;
+                }
+                float: right;
             }
         }
     }

@@ -32,10 +32,9 @@ window.ChordProcessor = {
             let rootDisplay = noteRef.displayName;
     
             let bassDisplay = '';
-
             if (bass != '') {
                 let bassNoteIndex = (scaleReference.pattern.find(o => o.name == bass).noteIndex + keyNoteIndex) % musicReference.notes.length
-                let bassNoteRef = musicReference.note[bassNoteIndex];
+                let bassNoteRef = musicReference.notes[bassNoteIndex];
                 bassDisplay = "<sub>/"+bassNoteRef.displayName+'</sub>';
             }
     

@@ -35,6 +35,9 @@ html, body {
   width: 48em;
   margin: 50px auto; }
 
+.text-muted {
+  color: gray; }
+
 nav {
   background-color: white;
   padding: 5px 20px;
@@ -185,12 +188,15 @@ nav {
 
 .song-part-container .song-part-title {
   margin-bottom: 10px; }
-  .song-part-container .song-part-title select, .song-part-container .song-part-title input {
-    border: none;
-    font-family: 'Consolas', 'Courier New', Courier, monospace; }
-    .song-part-container .song-part-title select:focus, .song-part-container .song-part-title input:focus {
-      background-color: #fafafa;
-      outline: none; }
+  .song-part-container .song-part-title .song-part-name {
+    border-radius: 3px;
+    font-family: 'Consolas', 'Courier New', Courier, monospace;
+    padding: 2px 10px; }
+    .song-part-container .song-part-title .song-part-name:hover {
+      cursor: pointer;
+      background-color: lightgray; }
+    .song-part-container .song-part-title .song-part-name span {
+      color: gray; }
   .song-part-container .song-part-title select {
     cursor: pointer;
     -webkit-appearance: none; }
@@ -223,11 +229,42 @@ nav {
       .song-part-container .expanded-menu ul li span {
         font-size: 13px; }
 
+.song-part-title-expanded-panel {
+  background-color: white;
+  border: 1px solid lightgray;
+  padding: 10px 5px;
+  position: absolute;
+  z-index: 2; }
+  .song-part-title-expanded-panel .panel-body {
+    display: flex;
+    margin: 25px 5px 20px 25px; }
+    .song-part-title-expanded-panel .panel-body .song-part-name-select {
+      border: 1px solid lightgray;
+      font-size: 16px;
+      padding: 5px 10px; }
+      .song-part-title-expanded-panel .panel-body .song-part-name-select option {
+        font-size: 14px; }
+    .song-part-title-expanded-panel .panel-body .song-part-name-number-input {
+      border: 1px solid lightgray;
+      display: inline; }
+      .song-part-title-expanded-panel .panel-body .song-part-name-number-input input {
+        border: none;
+        font-size: 16px;
+        padding: 5px 10px;
+        width: 50px; }
+        .song-part-title-expanded-panel .panel-body .song-part-name-number-input input:focus {
+          outline: none; }
+      .song-part-title-expanded-panel .panel-body .song-part-name-number-input .clear {
+        float: right; }
+        .song-part-title-expanded-panel .panel-body .song-part-name-number-input .clear span {
+          font-size: 14px;
+          padding-top: 5px; }
+
 .chord-selection-menu {
   background-color: white;
   border: 1px solid lightgray;
   padding: 5px;
-  position: absolute;
+  position: fixed;
   z-index: 2; }
   .chord-selection-menu .content {
     margin: 20px; }
@@ -276,7 +313,8 @@ nav {
   .sequence-container #sequenceBox {
     margin-left: 20px; }
     .sequence-container #sequenceBox .sequence-item {
-      display: flex; }
+      display: flex;
+      padding: 5px 3px; }
       .sequence-container #sequenceBox .sequence-item select {
         border: 1px solid lightgray;
         font-size: 20px;
@@ -285,6 +323,23 @@ nav {
           font-size: 14px; }
         .sequence-container #sequenceBox .sequence-item select:focus {
           outline: none; }
+      .sequence-container #sequenceBox .sequence-item .repeat {
+        margin-left: 30px;
+        display: flex; }
+        .sequence-container #sequenceBox .sequence-item .repeat .repeat-input {
+          border: 1px solid lightgray;
+          display: flex;
+          margin-left: 15px; }
+          .sequence-container #sequenceBox .sequence-item .repeat .repeat-input input {
+            border: none;
+            font-size: 20px;
+            padding-left: 10px;
+            width: 50px; }
+            .sequence-container #sequenceBox .sequence-item .repeat .repeat-input input:focus {
+              outline: none; }
+          .sequence-container #sequenceBox .sequence-item .repeat .repeat-input .clear span {
+            font-size: 14px;
+            padding-top: 5px; }
       .sequence-container #sequenceBox .sequence-item .sequence-item-actions {
         margin-left: auto; }
         .sequence-container #sequenceBox .sequence-item .sequence-item-actions span {

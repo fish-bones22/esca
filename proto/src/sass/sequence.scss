@@ -9,6 +9,7 @@
         margin-left: 20px;
         .sequence-item {
             display: flex;
+            padding: 5px 3px;
             select {
                 border: 1px solid lightgray;
                 font-size: 20px;
@@ -18,6 +19,28 @@
                 }
                 &:focus {
                     outline: none;
+                }
+            }
+            .repeat {
+                margin-left: 30px;
+                display: flex;
+                .repeat-input {
+                    border: 1px solid lightgray;
+                    display: flex;
+                    margin-left: 15px;
+                    input {
+                        border: none;
+                        font-size: 20px;
+                        padding-left: 10px;
+                        width: 50px;
+                        &:focus {
+                            outline: none;
+                        }
+                    }
+                    .clear span {
+                        font-size: 14px;
+                        padding-top: 5px;
+                    }
                 }
             }
             .sequence-item-actions {

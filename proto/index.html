@@ -30,20 +30,7 @@
             <button class="fold btn-action" tabindex="-1"><span class="material-icons">expand_less</span></button>
             <button class="expand btn-action" tabindex="-1" style="display: none"><span class="material-icons">expand_more</span></button>
             <div class="song-part-title">
-                <select>
-                    <option>Prelude</option>
-                    <option>Intro</option>
-                    <option selected>Verse</option>
-                    <option>Interlude</option>
-                    <option>Chorus</option>
-                    <option>Refrain</option>
-                    <option>Instrumentals</option>
-                    <option>Bridge</option>
-                    <option>Coda</option>
-                    <option>Last Three</option>
-                    <option>Outro</option>
-                </select>
-                <input type="number" min="1" value="1" />
+                <span class="song-part-name" data-name=""><span>Click to change</span></span>
             </div>
             <div class="stanza-container">
                 <div class="stanza"></div>
@@ -62,8 +49,13 @@
     <div class="sequence-item-template" style="display: none;">
         <div class="sequence-item">
             <select></select>
-            <label>Repeat: </label>
-            <input type="number" />
+            <div class="repeat">
+                <label>Repeat: </label>
+                <form class="repeat-input" onsubmit="function(ev){ev.preventDefault()}">
+                    <input type="number" min="1" />
+                    <button type="reset" class="btn-action clear"><span class="material-icons">clear</span></button>
+                </form>
+            </div>
             <div class="sequence-item-actions">
                 <button class="option-sequence btn-action" tabindex="-1"><span class="material-icons">more_vert</span></button>
                 <button class="move-handle btn-action" tabindex="-1"><span class="material-icons" tabindex="-1">drag_handle</span></button>
@@ -83,6 +75,29 @@
             <li class="change-chord">Change</li>
             <li class="delete-chord">Delete</li>
         </ul>
+    </div>
+    <div class="song-part-title-expanded-panel" style="display: none;">
+        <button class="btn-action close"><span class="material-icons">clear</span></button>
+        <div class="panel-body"> 
+            <select class="song-part-name-select">
+                <option>Prelude</option>
+                <option>Intro</option>
+                <option selected>Verse</option>
+                <option>Interlude</option>
+                <option>Chorus</option>
+                <option>Refrain</option>
+                <option>Instrumentals</option>
+                <option>Bridge</option>
+                <option>Coda</option>
+                <option>Last Three</option>
+                <option>Outro</option>
+            </select>
+            <span class="song-part-name-number-input" > 
+                <input type="number" min="1" />
+                <button type="button" class="btn-action clear"><span class="material-icons">clear</span></button>
+            </span>
+        </div>
+        <button class="btn-action done">Done</button>
     </div>
 
     <div class="chord-selection-menu chord-builder" style="display: none;">

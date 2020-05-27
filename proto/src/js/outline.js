@@ -9,7 +9,7 @@ $(document).ready(function() {
                 'selector': '.delete-chord',
                 'action': function(ev, obj, target) {
                     $(target).remove();
-                    hide(self);
+                    $(obj).contextMenu('hide');
                 }
             },
             {
@@ -19,6 +19,7 @@ $(document).ready(function() {
                     $(target).chordMarker('select');
                     $(chordSelectionSelector).chordBuilder('show', target);
                     $(chordSelectionSelector).chordBuilder('setTarget', target, true);
+                    $(obj).contextMenu('hide');
                 }
             }
         ] 
@@ -36,16 +37,74 @@ $(document).ready(function() {
     });
 
     $('#sequenceBox').sequenceBuilder({
+        'noNameSubstitute': {
+            'find': '[no-name]',
+            'replace': '<span class="text-muted">No name</span>'
+        },
         'defaultSelect': function() {
             var select = [];
             $('.song-part.panel-item .song-part-title').each(function() {
+                var name = $(this).find('.song-part-name').attr('data-name');
+                if (name == '' || name == undefined) {
+                    name = '[no-name]';
+                }
                 select.push({
-                    'name': $(this).find('select').val() + ' ' + $(this).find('input[type="number"]').val(),
+                    'name': name,
                     'id': $(this).parent().find('.stanza').attr('id')
                 });
             });
             return select;
         }
+    });
+
+    // Context menu of song part
+    $('.song-part-title-expanded-panel').contextMenu({
+        'menuItems': [
+            {
+                'name': 'done',
+                'selector': '.done',
+                'action': function(ev, obj, target) {
+                    var name = $(obj).find('.song-part-name-select').val();
+                    var number = $(obj).find('.song-part-name-number-input input').val();
+                    name = number != '' ? name + ' ' + number : name;
+                    $(target).attr('data-name', name);
+                    $(target).html(name);
+                    $(obj).contextMenu('hide');
+                 }
+            },
+            {
+                'name': 'clear',
+                'selector': '.clear',
+                'action': function(ev, obj, target) {
+                    $(obj).find('.song-part-name-number-input input').val('');
+                 }
+            }
+        ]
+    });
+
+    
+    // context menu of sequence builder
+    $('.sequence-expanded-menu').contextMenu({
+        'menuItems': [
+            {
+                'name': 'delete',
+                'selector': '.delete-sequence',
+                'action': function(ev, obj, target) {
+                    var index = $(target).closest('.panel-item').attr('data-order')*1-1;
+                    $(target).closest('.dynamicPanel').dynamicPanel('remove', index);
+                    $(obj).contextMenu('hide');
+                }
+            },
+            {
+                'name': 'insertBelow',
+                'selector': '.insert-sequence',
+                'action': function(ev, obj, target) {
+                    var index = $(target).closest('.panel-item').attr('data-order')*1;
+                    $(target).closest('.dynamicPanel').dynamicPanel('insert', index);
+                    $(obj).contextMenu('hide');
+                }
+            }
+        ]
     });
 
     $('.step a').click(function () {

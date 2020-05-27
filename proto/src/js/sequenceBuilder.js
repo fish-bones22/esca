@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 (function($) {
 
     var defaults = {
+        'noNameSubstitute': false,
         'defaultSelect': []
     };
 
@@ -41,9 +42,14 @@ import { v4 as uuidv4 } from 'uuid';
         }
 
         // Construct select
+        var noName = getOption(obj, 'noNameSubstitute');
         $('.sequence-item-template select').empty();
         select.forEach(elem => {
-            $('.sequence-item-template select').append($('<option>').html(elem.name).val(elem.id));
+            var name = elem.name;
+            if (typeof noName == 'object' && name == noName.find) {
+                name = noName.replace;
+            }
+            $('.sequence-item-template select').append($('<option>').html(name).val(elem.id));
         });
         // Insert template back to sequence
         for (var i = 0; i < select.length; i++) {
@@ -62,27 +68,6 @@ import { v4 as uuidv4 } from 'uuid';
 
                 $(self).data('sequenceBuilder-options', settings);
                 
-                // Set up context menu
-                $('.sequence-expanded-menu').contextMenu({
-                    'menuItems': [
-                        {
-                            'name': 'delete',
-                            'selector': '.delete-sequence',
-                            'action': function(ev, obj, target) {
-                                var index = $(target).closest('.panel-item').attr('data-order')*1-1;
-                                $(self).dynamicPanel('remove', index);
-                            }
-                        },
-                        {
-                            'name': 'insertBelow',
-                            'selector': '.insert-sequence',
-                            'action': function(ev, obj, target) {
-                                var index = $(target).closest('.panel-item').attr('data-order')*1;
-                                $(self).dynamicPanel('insert', index);
-                            }
-                        }
-                    ]
-                });
                 // Set up dynamic panel
                 $(self).dynamicPanel({
                     'startCount': 0,

@@ -221,6 +221,8 @@ $.fn.dynamicPanel = function(command, option, val) {
             let settings = $.extend({}, defaults, initOptions(command));
             $(this).data('dynamicPanel-options', settings);
 
+            $(self).addClass('dynamicPanel');
+
             // Set draggable
             var dragOpt = settings.draggable;
             var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];

@@ -64,6 +64,10 @@ $(document).ready(function(){
             });
             // Set add stanza button target
             panel.find('.add-stanza').attr('data-target', '#'+id);
+            // Set up song part title
+            panel.find('.song-part-title .song-part-name').on('click', function() {
+                $('.song-part-title-expanded-panel').contextMenu('show', this);
+            })
         }
     });
 });

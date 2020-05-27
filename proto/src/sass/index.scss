@@ -9,6 +9,9 @@ html, body {
     width: 48em;
     margin:50px auto;
 }
+.text-muted {
+    color: gray;
+}
 
 @import 'nav.scss';
 @import 'outline.scss';

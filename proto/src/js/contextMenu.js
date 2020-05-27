@@ -3,11 +3,11 @@
     var defaults = {
         'menuItems': [
             {
-                'selector': '.delete',
+                'name': 'close',
+                'selector': '.close',
                 'action': function(ev, obj, target) {
-                    $(target).remove();
-                    hide(self);
-                },
+                    hide(obj);
+                }
             }
         ]
     }
@@ -55,13 +55,17 @@
 
             return $(this).each(function() {
                 var self = this;
-                
+                // Combine menu items array from default and command
+                command.menuItems = defaults.menuItems.concat((command.hasOwnProperty('menuItems') ? command.menuItems : []));
+                // Extend settings from default 
                 var settings = $.extend({}, defaults, command);
                 $(self).data('contextMenu-options', settings);
 
                 // Collapse context menu when clicked outside
                 $(document).on('click', function(event){ 
-                    if (!$(self).is(event.target) && $($(self).data('target')).has(event.target).length <= 0) {
+                    if (!$(self).is(event.target) 
+                    && $(event.target).closest($(self).data('target')).length <= 0
+                    && $(event.target).closest(self).length <= 0) {
                         $(self).hide();
                     }
                 });
