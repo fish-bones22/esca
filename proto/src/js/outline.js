@@ -29,6 +29,7 @@ $(document).ready(function() {
     $(chordSelectionSelector).chordBuilder({
         'keySelector': '#mainKey',
         'changeTargetOnChordChange': true,
+        'songPartSelector': '.song-part-name',
         'setTargetValue': function(ev, target, value) {
             if (target != undefined) {
                 $(target).chordMarker('chordValue', value);
@@ -70,6 +71,7 @@ $(document).ready(function() {
                     $(target).attr('data-name', name);
                     $(target).html(name);
                     $(obj).contextMenu('hide');
+                    $(chordSelectionSelector).chordBuilder('generateCustom');
                  }
             },
             {

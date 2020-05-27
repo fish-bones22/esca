@@ -129,6 +129,11 @@ nav {
         background-color: lightgray; }
     .song-line .song-line-content .lyrics {
       margin-left: 50px; }
+      .song-line .song-line-content .lyrics .lyrics-view {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 598px; }
       .song-line .song-line-content .lyrics input {
         border: none;
         border-bottom: solid 1px gray;
@@ -146,7 +151,8 @@ nav {
     .song-line .song-line-actions span {
       color: #e0e0e0; }
     .song-line .song-line-actions .close {
-      cursor: pointer; }
+      cursor: pointer;
+      padding: 1px 0; }
       .song-line .song-line-actions .close .selected {
         background-color: #fafafa; }
     .song-line .song-line-actions .move-handle {
@@ -184,7 +190,8 @@ nav {
   background-color: white;
   border: 1px solid lightgray;
   margin-bottom: 10px;
-  padding: 10px; }
+  padding: 10px;
+  position: relative; }
 
 .song-part-container .song-part-title {
   margin-bottom: 10px; }
@@ -282,7 +289,7 @@ nav {
       height: 25em;
       overflow-y: auto;
       padding: 10px;
-      width: 15.7em; }
+      width: 17.3em; }
       .chord-selection-menu .content .body .section {
         display: flex;
         flex-wrap: wrap; }
@@ -292,10 +299,11 @@ nav {
           cursor: pointer;
           font-family: 'Consolas', 'Courier New', Courier, monospace;
           font-size: 18px;
-          user-select: none;
-          margin: 8px;
+          height: 22px;
+          margin: 5px;
           padding: 8px 0;
           text-align: center;
+          user-select: none;
           width: 40px; }
           .chord-selection-menu .content .body .section .item:hover {
             box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); }
@@ -303,6 +311,24 @@ nav {
             background-color: lightgray; }
             .chord-selection-menu .content .body .section .item.selected:hover {
               box-shadow: none; }
+          .chord-selection-menu .content .body .section .item.custom-item {
+            width: 100%; }
+        .chord-selection-menu .content .body .section.custom-text .custom-item {
+          width: 100%; }
+          .chord-selection-menu .content .body .section.custom-text .custom-item input {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            border: 1px solid lightgray;
+            margin: 0 auto;
+            width: 160px; }
+            .chord-selection-menu .content .body .section.custom-text .custom-item input:focus {
+              outline: none; }
+      .chord-selection-menu .content .body .edit-custom-text {
+        background-color: #eaeaea;
+        border-radius: 5px;
+        float: unset;
+        margin-left: 10px; }
+        .chord-selection-menu .content .body .edit-custom-text span {
+          font-size: 16px; }
 
 .sequence-container {
   border: 1px solid lightgray;

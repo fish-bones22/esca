@@ -9,7 +9,9 @@
         'mainRoot': 'G',
         'mainScale': 'Major',
         'keySelector': '.key',
-        'changeTargetOnChordChange':false
+        'changeTargetOnChordChange':false,
+        'songPartSelector': '',
+        'customSectionEmptyMessage': 'Empty'
     }
     var chordDisplay = '';
     var chordValue = '';
@@ -105,7 +107,34 @@
                 section2.append(item);
             }
         }
+        generateCustom(obj);
 
+    }
+
+    /**
+     * Generate custom chord selection
+     * @param {object} obj 
+     */
+    function generateCustom(obj) {
+        // Add songparts
+        var section = $(obj).find('.section.custom');
+        var count = 0;
+        section.empty();
+        $(getOption(obj, 'songPartSelector')).each(function() {
+            if ($(this).attr('data-name') == '') return; 
+            var name = $(this).attr('data-name');
+            var item = $('<span>').addClass('item custom-item')
+            .attr('data-value', name)
+            .attr('data-display', name)
+            .html(name);
+            section.append(item);
+            count++;
+        });
+
+        if (count <= 0) {
+            var item = $('<i>').addClass('text-muted').html(getOption(obj, 'customSectionEmptyMessage'));
+            section.append(item);
+        }
     }
     /**
      * Construct chords from selection
@@ -117,9 +146,25 @@
         var measureVal = $(obj).find('.measure.selected').attr('data-value');
         var rootVal = $(obj).find('.root.selected').attr('data-value');
         var variationVal = $(obj).find('.chord-variation.selected').attr('data-value');
+        var customVal = $(obj).find('.custom-item.selected').attr('data-value');
         // Check if selections valid, else display previous chord selected
         var view = $(obj).find('.selected-chord');
+
+        // When custom panel is selected
+        if (measureVal != undefined && customVal != undefined) {
+            var measureDis = $(obj).find('.measure.selected').attr('data-display');
+            chordValue =  [measureVal, 'custom', customVal ].join('/');
+            chordDisplay = [measureDis, customVal ].join('');
+            // Set value to displayer
+            view.attr('data-value', chordValue);
+            view.html(chordDisplay);
+            return;
+        }
+
+        // When required panels are not selected
         if (measureVal == undefined || rootVal == undefined || variationVal == undefined) {
+            chordValue = '';
+            chordDisplay = '';
             view.attr('data-value', chordValue);
             view.html(chordDisplay);
             return;
@@ -168,9 +213,19 @@
 
     function onItemClick(event) {
         // Toggle select
-        if ($(event.target).hasClass('selected') && $(event.target).closest('.section').attr('data-required') == undefined) {
+        if (($(event.target).hasClass('selected') 
+        && $(event.target).closest('.section').attr('data-required') == undefined)
+        || ($(event.target).hasClass('selected') 
+        && $(event.target).closest('.section').attr('data-required') != undefined
+        && $(event.data.obj).find('.item.custom-item.selected').length > 0)) {
             $(event.target).removeClass('selected');
         } else {
+            // For custom items, unselect custom items if another custom item is selected 
+            // Or root item is selected
+            if ($(event.target).hasClass('custom-item') || $(event.target).hasClass('root')) {
+                $(event.data.obj).find('.root.selected').removeClass('selected');
+                $(event.data.obj).find('.custom-item.selected').removeClass('selected');
+            }
             $(event.target).parent().find('.selected').removeClass('selected');
             $(event.target).addClass('selected');
             // select default variation attached to it
@@ -226,6 +281,20 @@
                     settings.mainScale = $(this).find('option:selected').attr('data-scale')
                     initializePanel(self);
                 }).change();
+                // Custom text button
+                $(self).find('.edit-custom-text').on('click', function() {
+                    var input = $(self).find('.custom-text-input');
+                    input.toggle();
+                    var display = $(self).find('.custom-text-display');
+                    display.toggle();
+                    display.html(input.val() != '' ? input.val() : '&nbsp;')
+                    $(self).find('.custom-text .custom-item')
+                    .attr('data-value', input.val())
+                    .attr('data-display', input.val());
+                });
+                $(self).find('.custom-text-display').on('click', function() {
+                    $(this).parent().trigger('click');
+                });
                 // Custom events
                 $(self).on('chordBuilder:setTargetValue', settings.setTargetValue);
             });
@@ -257,7 +326,12 @@
                 case 'settarget': 
                     return $(this).each(function() {
                         setTarget(this, option, value);
-                    });    
+                    });   
+                case 'generatecustom':
+                    return $(this).each(function() {
+                        generateCustom(this);
+                    });   
+                     
             }
         }
     }

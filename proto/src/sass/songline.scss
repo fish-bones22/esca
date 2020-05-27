@@ -35,6 +35,13 @@
 
         .lyrics {
             margin-left: 50px;
+
+            .lyrics-view {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 598px;
+            }
         
             input {
                 border: none;
@@ -62,6 +69,7 @@
         }
         .close {
             cursor: pointer;
+            padding: 1px 0;
             .selected {
                 background-color: #fafafa;
             }

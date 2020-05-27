@@ -3,7 +3,8 @@
         { "name": "whole", "displayName": "|", "default": true },
         { "name": "half", "displayName": "'" },
         { "name": "quarter", "displayName": "-" },
-        { "name": "eightth", "displayName": "·" }
+        { "name": "eightth", "displayName": "·" },
+        { "name": "no", "displayName": "" }
     ],
     "notes": [
         { "name":"C", "displayName": "C" },  

@@ -21,6 +21,12 @@ window.ChordProcessor = {
     
             // Get measure
             let measureDisplay = musicReference.measures.find(o => o.name == measure).displayName;
+
+            // IF custom
+            if (root == 'custom') {
+                return [measureDisplay, variation].join('');
+            }
+
             //** Get root and bass note **//
     
             // Get scale
