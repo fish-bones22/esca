@@ -265,13 +265,14 @@ $.fn.dynamicPanel = function(command, option, val) {
                     event.preventDefault();
                     // Process clipboard data, creating new panel per line of text
                     let panelInput = $(this);
-                    panelInput.val(lines[0].trim());
+                    panelInput.val(lines[0].trim()).trigger('change');
                     for (var i = 1; i < lines.length; i++) {
                         panelInput = panelInput.closest(panelSelector).next(panelSelector).find('input[type="text"]');
                         if (panelInput.length <= 0) {
                             panelInput = insertPanel(self).find('input[type="text"]');
                         }
                         panelInput.val(lines[i].trim());
+                        panelInput.trigger('change');
                     }
             });
 

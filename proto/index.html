@@ -35,7 +35,7 @@
             <div class="stanza-container">
                 <div class="stanza"></div>
                 <div class="actions-container stanza-actions">
-                    <a href=# class="add-stanza" data-target=".stanza">Add new line</a>
+                    <button class="add-stanza btn-link" data-target=".stanza">Add new line</button>
                 </div>
             </div>
             <div class="expanded-menu">
@@ -70,17 +70,40 @@
         </ul>
     </div>
 
-    <div class="chord-context-menu contextMenu" style="display: none;">
+    <div class="chord-context-menu context-menu" style="display: none;">
         <ul>
             <li class="change-chord">Change</li>
             <li class="delete-chord">Delete</li>
         </ul>
     </div>
-    <div class="songline-context-menu contextMenu" style="display: none;">
+
+    <div class="songline-context-menu context-menu" style="display: none;">
         <ul>
             <li class="insert-line-below">Insert below</li>
             <li class="delete-line">Delete</li>
         </ul>
+    </div>
+    
+    <div class="spacer-context-menu context-menu" style="display: none;">
+        <ul>
+            <li class="adjust-spacer">Change width</li>
+            <li class="delete-spacer">Delete</li>
+        </ul>
+    </div>
+
+    <div class="character-context-menu" style="display: none;">
+        <button class="btn-action close"><span class="material-icons">clear</span></button>
+        <div class="panel-title">Insert spacer</div>
+        <div class="panel-body"> 
+            <label>Width</label>
+            <span class="spacer-width" > 
+                <form onsubmit="return false">
+                    <input type="number" value="1" min="1" data-default="1" />
+                    <button type="reset" class="btn-action clear"><span class="material-icons">clear</span></button>
+                </form>
+            </span>
+        </div>
+        <button class="btn-action insert">Insert</button>
     </div>
     <div class="song-part-title-expanded-panel" style="display: none;">
         <button class="btn-action close"><span class="material-icons">clear</span></button>
@@ -171,14 +194,14 @@
         <div class="song-part-container">
             <div id="songParts"></div>
             <div class="actions-container song-part-actions">
-                <a href=# class="add-songpart" data-target="#songParts">Add new song part</a>
+                <button class="btn-link add-songpart" data-target="#songParts">Add new song part</button>
             </div>
         </div>
         <div class="sequence-container" style="display: none;">
             <div class="sequence-details">Drag song parts to desired position.</div>
             <div id="sequenceBox"></div>
             <div class="action-box sequence-actions">
-                <a href="#" class="add-sequence" data-target="#sequenceBox" >Add song part</a>
+                <button class="btn-link add-sequence" data-target="#sequenceBox" >Add song part</button>
             </div>
         </div>
     </div>

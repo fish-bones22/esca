@@ -12,3 +12,16 @@
         outline:none;
     }
 }
+// link-style Button
+.btn-link {
+    border: 1px solid darkgray;
+    color: darkgray;
+    background-color: transparent;
+    &:hover {
+        border: 1px solid gray;
+        color: gray;
+    }
+    &:focus, &:active {
+        outline:none;
+    }
+}

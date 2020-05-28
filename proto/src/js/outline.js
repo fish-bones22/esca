@@ -132,6 +132,55 @@ $(document).ready(function() {
         ]
     });
 
+    // Insert spacer menu for characters
+    $('.character-context-menu').contextMenu({
+        'menuItems': [
+            {
+                'name': 'insert',
+                'selector': '.insert',
+                'action': function(ev, menu, target) {
+                    var input = $(menu).find('.spacer-width input[type="number"]');
+                    var width = input.val();
+                    input.val(input.attr('data-default'));
+                    $(target).parent().songLine('addSpacer', target, width);
+                    $(target).parent().songLine('clean');
+                    $(menu).contextMenu('hide');
+                }
+            }
+        ],
+        'onShow': function(ev, menu, target) {
+            $('.temp-spacer').remove();
+            $(target).after($('<span class="temp-spacer">&nbsp;</span>').css('background-color', 'lightgray'));
+        },
+        'onHide': function(ev, menu, target) {
+            $('.temp-spacer').remove();
+        }
+    });
+
+    // context menu of sequence builder
+    $('.spacer-context-menu').contextMenu({
+        'menuItems': [
+            {
+                'name': 'delete',
+                'selector': '.delete-spacer',
+                'action': function(ev, obj, target) {
+                    $(target).remove();
+                    $(obj).contextMenu('hide');
+                }
+            },
+            {
+                'name': 'adjust',
+                'selector': '.adjust-spacer',
+                'action': function(ev, obj, target) {
+                    $(obj).contextMenu('hide');
+                    var newTarget = $(target).prev('.character');
+                    $(target).remove();
+                    window.setTimeout(function(){$('.character-context-menu').contextMenu('show', newTarget)}, 100);
+                }
+            }
+        ]
+    });
+
     $('.step a').click(function () {
         $('.step.current').removeClass('current');
         $(this).parent().addClass('current');
@@ -181,13 +230,19 @@ function addChords() {
         }
         // Get sibling view element
         var lyricsView = $(this).siblings('.lyrics-view');
+        
         // Hide input
         $(this).hide();
         if (lyricsView.length <= 0) return;
-        // Get text from lyrics text input
-        var lineText = $(this).val();
+
+        // Get text from lyrics text input and format
+        lyricsView.songLine({
+            'dataSource': this,
+            'contextMenu': '.character-context-menu',
+            'spacerContextMenu': '.spacer-context-menu'
+        });
+
         // Set view element text
-        lyricsView.text(lineText);
         lyricsView.show();
 
     });

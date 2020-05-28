@@ -6,18 +6,46 @@
                 'name': 'close',
                 'selector': '.close',
                 'action': function(ev, obj, target) {
-                    hide(obj);
+                    hide(obj, target);
                 }
             }
-        ]
+        ],
+        'onShow': function(ev, obj, target) {},
+        'onHide': function(ev, obj) {},
+        'nesting': false
+    }
+
+    
+    /**
+     * Get option value
+     * @param {Object} object 
+     * @param {String} key 
+     */
+    function getOption(object, key) {
+        var options = $(object).data('contextMenu-options');
+
+        if (!options.hasOwnProperty(key)) return null;
+
+        return options[key];
+    }
+
+    /**
+     * Hide context menu
+     * @param {Object} obj 
+     */
+    function hide(obj, target = null) {
+        $(obj).trigger('contextMenu:hide', [obj, target]);
+        $(obj).hide();
+        $(obj).data('target', null);
     }
     /**
      * Hide context menu
      * @param {Object} obj 
      */
-    function hide(obj) {
-        $(obj).hide();
-        $(obj).data('target', null);
+    function hideAll() {
+        $('.contextMenu:visible').each(function() {
+            hide(this, $(this).data('target'));
+        });
     }
     /**
      * Show context menu and set target
@@ -31,11 +59,14 @@
             var width = $(obj).width();
             var viewPortWidth = $(document).width();
             left = left + width > viewPortWidth ? viewPortWidth - width - 20 : left;
+            $(obj).trigger('contextMenu:hide', [obj, target]);
             $(obj).data('target', target);
             $(obj).css('left', left)
             .css('top', $(target).offset().top + $(target).height());
         }
+        if (!getOption(obj, 'nesting')) hideAll();
         $(obj).show();
+        $(obj).trigger('contextMenu:show', [obj, target]);
     }
     /**
      * Hide menu if shown, show if hidden
@@ -45,7 +76,7 @@
         if ($(obj).is(':hidden')) {
             show(obj, target);
         } else {
-            hide(obj);
+            hide(obj, target);
         }
     }
 
@@ -65,8 +96,9 @@
                 $(document).on('click', function(event){ 
                     if (!$(self).is(event.target) 
                     && $(event.target).closest($(self).data('target')).length <= 0
-                    && $(event.target).closest(self).length <= 0) {
-                        $(self).hide();
+                    && $(event.target).closest(self).length <= 0
+                    && !$(self).is(':hidden')) {
+                        hide(self, $(self).data('target'));
                     }
                 });
                 // Set up context menu items click event listener
@@ -80,14 +112,23 @@
                 $(self).on('contextmenu', function(ev) {
                     ev.preventDefault();
                 });
+
+                // Custom events
+                $(self).on('contextMenu:show', settings.onShow);
+                $(self).on('contextMenu:hide', settings.onHide);
+
+                $(self).addClass('contextMenu');
             });
         }
         
         switch(command.toLowerCase()) {
             case 'hide':
                 return $(this).each(function() {
-                    hide(this);
+                    hide(this, value);
                 });
+            case 'hideall':
+                hideAll();
+                return $(this);
             case 'show':
                 return $(this).each(function() {
                     show(this, value);
@@ -96,6 +137,10 @@
                 return $(this).each(function() {
                     toggle(this, value);
                 });
+            case 'isshown':
+                return !$(this).is(':hidden');
+            case 'ishidden':
+                return $(this).is(':hidden');
         }
 
     }

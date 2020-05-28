@@ -37,7 +37,7 @@ $(document).ready(function(){
         'removerSelector': '.delete-line',
         // Draggable options
         'draggable': {
-            'cancel': ['.chord-cursor', '.chord',  '.close', '.more' ]
+            'cancel': ['.chord-cursor', '.chord',  '.close', '.more', '.song-line', '.song-part-title' ]
         },
         'onInsert': function (event, panel) {
             // Generate GUID and create id for stanza
@@ -50,7 +50,7 @@ $(document).ready(function(){
                 'autoformatPaste': true,
                 // Draggable options
                 'draggable': {
-                    'cancel': ['.chord-cursor', '.chord',  '.close', '.more' ]
+                    'cancel': ['.chord-cursor', '.chord',  '.close', '.more', '.lyrics' ]
                 }, 
                 'onInsert': function (innerEv, songlinePanel) {
                     // Generate GUID and create id for song line
@@ -58,11 +58,17 @@ $(document).ready(function(){
                     songlinePanel.attr('id', lineId);
                     // Process chords line when inserting new line from chords mode
                     if ($('#processing').val() == 'chords') {
-                        songlinePanel.find('.chords').chordsLine();
+                        songlinePanel.find('.chords').chordsLine({
+                            'height': songlinePanel.find('.lyrics input[type="text"]').css('font-size').replace(/px+/g, '')*1 + 8
+                        });
                     }
                     // Set up context menu
                     songlinePanel.find('.line-options').on('click', function() {
                         $('.songline-context-menu').contextMenu('toggle', this);
+                    });
+                    // Set up change listener for input texts
+                    songlinePanel.find('.lyrics input[type="text"]').on('change', function() {
+                        $(this).addClass('changed');
                     });
                 }
             });

@@ -102,6 +102,16 @@ nav {
   .btn-action:focus, .btn-action:active {
     outline: none; }
 
+.btn-link {
+  border: 1px solid darkgray;
+  color: darkgray;
+  background-color: transparent; }
+  .btn-link:hover {
+    border: 1px solid gray;
+    color: gray; }
+  .btn-link:focus, .btn-link:active {
+    outline: none; }
+
 .song-line {
   display: flex;
   position: relative; }
@@ -165,28 +175,55 @@ nav {
   .song-line:hover .song-line-actions span, .song-line.ui-draggale-dragging .song-line-actions span {
     color: lightgray; }
 
-.contextMenu {
+.context-menu {
   background: white;
   border: 1px solid rgba(90, 90, 90, 0.5);
   position: absolute;
   width: 140px;
   z-index: 2; }
-  .contextMenu ul {
+  .context-menu ul {
     list-style: none;
     margin: 0;
     padding: 0; }
-    .contextMenu ul li {
+    .context-menu ul li {
       cursor: pointer;
       padding: 7px 10px; }
-      .contextMenu ul li:hover {
+      .context-menu ul li:hover {
         background-color: aquamarine; }
-      .contextMenu ul li span {
+      .context-menu ul li span {
         font-size: 13px; }
+
+.character-context-menu {
+  background-color: white;
+  border: 1px solid lightgray;
+  padding: 10px 5px;
+  position: absolute;
+  z-index: 2; }
+  .character-context-menu .panel-body {
+    display: flex;
+    margin: 25px 10px; }
+    .character-context-menu .panel-body label {
+      margin-right: 10px; }
+    .character-context-menu .panel-body .spacer-width {
+      border: 1px solid lightgray;
+      display: inline; }
+      .character-context-menu .panel-body .spacer-width input {
+        border: none;
+        font-size: 16px;
+        padding: 5px 10px;
+        width: 50px; }
+        .character-context-menu .panel-body .spacer-width input:focus {
+          outline: none; }
+      .character-context-menu .panel-body .spacer-width .clear {
+        float: right; }
+        .character-context-menu .panel-body .spacer-width .clear span {
+          font-size: 14px;
+          padding-top: 5px; }
 
 .stanza-container {
   width: 45em; }
   .stanza-container .actions-container {
-    margin: 10px 0; }
+    margin: 10px 10px 5px 10px; }
 
 .song-part-container .song-part {
   background-color: white;
