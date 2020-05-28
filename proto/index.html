@@ -20,7 +20,7 @@
             </div>
             <span class="song-line-actions" tabindex="-1">
                 <button class="move-handle btn-action" tabindex="-1"><span class="material-icons" tabindex="-1">drag_handle</span></button>
-                <button class="delete-line close btn-action" tabindex="-1"><span class="material-icons">more_vert</span></button>
+                <button class="line-options btn-action" tabindex="-1"><span class="material-icons">more_vert</span></button>
             </span>
         </div>
     </div>
@@ -70,10 +70,16 @@
         </ul>
     </div>
 
-    <div class="chord-context-menu" style="display: none;">
+    <div class="chord-context-menu contextMenu" style="display: none;">
         <ul>
             <li class="change-chord">Change</li>
             <li class="delete-chord">Delete</li>
+        </ul>
+    </div>
+    <div class="songline-context-menu contextMenu" style="display: none;">
+        <ul>
+            <li class="insert-line-below">Insert below</li>
+            <li class="delete-line">Delete</li>
         </ul>
     </div>
     <div class="song-part-title-expanded-panel" style="display: none;">

@@ -84,6 +84,29 @@ $(document).ready(function() {
         ]
     });
 
+    $('.songline-context-menu').contextMenu({
+        'menuItems': [
+            {
+                'name': 'delete',
+                'selector': '.delete-line',
+                'action': function(ev, obj, target) {
+                    var index = $(target).closest('.panel-item').attr('data-order')*1-1;
+                    $(target).closest('.dynamicPanel').dynamicPanel('remove', index);
+                    $(obj).contextMenu('hide');
+                }
+            },
+            {
+                'name': 'insertBelow',
+                'selector': '.insert-line-below',
+                'action': function(ev, obj, target) {
+                    var index = $(target).closest('.panel-item').attr('data-order')*1;
+                    $(target).closest('.dynamicPanel').dynamicPanel('insert', index);
+                    $(obj).contextMenu('hide');
+                }
+            }
+        ]
+    });
+
     
     // context menu of sequence builder
     $('.sequence-expanded-menu').contextMenu({
@@ -151,7 +174,9 @@ function addChords() {
             var chordsView = $(this).parent().siblings('.chords');
             if (chordsView.length > 0) {
                 // Create chord cursor if not yet existing
-                chordsView.chordsLine();
+                chordsView.chordsLine({
+                    'height': $(this).css('font-size').replace(/px+/g, '')*1 + 8
+                });
             }
         }
         // Get sibling view element

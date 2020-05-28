@@ -6,6 +6,7 @@
         flex-grow: 1;
 
         .chords {
+            min-height: fit-content !important;
             .chord-cursor {
                 bottom: 50%;
                 cursor: pointer;
@@ -94,8 +95,8 @@
     }
 }
 
-// Context menu for chords
-.chord-context-menu {
+// Context menu for chords and song line
+.contextMenu {
     background: white;
     border: 1px solid rgba(90, 90, 90, 0.5);
     position: absolute;

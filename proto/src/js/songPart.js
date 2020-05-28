@@ -60,6 +60,10 @@ $(document).ready(function(){
                     if ($('#processing').val() == 'chords') {
                         songlinePanel.find('.chords').chordsLine();
                     }
+                    // Set up context menu
+                    songlinePanel.find('.line-options').on('click', function() {
+                        $('.songline-context-menu').contextMenu('toggle', this);
+                    });
                 }
             });
             // Set add stanza button target

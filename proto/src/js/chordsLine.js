@@ -1,6 +1,7 @@
 (function($){
 
     var defaults = {
+        'height': 10,
         'contextMenu': '.chord-context-menu',
         'chordBuilder': '.chord-selection-menu'
     };
@@ -34,6 +35,13 @@
         markers.sort(function(elem1, elem2) {
             return $(elem1).offset().left > $(elem2).offset().left ? 1 : -1;
         }).appendTo(parent);
+    }
+
+    function updateDimensions(obj, cursor) { 
+        
+        if (cursorWidth == '' || cursorWidth == 0 || cursor.width() > cursorWidth) {
+            cursorWidth = cursor.width();
+        }
     }
 
     $.fn.chordsLine = function(command, option, value) {
@@ -80,16 +88,9 @@
                 // Add chord cursor to chords line
                 $(self).append(cursor);
 
-                // Set global variables
-                if (cursorWidth == '' || cursorWidth == 0) {
-                    cursorWidth = cursor.width();
-                }
-                if (cursorHeight == '' || cursorHeight == 0) {
-                    cursorHeight = cursor.height();
-                }
                 // Set chords line attributes
-                $(self)
-                .css('height', cursorHeight+5 + 'px')
+                updateDimensions(self, cursor);
+                $(self).css('height', settings.height)
                 .addClass('chordsLine-processed');
 
                 // Mouseover event for chords line to make chord cursor follow the mouse cursor
@@ -101,7 +102,9 @@
                         var diff = event.offsetX;
                         // Get remainder and remove from difference for snapping
                         var remainder = diff%cursorWidth;
-                        cursor.css('left', diff - remainder + 'px');    
+                        cursor.css('left', diff - remainder + 'px');   
+                        // Update the chord line dimension
+                        updateDimensions(self, cursor);
                     });
                 // Unbind mousemove event
                 }).on('mouseout', function() {
