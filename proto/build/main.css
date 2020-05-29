@@ -434,3 +434,47 @@ nav {
       .sequence-expanded-menu ul li span {
         font-size: 13px; }
 
+.song-details-container {
+  width: 40em;
+  margin: 50px auto; }
+  .song-details-container .body .input-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px; }
+    .song-details-container .body .input-container label {
+      margin: 2px 10px; }
+    .song-details-container .body .input-container input, .song-details-container .body .input-container textarea, .song-details-container .body .input-container select {
+      border: 1px solid lightgray;
+      font-size: 18px;
+      padding: 6px 10px; }
+      .song-details-container .body .input-container input:focus, .song-details-container .body .input-container textarea:focus, .song-details-container .body .input-container select:focus {
+        outline: none; }
+    .song-details-container .body .input-container select option {
+      font-size: 14px; }
+    .song-details-container .body .input-container textarea {
+      resize: vertical; }
+    .song-details-container .body .input-container .error-text {
+      color: darkred;
+      font-size: 14px;
+      font-style: italic;
+      margin-bottom: 10px; }
+  .song-details-container .body .song-musical-details {
+    display: flex;
+    margin: 20px 0; }
+    .song-details-container .body .song-musical-details .input-container {
+      width: 20em; }
+  .song-details-container .body .song-tags .song-tags-box {
+    user-select: none; }
+    .song-details-container .body .song-tags .song-tags-box .tag-item {
+      background-color: #eaeaea;
+      border: 1px solid lightgray;
+      border-radius: 5px;
+      cursor: pointer;
+      line-height: 2.4em;
+      margin: 2px 5px;
+      padding: 2px 10px; }
+      .song-details-container .body .song-tags .song-tags-box .tag-item:hover {
+        background-color: lightgray; }
+      .song-details-container .body .song-tags .song-tags-box .tag-item.selected {
+        background-color: lightgray; }
+
