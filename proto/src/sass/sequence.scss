@@ -11,9 +11,8 @@
             display: flex;
             padding: 5px 3px;
             select {
-                border: 1px solid lightgray;
-                font-size: 20px;
-                width: 180px;
+                font-size: 16px;
+                width: 230px;
                 option {
                     font-size: 14px;
                 }
@@ -22,15 +21,15 @@
                 }
             }
             .repeat {
-                margin-left: 30px;
+                margin-left: 80px;
                 display: flex;
                 .repeat-input {
-                    border: 1px solid lightgray;
+                    border: 1px solid $dark;
                     display: flex;
                     margin-left: 15px;
                     input {
                         border: none;
-                        font-size: 20px;
+                        font-size: 16px;
                         padding-left: 10px;
                         width: 50px;
                         &:focus {
@@ -46,9 +45,9 @@
             .sequence-item-actions {
                 margin-left: auto;
                 span {
-                    color: #e0e0e0;
+                    color: $dimmer;
                     &:hover {
-                        color: lightgray;
+                        color: $dark;
                     }
                 }
                 .move-handle {
@@ -59,28 +58,5 @@
     }
     .sequence-actions {
         margin: 10px 0;
-    }
-}
-// Context menu for chords
-.sequence-expanded-menu {
-    background: white;
-    border: 1px solid rgba(90, 90, 90, 0.5);
-    position: absolute;
-    width: 140px;
-    z-index: 2;
-    ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        li {
-            cursor: pointer;
-            padding: 7px 10px;
-            &:hover {
-                background-color: aquamarine;
-            }
-            span {
-                font-size: 13px;
-            }
-        }
     }
 }

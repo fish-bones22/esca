@@ -1,0 +1,28 @@
+//reference _variables.scss
+.song-builder-actions {
+    margin: auto;
+    padding: 50px 0;
+    button {
+        background-color: $primary;
+        border: none;
+        color: white;
+        font-size: 14px;
+        font-weight: 100;
+        line-height: 2.6em;
+        &:hover {
+            background-color: $primary_dark;
+        }
+        span {
+            top: 7.4px;
+            position: relative;
+        }
+    }
+    .next {
+        float: right;
+        padding: 0 15px 0 20px;
+    }
+    .previous {
+        float: left;
+        padding: 0 20px 0 15px;
+    }
+}

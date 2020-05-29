@@ -1,6 +1,7 @@
 .song-details-container {
-    width: 40em;
-    margin: 50px auto;
+    border: 1px solid $dark;
+    margin: 0 auto;
+    padding: 30px 80px;
     .body {
         .input-container {
             display: flex;
@@ -10,8 +11,6 @@
                 margin: 2px 10px;
             }
             input, textarea, select {
-                border: 1px solid lightgray;
-                font-size: 18px;
                 padding: 6px 10px;
                 &:focus {
                     outline: none;
@@ -43,18 +42,20 @@
             .song-tags-box {
                 user-select: none;
                 .tag-item {
-                    background-color: #eaeaea;
-                    border: 1px solid lightgray;
-                    border-radius: 5px;
+                    background-color: $dim;
+                    border: 1px solid $dark;
+                    color: black;
                     cursor: pointer;
-                    line-height: 2.4em;
-                    margin: 2px 5px;
-                    padding: 2px 10px;
+                    line-height: 2.1em;
+                    margin: 0 2px;
+                    padding: 0 10px 3px 10px;
                     &:hover {
-                        background-color: lightgray;
+                        background-color: $dimmer;
                     }
                     &.selected {
-                        background-color: lightgray;
+                        background-color: $accent;
+                        border: none;
+                        color: white;
                     }
                 }
             }

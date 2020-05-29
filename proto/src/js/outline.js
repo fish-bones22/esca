@@ -27,9 +27,14 @@ $(document).ready(function() {
 
     // Set up chord builder
     $(chordSelectionSelector).chordBuilder({
-        'keySelector': '#mainKey',
         'changeTargetOnChordChange': true,
         'songPartSelector': '.song-part-name',
+        'mainRoot': function() {
+            return $('#mainKey option:selected').val();
+        },
+        'mainScale': function() {
+            return $('#mainKey option:selected').attr('data-scale');
+        },
         'setTargetValue': function(ev, target, value) {
             if (target != undefined) {
                 $(target).chordMarker('chordValue', value);
@@ -181,22 +186,34 @@ $(document).ready(function() {
         ]
     });
 
-    $('.step a').click(function () {
-        $('.step.current').removeClass('current');
-        $(this).parent().addClass('current');
-    });
-
+    $('#addDetails').click(addDetails);
     $('#addChords').click(addChords);
-    
     $('#addLyrics').click(addLyrics);
-    
     $('#createSequence').click(setSequence);
+
+    addDetails();
     
 });
 
+function addDetails() {
+    $('.song-details-container').show();
+    $('.song-part-container').hide();
+    $('.sequence-container').hide();
+    $('.step.current').removeClass('current');
+    $('#addDetails').addClass('current');
+
+    $('.previous').off('click').hide();
+    $('.next').off('click').on('click', function() {
+        addLyrics();
+    });
+}
+
 function addLyrics() {
+    $('.song-details-container').hide();
     $('.song-part-container').show();
     $('.sequence-container').hide();
+    $('.step.current').removeClass('current');
+    $('#addLyrics').addClass('current');
     $('.song-line .lyrics-view').each(function() {
         // Set process
         $('#processing').val('lyrics');
@@ -208,11 +225,22 @@ function addLyrics() {
         // Set view element text
         lyricsInput.show();
     });
+    $('.chord-selection-menu').chordBuilder('hide');
+    
+    $('.previous').off('click').on('click', function() {
+        addDetails();
+    }).show();
+    $('.next').off('click').on('click', function() {
+        addChords();
+    });
 }
 
 function addChords() {
+    $('.song-details-container').hide();
     $('.song-part-container').show();
     $('.sequence-container').hide();
+    $('.step.current').removeClass('current');
+    $('#addChords').addClass('current');
     // Get each lyrics line and display
     $('.song-line .lyrics input[type="text"]').each(function() {
         // Set process
@@ -246,11 +274,29 @@ function addChords() {
         lyricsView.show();
 
     });
+    
+    $('.previous').off('click').on('click', function() {
+        addLyrics();
+    }).show();
+    $('.next').off('click').on('click', function() {
+        setSequence();
+    });
 }
 
 function setSequence() {
+    $('.song-details-container').hide();
     $('.song-part-container').hide();
     $('.sequence-container').show();
+    $('.step.current').removeClass('current');
+    $('#createSequence').addClass('current');
     $('#processing').val('sequence');
+    $('.chord-selection-menu').chordBuilder('hide');
     $('#sequenceBox').sequenceBuilder('setSequenceSelect');
+    
+    $('.previous').off('click').on('click', function() {
+        addChords();
+    }).show();
+    $('.next').off('click').on('click', function() {
+        alert('Done');
+    });
 }

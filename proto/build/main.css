@@ -38,58 +38,10 @@ html, body {
 .text-muted {
   color: gray; }
 
-nav {
-  background-color: white;
-  padding: 5px 20px;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1; }
-  nav .song-information {
-    display: flex; }
-    nav .song-information .song-title input {
-      border: 1px solid white;
-      font-size: 20px;
-      padding: 5px 10px;
-      width: 250px; }
-      nav .song-information .song-title input:focus {
-        border: 1px solid lightgray;
-        outline: none; }
-    nav .song-information .song-key select {
-      border: 1px solid white;
-      font-size: 20px;
-      padding: 5px 10px; }
-      nav .song-information .song-key select:focus {
-        border: 1px solid lightgray;
-        outline: none; }
-      nav .song-information .song-key select option {
-        font-size: 14px; }
-
-.step-outline {
-  display: flex;
-  margin: 20px 0; }
-  .step-outline .step {
-    padding: 5px 28px 5px 35px;
-    text-align: center;
-    background-color: #fafafa; }
-    .step-outline .step.current {
-      background-color: lightgray; }
-      .step-outline .step.current::after {
-        background-color: lightgray; }
-    .step-outline .step a {
-      text-decoration: none; }
-    .step-outline .step::after {
-      content: ' ';
-      height: 21px;
-      width: 21px;
-      position: absolute;
-      transform: translateX(18px) rotate(45deg);
-      background-color: #fafafa;
-      border: 1px solid lightgray;
-      border-left: none;
-      border-bottom: none; }
-    .step-outline .step:last-child::after {
-      content: none; }
+button {
+  cursor: pointer; }
+  button:focus {
+    outline: none; }
 
 .btn-action {
   background-color: transparent;
@@ -103,14 +55,119 @@ nav {
     outline: none; }
 
 .btn-link {
-  border: 1px solid darkgray;
-  color: darkgray;
+  border: 1px solid #f4a261;
+  color: #f4a261;
+  background-color: white;
   background-color: transparent; }
   .btn-link:hover {
     border: 1px solid gray;
     color: gray; }
   .btn-link:focus, .btn-link:active {
     outline: none; }
+
+input, select, textarea {
+  border: 1px solid lightgray;
+  font-size: 18px; }
+  input:focus, select:focus, textarea:focus {
+    border: 1px solid gray; }
+  input::placeholder, select::placeholder, textarea::placeholder {
+    color: lightgray; }
+
+label {
+  color: gray; }
+
+select option {
+  padding: 0; }
+  select option:hover, select option:focus {
+    background-color: paleturquoise;
+    border: none;
+    outline: none; }
+
+nav {
+  background-color: #2a9d8f;
+  padding: 5px 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1; }
+  nav .song-information {
+    margin-left: 50px;
+    display: flex; }
+    nav .song-information .song-title {
+      margin-right: 10px; }
+      nav .song-information .song-title input {
+        background-color: #2a9d8f;
+        border: none;
+        color: white;
+        font-size: 18px;
+        padding: 5px 10px;
+        width: 250px; }
+        nav .song-information .song-title input:focus {
+          background-color: white;
+          color: black;
+          outline: none; }
+          nav .song-information .song-title input:focus::placeholder {
+            color: lightgray; }
+        nav .song-information .song-title input::placeholder {
+          color: #5cafa5; }
+    nav .song-information .song-key select {
+      background-color: #2a9d8f;
+      border: none;
+      color: white;
+      font-size: 18px;
+      padding: 5px 10px;
+      user-select: none; }
+      nav .song-information .song-key select:focus {
+        background-color: white;
+        color: black;
+        outline: none;
+        user-select: unset; }
+      nav .song-information .song-key select option {
+        font-size: 14px; }
+
+.context-menu {
+  background: white;
+  border: 1px solid lightgray;
+  position: absolute;
+  width: 140px;
+  z-index: 2; }
+  .context-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0; }
+    .context-menu ul li {
+      cursor: pointer;
+      padding: 4px 10px; }
+      .context-menu ul li:hover {
+        background-color: #e9c46a;
+        color: white; }
+      .context-menu ul li span {
+        font-size: 13px; }
+
+.step-outline {
+  display: flex;
+  margin: 80px 30px 30px 30px; }
+  .step-outline .step {
+    background-color: #eaeaea;
+    border: none;
+    color: black;
+    cursor: pointer;
+    margin: auto;
+    padding: 10px 28px;
+    text-align: center;
+    text-transform: uppercase; }
+    .step-outline .step:hover {
+      background-color: lightgray; }
+    .step-outline .step.current {
+      background-color: #e9c46a;
+      color: white;
+      font-weight: 600; }
+    .step-outline .step:focus {
+      outline: none; }
+  .step-outline span {
+    color: lightgray;
+    font-weight: 100;
+    padding: 5px; }
 
 .song-line {
   display: flex;
@@ -170,28 +227,12 @@ nav {
     .song-line .song-line-actions .move-handle {
       cursor: move; }
   .song-line:hover input:not(:focus), .song-line.ui-draggale-dragging input:not(:focus) {
-    background-color: #dcf9ff;
+    background-color: #eaeaea;
     cursor: pointer; }
+    .song-line:hover input:not(:focus)::placeholder, .song-line.ui-draggale-dragging input:not(:focus)::placeholder {
+      color: gray; }
   .song-line:hover .song-line-actions span, .song-line.ui-draggale-dragging .song-line-actions span {
     color: lightgray; }
-
-.context-menu {
-  background: white;
-  border: 1px solid rgba(90, 90, 90, 0.5);
-  position: absolute;
-  width: 140px;
-  z-index: 2; }
-  .context-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0; }
-    .context-menu ul li {
-      cursor: pointer;
-      padding: 7px 10px; }
-      .context-menu ul li:hover {
-        background-color: aquamarine; }
-      .context-menu ul li span {
-        font-size: 13px; }
 
 .character-context-menu {
   background-color: white;
@@ -199,6 +240,8 @@ nav {
   padding: 10px 5px;
   position: absolute;
   z-index: 2; }
+  .character-context-menu .panel-title {
+    margin-left: 5px; }
   .character-context-menu .panel-body {
     display: flex;
     margin: 25px 10px; }
@@ -219,6 +262,35 @@ nav {
         .character-context-menu .panel-body .spacer-width .clear span {
           font-size: 14px;
           padding-top: 5px; }
+  .character-context-menu .insert {
+    background-color: #2a9d8f;
+    color: white;
+    margin: 0 10px 0 5px;
+    padding: 5px 20px; }
+    .character-context-menu .insert:hover {
+      background-color: #23837b; }
+
+.song-builder-actions {
+  margin: auto;
+  padding: 50px 0; }
+  .song-builder-actions button {
+    background-color: #2a9d8f;
+    border: none;
+    color: white;
+    font-size: 14px;
+    font-weight: 100;
+    line-height: 2.6em; }
+    .song-builder-actions button:hover {
+      background-color: #23837b; }
+    .song-builder-actions button span {
+      top: 7.4px;
+      position: relative; }
+  .song-builder-actions .next {
+    float: right;
+    padding: 0 15px 0 20px; }
+  .song-builder-actions .previous {
+    float: left;
+    padding: 0 20px 0 15px; }
 
 .stanza-container {
   width: 45em; }
@@ -233,27 +305,23 @@ nav {
   position: relative; }
 
 .song-part-container .song-part-title {
+  display: inline-block;
   margin-bottom: 10px; }
   .song-part-container .song-part-title .song-part-name {
     border-radius: 3px;
     font-family: 'Consolas', 'Courier New', Courier, monospace;
     padding: 2px 10px; }
     .song-part-container .song-part-title .song-part-name:hover {
-      cursor: pointer;
-      background-color: lightgray; }
+      background-color: #eaeaea;
+      cursor: pointer; }
+      .song-part-container .song-part-title .song-part-name:hover span {
+        color: gray; }
     .song-part-container .song-part-title .song-part-name span {
-      color: gray; }
-  .song-part-container .song-part-title select {
-    cursor: pointer;
-    -webkit-appearance: none; }
-    .song-part-container .song-part-title select::-ms-expand {
-      display: none; }
-  .song-part-container .song-part-title input[type='number'] {
-    width: 30px; }
+      color: lightgray; }
 
 .song-part-container .expanded-menu {
   background: white;
-  border: 1px solid rgba(90, 90, 90, 0.5);
+  border: 1px solid lightgray;
   display: none;
   position: absolute;
   right: 0;
@@ -269,9 +337,10 @@ nav {
     padding: 0; }
     .song-part-container .expanded-menu ul li {
       cursor: pointer;
-      padding: 7px 10px; }
+      padding: 4px 10px; }
       .song-part-container .expanded-menu ul li:hover {
-        background-color: aquamarine; }
+        background-color: #e9c46a;
+        color: white; }
       .song-part-container .expanded-menu ul li span {
         font-size: 13px; }
 
@@ -285,7 +354,6 @@ nav {
     display: flex;
     margin: 25px 5px 20px 25px; }
     .song-part-title-expanded-panel .panel-body .song-part-name-select {
-      border: 1px solid lightgray;
       font-size: 16px;
       padding: 5px 10px; }
       .song-part-title-expanded-panel .panel-body .song-part-name-select option {
@@ -300,11 +368,20 @@ nav {
         width: 50px; }
         .song-part-title-expanded-panel .panel-body .song-part-name-number-input input:focus {
           outline: none; }
+      .song-part-title-expanded-panel .panel-body .song-part-name-number-input:focus {
+        border: 1px solid gray; }
       .song-part-title-expanded-panel .panel-body .song-part-name-number-input .clear {
         float: right; }
         .song-part-title-expanded-panel .panel-body .song-part-name-number-input .clear span {
           font-size: 14px;
           padding-top: 5px; }
+  .song-part-title-expanded-panel .done {
+    background-color: #2a9d8f;
+    color: white;
+    margin: 0 10px 0 5px;
+    padding: 5px 20px; }
+    .song-part-title-expanded-panel .done:hover {
+      background-color: #23837b; }
 
 .chord-selection-menu {
   background-color: white;
@@ -334,7 +411,7 @@ nav {
         flex-wrap: wrap; }
         .chord-selection-menu .content .body .section .item {
           background-color: white;
-          border: 1px solid lightgray;
+          border: 1px solid #f4a261;
           cursor: pointer;
           font-family: 'Consolas', 'Courier New', Courier, monospace;
           font-size: 18px;
@@ -347,7 +424,7 @@ nav {
           .chord-selection-menu .content .body .section .item:hover {
             box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); }
           .chord-selection-menu .content .body .section .item.selected {
-            background-color: lightgray; }
+            background-color: #e9c46a; }
             .chord-selection-menu .content .body .section .item.selected:hover {
               box-shadow: none; }
           .chord-selection-menu .content .body .section .item.custom-item {
@@ -381,15 +458,14 @@ nav {
       display: flex;
       padding: 5px 3px; }
       .sequence-container #sequenceBox .sequence-item select {
-        border: 1px solid lightgray;
-        font-size: 20px;
-        width: 180px; }
+        font-size: 16px;
+        width: 230px; }
         .sequence-container #sequenceBox .sequence-item select option {
           font-size: 14px; }
         .sequence-container #sequenceBox .sequence-item select:focus {
           outline: none; }
       .sequence-container #sequenceBox .sequence-item .repeat {
-        margin-left: 30px;
+        margin-left: 80px;
         display: flex; }
         .sequence-container #sequenceBox .sequence-item .repeat .repeat-input {
           border: 1px solid lightgray;
@@ -397,7 +473,7 @@ nav {
           margin-left: 15px; }
           .sequence-container #sequenceBox .sequence-item .repeat .repeat-input input {
             border: none;
-            font-size: 20px;
+            font-size: 16px;
             padding-left: 10px;
             width: 50px; }
             .sequence-container #sequenceBox .sequence-item .repeat .repeat-input input:focus {
@@ -408,7 +484,7 @@ nav {
       .sequence-container #sequenceBox .sequence-item .sequence-item-actions {
         margin-left: auto; }
         .sequence-container #sequenceBox .sequence-item .sequence-item-actions span {
-          color: #e0e0e0; }
+          color: #eaeaea; }
           .sequence-container #sequenceBox .sequence-item .sequence-item-actions span:hover {
             color: lightgray; }
         .sequence-container #sequenceBox .sequence-item .sequence-item-actions .move-handle {
@@ -416,27 +492,10 @@ nav {
   .sequence-container .sequence-actions {
     margin: 10px 0; }
 
-.sequence-expanded-menu {
-  background: white;
-  border: 1px solid rgba(90, 90, 90, 0.5);
-  position: absolute;
-  width: 140px;
-  z-index: 2; }
-  .sequence-expanded-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0; }
-    .sequence-expanded-menu ul li {
-      cursor: pointer;
-      padding: 7px 10px; }
-      .sequence-expanded-menu ul li:hover {
-        background-color: aquamarine; }
-      .sequence-expanded-menu ul li span {
-        font-size: 13px; }
-
 .song-details-container {
-  width: 40em;
-  margin: 50px auto; }
+  border: 1px solid lightgray;
+  margin: 0 auto;
+  padding: 30px 80px; }
   .song-details-container .body .input-container {
     display: flex;
     flex-direction: column;
@@ -444,8 +503,6 @@ nav {
     .song-details-container .body .input-container label {
       margin: 2px 10px; }
     .song-details-container .body .input-container input, .song-details-container .body .input-container textarea, .song-details-container .body .input-container select {
-      border: 1px solid lightgray;
-      font-size: 18px;
       padding: 6px 10px; }
       .song-details-container .body .input-container input:focus, .song-details-container .body .input-container textarea:focus, .song-details-container .body .input-container select:focus {
         outline: none; }
@@ -466,15 +523,17 @@ nav {
   .song-details-container .body .song-tags .song-tags-box {
     user-select: none; }
     .song-details-container .body .song-tags .song-tags-box .tag-item {
-      background-color: #eaeaea;
+      background-color: #fafafa;
       border: 1px solid lightgray;
-      border-radius: 5px;
+      color: black;
       cursor: pointer;
-      line-height: 2.4em;
-      margin: 2px 5px;
-      padding: 2px 10px; }
+      line-height: 2.1em;
+      margin: 0 2px;
+      padding: 0 10px 3px 10px; }
       .song-details-container .body .song-tags .song-tags-box .tag-item:hover {
-        background-color: lightgray; }
+        background-color: #eaeaea; }
       .song-details-container .body .song-tags .song-tags-box .tag-item.selected {
-        background-color: lightgray; }
+        background-color: #e9c46a;
+        border: none;
+        color: white; }
 

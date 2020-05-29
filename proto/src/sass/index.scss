@@ -13,10 +13,13 @@ html, body {
     color: gray;
 }
 
+@import 'variables.scss';
+@import 'controls.scss';
 @import 'nav.scss';
+@import 'contextMenu.scss';
 @import 'outline.scss';
-@import 'buttons.scss';
 @import 'songline.scss';
+@import 'songBuilder.scss';
 @import 'stanza.scss';
 @import 'songpart.scss';
 @import 'chordSelection.scss';

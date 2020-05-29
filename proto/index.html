@@ -63,7 +63,7 @@
         </div>
     </div>
     
-    <div class="sequence-expanded-menu" style="display: none;">
+    <div class="sequence-expanded-menu context-menu" style="display: none;">
         <ul>
             <li class="delete-sequence">Delete</li>
             <li class="insert-sequence">Insert below</li>
@@ -186,10 +186,13 @@
     </nav>
     <div class="container">
         <div class="step-outline">
-            <div class="step"><a href='#' role="button" id="addDetails">Add details</a></div>
-            <div class="step current"><a href='#' role="button" id="addLyrics">Add lyrics</a></div>
-            <div class="step"><a href='#' role="button" id="addChords">Add chords</a></div>
-            <div class="step"><a href='#' role="button" id="createSequence">Set sequence</a></div>
+            <button class="step" role="button" id="addDetails">Add details</button>
+            <span class="material-icons">navigate_next</span>
+            <button  class="step"  role="button" id="addLyrics">Add lyrics</button>
+            <span class="material-icons">navigate_next</span>
+            <button class="step"  role="button" id="addChords">Add chords</button>
+            <span class="material-icons">navigate_next</span>
+            <button class="step"  role="button" id="createSequence">Set sequence</button>
         </div>
         <div class="song-details-container">
             <div class="body">
@@ -197,16 +200,16 @@
                     <div class="song-title input-container">
                         <label for="songTitle">Title</label>
                         <input type="text" class="song-title-input" id="songTitle" />
-                        <span class="error-text">Do not leave empty</span>
+                        <span class="error-text" style="display: none;">Do not leave empty</span>
                     </div>
                     <div class="song-artist input-container">
                         <label for="songArtist">Artist</label>
                         <input type="text" class="song-artist-input" id="songArtist" />
-                        <span class="error-text">Do not leave empty. Write 'anonymous' if unknown</span>
+                        <span class="error-text" style="display: none;">Do not leave empty. Write 'anonymous' if unknown</span>
                     </div>
                     <div class="song-tags input-container">
                         <label for="songTags">Tags</label>
-                        <div class="song-tags-box" id="songTags">
+                        <div class="song-tags-box">
                             <span class="tag-item">Praise</span>
                             <span class="tag-item">Worship</span>
                             <span class="tag-item">English</span>
@@ -222,12 +225,12 @@
                             <span class="tag-item">Soulful</span>
                             <span class="tag-item">Hymn</span>
                         </div>
-                        <input type="hidden" class="song-tags-input" />
-                        <span class="error-text">Select at least one</span>
+                        <input type="hidden" class="song-tags-input" id="songTags" />
+                        <span class="error-text" style="display: none;">Select at least one</span>
                     </div>
                     <div class="song-description input-container">
                         <label for="songDescription">Description</label>
-                        <textarea class="song-description-input" id="songDescription" rows="5" ></textarea>
+                        <textarea class="song-description-input" id="songDescription" rows="2" ></textarea>
                     </div>
                 </div>
                 <div class="song-musical-details">
@@ -248,7 +251,7 @@
                             <option value="A#" data-scale="Major">Key of A♯</option>
                             <option value="B" data-scale="Major">Key of B</option>
                         </select>
-                        <span class="error-text">Select one</span>
+                        <span class="error-text" style="display: none;">Select one</span>
                     </div>
                     <div class="song-time-sign input-container">
                         <label for="songTimeSign">Time Signature</label>
@@ -267,7 +270,7 @@
             </div>
             <div class="actions-container"></div>
         </div>
-        <div class="song-part-container">
+        <div class="song-part-container" style="display: none;">
             <div id="songParts"></div>
             <div class="actions-container song-part-actions">
                 <button class="btn-link add-songpart" data-target="#songParts">Add new song part</button>
@@ -279,6 +282,10 @@
             <div class="action-box sequence-actions">
                 <button class="btn-link add-sequence" data-target="#sequenceBox" >Add song part</button>
             </div>
+        </div>
+        <div class="song-builder-actions">
+            <button class="previous" style="display: none;"><span class="material-icons">navigate_before</span>Back</button>
+            <button class="next">Next<span class="material-icons">navigate_next</span></button>
         </div>
     </div>
     <input type="hidden" id="processing" value=""/>

@@ -1,32 +1,31 @@
 .step-outline {
     display: flex;
-    margin: 20px 0;
+    margin: 80px 30px 30px 30px;
     .step {
-        padding: 5px 28px 5px 35px;
+        background-color: $dimmer;
+        border: none;
+        color: black;
+        cursor: pointer;
+        margin: auto;
+        padding: 10px 28px;
         text-align: center;
-        background-color: #fafafa;
+        text-transform: uppercase;
+        &:hover {
+            background-color: $dark;
+        }
         &.current {
-            background-color: lightgray;
-            &::after {
-                background-color: lightgray;
-            }
+            background-color: $accent;
+            color: white;
+            font-weight: 600;
         }
-        a {
-            text-decoration: none;
-        }
-        &::after {
-            content: ' ';
-            height: 21px;
-            width: 21px;
-            position: absolute;
-            transform: translateX(18px) rotate(45deg);
-            background-color: #fafafa;
-            border: 1px solid lightgray;
-            border-left: none;
-            border-bottom: none;
-        }
-        &:last-child::after {
-            content:none;
+        &:focus {
+            outline: none;
         }
     }
+    span {
+        color: $dark;
+        font-weight: 100;
+        padding: 5px;
+    }
 }
+

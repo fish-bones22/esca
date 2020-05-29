@@ -12,3 +12,4 @@ require('./songLine');
 require('./sequenceBuilder');
 require('./songPart');
 require('./outline');
+require('./songDetails');

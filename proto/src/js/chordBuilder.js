@@ -8,7 +8,6 @@
         },
         'mainRoot': 'G',
         'mainScale': 'Major',
-        'keySelector': '.key',
         'changeTargetOnChordChange':false,
         'songPartSelector': '',
         'customSectionEmptyMessage': 'Empty'
@@ -16,6 +15,7 @@
     var chordDisplay = '';
     var chordValue = '';
     var changeValueOfTarget = false;
+    var selectKey = '';
 
     var chordsReference = window.musicReference || {};
 
@@ -28,6 +28,16 @@
     }
 
     function initializePanel(obj) {
+        
+        // Get root key and scale
+        let root = getOption(obj, 'mainRoot');
+        let scale = getOption(obj, 'mainScale');
+        
+        root = typeof root == 'function' ? root() : root;
+        scale = typeof scale == 'function' ? scale() : scale;
+
+        if ([root, scale].join('') == selectKey) return;
+
         // Add measures
         var section = $(obj).find('.section.measures');
         section.empty();
@@ -46,9 +56,7 @@
         var section2 = $(obj).find('.section.chord-bass');
         section.empty();
         section2.empty();
-        // Get root key and scale
-        let root = getOption(obj, 'mainRoot');
-        let scale = getOption(obj, 'mainScale');
+
         let scaleReference = chordsReference.scale.find(o => o.name == scale);
         // Get position of root note
         let rootNoteIndex = chordsReference.notes.indexOf(chordsReference.notes.find(note => note.name == root));
@@ -108,6 +116,13 @@
             }
         }
         generateCustom(obj);
+        
+        // Empty values
+        chordValue = '';
+        chordDisplay = '';
+        var view = $(obj).find('.selected-chord');
+        view.attr('data-value', chordValue);
+        view.html(chordDisplay);
 
     }
 
@@ -275,12 +290,6 @@
                     'cursor': 'grabbing',
                     'cancel': 'button,.item'
                 });
-                // Key selector changed
-                $(settings.keySelector).on('change', function() {
-                    settings.mainRoot = $(this).val();
-                    settings.mainScale = $(this).find('option:selected').attr('data-scale')
-                    initializePanel(self);
-                }).change();
                 // Custom text button
                 $(self).find('.edit-custom-text').on('click', function() {
                     var input = $(self).find('.custom-text-input');
@@ -330,6 +339,10 @@
                 case 'generatecustom':
                     return $(this).each(function() {
                         generateCustom(this);
+                    });   
+                case 'update':
+                    return $(this).each(function() {
+                        initializePanel(this);
                     });   
                      
             }
