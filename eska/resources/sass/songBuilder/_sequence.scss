@@ -1,0 +1,62 @@
+.sequence-container {
+    border: 1px solid lightgray;
+    margin: 20px 0;
+    padding: 10px;
+    .sequence-details {
+       margin: 0 0 20px 0;
+    }
+    #sequenceBox {
+        margin-left: 20px;
+        .sequence-item {
+            display: flex;
+            padding: 5px 3px;
+            select {
+                font-size: 16px;
+                padding: 5px 10px;
+                width: 230px;
+                option {
+                    font-size: 14px;
+                }
+                &:focus {
+                    outline: none;
+                }
+            }
+            .repeat {
+                margin-left: 80px;
+                display: flex;
+                .repeat-input {
+                    border: 1px solid $dark;
+                    display: flex;
+                    margin: 0 0 0 15px;
+                    input {
+                        border: none;
+                        font-size: 16px;
+                        padding-left: 10px;
+                        width: 50px;
+                        &:focus {
+                            outline: none;
+                        }
+                    }
+                    .clear span {
+                        font-size: 14px;
+                    }
+                }
+            }
+            .sequence-item-actions {
+                margin-left: auto;
+                span {
+                    color: $dimmer;
+                    &:hover {
+                        color: $dark;
+                    }
+                }
+                .move-handle {
+                    cursor: move;
+                }
+            }
+        }
+    }
+    .sequence-actions {
+        margin: 10px 0;
+    }
+}

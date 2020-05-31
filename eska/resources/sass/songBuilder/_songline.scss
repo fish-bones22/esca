@@ -1,0 +1,146 @@
+.song-line {
+    display: flex;
+    position: relative;
+
+    .song-line-content {
+        flex-grow: 1;
+
+        .chords {
+            min-height: fit-content !important;
+            .chord-cursor {
+                bottom: 50%;
+                cursor: pointer;
+                position: absolute;
+                user-select: none;
+                &:hover {
+                    background-color: #cfcfcf;
+                }
+            }
+            .chord {
+                cursor: pointer;
+                border-radius: 2px;
+                bottom: 50%;
+                position: absolute;
+                user-select: none;
+                z-index: 0;
+                &:hover {
+                    background-color: #fafafa;
+                    box-shadow: 1px 1px 5px rgba($color: #000000, $alpha: 0.5);
+                    z-index: 1;
+                }
+                &.selected {
+                    background-color: lightgray;
+                }
+            }
+        }
+
+        .lyrics {
+            margin-left: 50px;
+
+            .lyrics-view {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 598px;
+            }
+        
+            input {
+                border: none;
+                border-bottom: solid 1px gray;
+                width: 100%;
+                &:focus {
+                    background-color: #fafafa;
+                    outline: none;
+                }
+            }
+        }
+        
+        input, .lyrics-view, .chord, .chord-cursor {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 20px;
+        }
+    }
+    
+    .song-line-actions {
+        display: flex;
+        float: right;
+        font-size: 20px;
+        span {
+            color: #e0e0e0;
+        }
+        .close {
+            cursor: pointer;
+            padding: 1px 0;
+            .selected {
+                background-color: #fafafa;
+            }
+        }
+        .move-handle {
+            cursor: move;
+        }
+    }
+
+    &:hover, &.ui-draggale-dragging {
+        
+        input:not(:focus) {
+            background-color: $dimmer;
+            cursor: pointer;
+            &::placeholder {
+                color: $darker;
+            }
+        }
+
+        .song-line-actions {
+            span {
+                color: lightgray;
+            }
+        }
+    }
+}
+
+.character-context-menu {
+    background-color: white;
+    border: 1px solid lightgray;
+    padding: 10px 5px;
+    position: absolute;
+    z-index: 2;
+    .panel-title {
+        margin-left: 5px;
+    }
+    .panel-body {
+        display: flex;
+        margin: 25px 10px;
+        label {
+            margin-right: 10px;
+        }
+        .spacer-width {
+            border: 1px solid lightgray;
+            display: inline;
+            input {
+                border: none;
+                font-size: 16px;
+                padding: 5px 10px;
+                width: 50px;
+                &:focus {
+                    outline: none;
+                }
+            }
+            .clear {
+                span {
+                    font-size: 14px;
+                    padding-top: 5px;
+                }
+                float: right;
+            }
+        }
+    }
+    .insert {
+        background-color: $primary;
+        color: white;
+        margin: 0 10px 0 5px;
+        padding: 5px 20px;
+        &:hover {
+            background-color: $primary_dark;
+        }
+    }
+}

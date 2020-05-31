@@ -1,0 +1,34 @@
+button {
+    cursor: pointer;
+    &:focus {
+        outline: none;
+    }
+}
+// action buttons
+.btn-action {
+    background-color: transparent;
+    border:none;
+    color: gray;
+    float: right;
+    &:hover {
+        color: darkgray;
+        border:none;
+    }
+    &:focus, &:active {
+        outline:none;
+    }
+}
+// link-style Button
+.btn-link {
+    border: 1px solid $secondary;
+    color: $secondary;
+    background-color: white;
+    background-color: transparent;
+    &:hover {
+        border: 1px solid gray;
+        color: gray;
+    }
+    &:focus, &:active {
+        outline:none;
+    }
+}

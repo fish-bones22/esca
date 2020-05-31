@@ -1,0 +1,70 @@
+nav {
+    background-color: $primary;
+    padding: 5px 20px;
+    position: fixed;
+    top:0;
+    width: 100%;
+    z-index: 1;
+    .app-name {
+        color: white;
+        display: inline-block;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .song-information {
+        margin-left: 50px;
+        display: inline-block;
+        .song-title {
+            display: inline-block;
+            margin-right: 10px;
+            input {
+                background-color: $primary;
+                border: none;
+                color: white;
+                font-size: 18px;
+                padding: 5px 10px;
+                width: 250px;
+                &:focus {
+                    background-color: white;
+                    color: black;
+                    outline: none;
+                    &::placeholder {
+                        color: $dark;
+                    }
+                }
+                &:hover {
+                    background-color: $primary_light;
+                    &::placeholder {
+                        color: $primary_dark;
+                    }
+                }
+                &::placeholder {
+                    color: $primary_light;
+                }
+            }
+        }
+        .song-key {
+            display: inline-block;
+            select {
+                background-color: $primary;
+                border: none;
+                color: white;
+                font-size: 18px;
+                padding: 5px 10px;
+                user-select: none;
+                &:focus {
+                    background-color: white;
+                    color: black;
+                    outline: none;
+                    user-select:unset;
+                }
+                &:hover:not(:focus) {
+                    background-color: $primary_light;
+                }
+                option {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}

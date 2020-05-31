@@ -1,0 +1,26 @@
+label {
+    color: $darker;
+}
+// Form controls
+input, select, textarea {
+    border: 1px solid $dark;
+    font-size: 18px;
+    &:focus {
+        border: 1px solid $darker;
+    }
+    &::placeholder {
+        color: $dark;
+    }
+}
+
+// Select
+select {
+    option {
+        padding: 0;
+        &:hover,&:focus {
+            background-color: paleturquoise;
+            border: none;
+            outline: none;
+        }
+    }
+}

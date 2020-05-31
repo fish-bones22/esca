@@ -1,0 +1,81 @@
+.chord-selection-menu {
+    background-color: white;
+    border: 1px solid lightgray;
+    padding: 5px;
+    position: fixed;
+    z-index: 2;
+    .content {
+        margin: 20px;
+        h3 {
+            margin: 0;
+        }
+        .details {
+            color: gray;
+            font-size: 13px;
+        }
+        .preview {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 30px;
+            height: 50px;
+        }
+        .body {
+            background-color: $dim;
+            height: 25em;
+            overflow-y: auto;
+            padding: 10px;
+            width: 17.3em;
+            .section {
+                display: flex;
+                flex-wrap: wrap;
+                .item {
+                    background-color: white;
+                    border:1px solid $secondary;
+                    cursor: pointer;
+                    font-family: 'Consolas', 'Courier New', Courier, monospace;
+                    font-size: 18px;
+                    height: 22px;
+                    margin: 5px;
+                    padding: 8px 0;
+                    text-align: center;
+                    user-select: none;
+                    width: 40px;
+                    &:hover {
+                        box-shadow: 1px 1px 2px rgba($color: #000000, $alpha: 0.2);
+                    }
+                    &.selected {
+                        background-color: $accent;
+                        &:hover {
+                            box-shadow: none;
+                        }
+                    }
+                    &.custom-item {
+                        width: 100%;
+                    }
+                }
+                &.custom-text {
+                    .custom-item {
+                        width: 100%;
+                        input {
+                            font-family: 'Consolas', 'Courier New', Courier, monospace;
+                            border:1px solid lightgray;
+                            margin: 0 auto;
+                            width: 160px;
+                            &:focus {
+                                outline: none;
+                            }
+                        }
+                    }
+                }
+            }
+            .edit-custom-text {
+                background-color: #eaeaea;
+                border-radius: 5px;
+                float: unset;
+                margin-left: 10px;
+                span {
+                    font-size: 16px;
+                }
+            }
+        }
+    }
+}

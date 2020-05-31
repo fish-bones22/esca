@@ -1,0 +1,31 @@
+.step-outline {
+    display: flex;
+    margin: 80px 30px 30px 30px;
+    .step {
+        background-color: $dimmer;
+        border: none;
+        color: black;
+        cursor: pointer;
+        margin: auto;
+        padding: 10px 28px;
+        text-align: center;
+        text-transform: uppercase;
+        &:hover {
+            background-color: $dark;
+        }
+        &.current {
+            background-color: $accent;
+            color: white;
+            font-weight: 600;
+        }
+        &:focus {
+            outline: none;
+        }
+    }
+    span {
+        color: $dark;
+        font-weight: 100;
+        padding: 5px;
+    }
+}
+

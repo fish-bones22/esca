@@ -1,0 +1,68 @@
+{
+    "measures": [
+        { "name": "whole", "displayName": "|", "default": true },
+        { "name": "half", "displayName": "'" },
+        { "name": "quarter", "displayName": "-" },
+        { "name": "eightth", "displayName": "·" },
+        { "name": "no", "displayName": "" }
+    ],
+    "notes": [
+        { "name":"C", "displayName": "C" },  
+        { "name": "C#", "displayName": "C♯", "altName": "D♭" }, 
+        { "name": "D", "displayName": "D" }, 
+        { "name": "D#", "displayName": "D♯", "altName": "E♭" }, 
+        { "name": "E", "displayName": "E" },
+        { "name": "F", "displayName": "F" },
+        { "name": "F#", "displayName": "F♯", "altName": "G♭" },
+        { "name": "G", "displayName": "G" },
+        { "name": "G#", "displayName": "G♯", "altName": "A♭" },
+        { "name": "A", "displayName": "A" },
+        { "name": "A#", "displayName": "A♯", "altName": "B♭" },
+        { "name": "B", "displayName": "B" }
+    ],
+    "scale": [{
+        "name": "Major",
+        "pattern": [
+            { "name": "1","noteIndex": 0 },    
+            { "name": "2","noteIndex": 2 },    
+            { "name": "3","noteIndex": 4 },    
+            { "name": "4","noteIndex": 5 },    
+            { "name": "5","noteIndex": 7 },   
+            { "name": "6","noteIndex": 9 },   
+            { "name": "7","noteIndex": 11 },   
+            { "name": "1s","noteIndex": 1 },   
+            { "name": "2s","noteIndex": 3 },   
+            { "name": "4s","noteIndex": 6 },   
+            { "name": "5s","noteIndex": 8 },  
+            { "name": "6s","noteIndex": 10 } 
+        ],
+        "family": [
+            { "name": "1", "variationIndex": 0 },
+            { "name": "2", "variationIndex": 1 },
+            { "name": "3", "variationIndex": 1 },
+            { "name": "4", "variationIndex": 0 },
+            { "name": "5", "variationIndex": 0 },
+            { "name": "6", "variationIndex": 1 },
+            { "name": "7", "variationIndex": 2 }
+        ]
+    }],
+    "variations": [
+        { "name": "M", "display": "M", "html": "", "fullName": "Major", "precedence": 0, "order": 0, "default": true },
+        { "name": "m", "display": "m", "html": "m", "fullName": "Minor", "precedence": 0, "order": 0 },
+        { "name": "dim", "display": "dim", "html": "<sup>dim</sup>", "fullName": "Diminished", "precedence": 0, "order": 1 },
+        { "name": "aug", "display": "aug", "html": "<sup>aug</sup>", "fullName": "Augmented", "precedence": 0,"order": 1 },
+        { "name": "dom7", "display":"7", "html": "<sup>7</sup>", "fullName": "Dominant seventh", "precedence": 1, "order": 2 },
+        { "name": "maj7", "display":"M7", "html": "<sup>M7</sup>", "fullName": "Major seventh", "precedence": 1,"order": 2 },
+        { "name": "5", "display":"5", "html": "<sup>5</sup>", "fullName": "Fifth/Power chord", "precedence": 1 },
+        { "name": "flat5", "display":"♭5", "html": "<sup>♭5</sup>", "fullName": "Flat fifth", "precedence": 1 },
+        { "name": "6", "display":"6", "html": "<sup>6</sup>", "fullName": "Sixth", "precedence": 1 },
+        { "name": "9", "display":"9", "html": "<sup>9</sup>", "fullName": "Ninth", "precedence": 1 },
+        { "name": "maj9", "display":"M9", "html": "<sup>M9</sup>", "fullName": "Major ninth", "precedence": 1 },
+        { "name": "11", "display":"11", "html": "<sup>11</sup>", "fullName": "Eleventh", "precedence": 1 },
+        { "name": "13", "display":"13", "html": "<sup>13</sup>", "fullName": "Thirteenth", "precedence": 1 },
+        { "name": "sus2", "display":"sus2", "html": "<sup>sus2</sup>", "fullName": "Suspended second", "precedence": 2 },
+        { "name": "sus4", "display":"sus4", "html": "<sup>sus4</sup>", "fullName": "Suspended fourth", "precedence": 2 },
+        { "name": "add6", "display":"add6", "html": "<sup>add6</sup>", "fullName": "Add sixth", "precedence": 2 },
+        { "name": "add9", "display":"add9", "html": "<sup>add9</sup>", "fullName": "Add ninth", "precedence": 2 }
+    ]
+}
