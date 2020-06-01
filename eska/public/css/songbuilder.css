@@ -55,23 +55,23 @@ nav .song-information .song-title input:focus::placeholder {
   color: lightgray;
 }
 
-nav .song-information .song-title input:hover {
+nav .song-information .song-title input:hover:not(:focus) {
   background-color: #5cafa5;
 }
 
-nav .song-information .song-title input:hover::-moz-placeholder {
+nav .song-information .song-title input:hover:not(:focus)::-moz-placeholder {
   color: #23837b;
 }
 
-nav .song-information .song-title input:hover:-ms-input-placeholder {
+nav .song-information .song-title input:hover:not(:focus):-ms-input-placeholder {
   color: #23837b;
 }
 
-nav .song-information .song-title input:hover::-ms-input-placeholder {
+nav .song-information .song-title input:hover:not(:focus)::-ms-input-placeholder {
   color: #23837b;
 }
 
-nav .song-information .song-title input:hover::placeholder {
+nav .song-information .song-title input:hover:not(:focus)::placeholder {
   color: #23837b;
 }
 
@@ -266,8 +266,8 @@ nav .song-information .song-key select option {
 .song-line .song-line-content .lyrics-view,
 .song-line .song-line-content .chord,
 .song-line .song-line-content .chord-cursor {
-  font-family: 'Consolas', 'Courier New', Courier, monospace;
-  font-size: 20px;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .song-line .song-line-actions {
@@ -411,10 +411,6 @@ nav .song-information .song-key select option {
   padding: 0 20px 0 15px;
 }
 
-.stanza-container {
-  width: 45em;
-}
-
 .stanza-container .actions-container {
   margin: 10px 10px 5px 10px;
 }
@@ -435,6 +431,7 @@ nav .song-information .song-key select option {
 .song-part-container .song-part-title .song-part-name {
   border-radius: 3px;
   font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 14px;
   padding: 2px 10px;
 }
 
@@ -730,13 +727,13 @@ nav .song-information .song-key select option {
 .song-details-container {
   border: 1px solid lightgray;
   margin: 0 auto;
-  padding: 30px 80px;
+  padding: 10px 80px 0 80px;
 }
 
 .song-details-container .body .input-container {
   display: flex;
   flex-direction: column;
-  margin: 0 10px;
+  margin: 15px 10px;
 }
 
 .song-details-container .body .input-container label {
@@ -746,7 +743,7 @@ nav .song-information .song-key select option {
 .song-details-container .body .input-container input,
 .song-details-container .body .input-container textarea,
 .song-details-container .body .input-container select {
-  padding: 6px 10px;
+  padding: 3px 10px;
 }
 
 .song-details-container .body .input-container input:focus,

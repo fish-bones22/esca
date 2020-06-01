@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSongDetailsTable extends Migration
+class CreateKeyReferencesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateSongDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('song_details', function (Blueprint $table) {
+        Schema::create('key_references', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('song_id');
-            $table->string('key');
-            $table->string('value')->nullable();
+            $table->string('root');
+            $table->string('alternative_root')->nullable();
+            $table->string('scale');
+            $table->integer('order');
+            $table->string('display');
+            $table->string('alternative_display')->nullable();
             $table->timestamps();
-
-            $table->foreign('song_id')->references('id')->on('songs')->onDelete('cascade');
         });
     }
 
@@ -31,6 +32,6 @@ class CreateSongDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('song_details');
+        Schema::dropIfExists('key_references');
     }
 }

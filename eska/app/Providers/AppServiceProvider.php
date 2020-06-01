@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\View\Components\KeySelector;
+use App\View\Components\TagSelector;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Blade::component('key-selector', KeySelector::class);
+        Blade::component('tag-selector', TagSelector::class);
     }
 }

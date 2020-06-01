@@ -16,10 +16,12 @@ ESKA
 @include('Songbuilder._chordBuilder')
 {{-- Context Menus --}}
 @include('Songbuilder.ContextMenus._characterMarker')
+@include('Songbuilder.ContextMenus._spacer')
 @include('Songbuilder.ContextMenus._chordMarker')
 @include('Songbuilder.ContextMenus._sequence')
 @include('Songbuilder.ContextMenus._songPartTitle')
 @include('Songbuilder.ContextMenus._songLine')
+@include('Songbuilder.ContextMenus._songPart')
 {{-- Content --}}
 @include('Songbuilder._navigation')
 <div class="container">
@@ -29,6 +31,8 @@ ESKA
     @include('Songbuilder._contentSequence')
     @include('Songbuilder._contentActions')
 </div>
+<input type="hidden" id="processing" value=""/>
+<input type="hidden" id="songId" value="611c3248-7326-448b-b66c-5199f9009dc8"/>
 @stop
 
 @section('script')
@@ -125,7 +129,7 @@ ESKA
     };
 
     $(function() {
-        post();
+
     });
 
     function get() {

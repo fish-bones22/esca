@@ -1,19 +1,21 @@
 (function($) {
 
     var defaults = {
-        dragSnap: 0,
-        leftOffset: 0,
-        keySelector: '#key',
-        mainKey: 'C',
-        mainScale: 'Major',
-        parent: undefined,
-        selectOnCreate: true,
-        remainSelected: false,
+        'dragSnap': 0,
+        'leftOffset': 0,
+        'keySelector': '#key',
+        'mainKey': 'C',
+        'mainScale': 'Major',
+        'parent': undefined,
+        'selectOnCreate': true,
+        'remainSelected': false,
+        'keyReference': 0,
+        'value': null,
         onDragStop: function() {},
     };
 
     var ChordProcessor = window.ChordProcessor;
-    
+
     function getOption(obj, name) {
         let option = $(obj).data('chordMarker-options');
         if (option == undefined || !option.hasOwnProperty(name)) {
@@ -32,20 +34,20 @@
 
     /**
      * Update each chord
-     * @param {object} obj 
+     * @param {object} obj
      */
     function updateChord(obj) {
         if ($(obj).attr('data-value') == '') {
             $(obj).html('&nbsp;');
             return;
         }
-        var disp = ChordProcessor.processChord($(obj).attr('data-value'), getOption(obj, 'mainRoot'),  getOption(obj, 'mainScale'));
+        var disp = ChordProcessor.processChord($(obj).attr('data-value'), getOption(obj, 'mainRoot'),  getOption(obj, 'mainScale'), getOption(obj, 'referenceKey'));
         $(obj).html(disp);
     }
 
     /**
      * Set value of chord
-     * @param {object} obj 
+     * @param {object} obj
      * @param {string} value Value of chord
      */
     function setValue(obj, value) {
@@ -58,7 +60,7 @@
 
     /**
      * Toggle this chord marker as selected
-     * @param {object} obj 
+     * @param {object} obj
      * @param {object} marker Target chord marker
      */
     function selectMarker(obj) {
@@ -164,26 +166,32 @@
                     settings.mainScale = $(this).find('option:selected').attr('data-scale');
                     updateChord(self);
                 });
-                
+
                 // Custom events
                 $(self).on('chordMarker:dragstop', settings.onDragStop);
 
                 // Append marker to parent
                 $(settings.parent).append($(self));
-                
+
                 // Run on init
 
                 // Set main key
                 settings.mainRoot = $(settings.keySelector).val();
                 settings.mainScale = $(settings.keySelector).find('option:selected').attr('data-scale');
 
-                var chordValue = $(settings.chordBuilder).chordBuilder('getChord', self);
-                if (settings.selectOnCreate) {
-                    unselectAllMarkers();
-                    selectMarker(self);
+                if (settings.value == null) {
+                    var chordValue = $(settings.chordBuilder).chordBuilder('getChord', self);
+                    if (settings.selectOnCreate) {
+                        unselectAllMarkers();
+                        selectMarker(self);
+                    }
+                    setValue(self, chordValue.value);
                 }
-                setValue(self, chordValue.value);
-                
+                else {
+                    setValue(self, settings.value);
+                    settings.value = null;
+                }
+
             });
         }
 

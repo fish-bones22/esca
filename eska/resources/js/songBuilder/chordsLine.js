@@ -3,11 +3,15 @@
     var defaults = {
         'height': 10,
         'contextMenu': '.chord-context-menu',
-        'chordBuilder': '.chord-selection-menu'
+        'chordBuilder': '.chord-selection-menu',
+        'keySelector': '#mainkey'
     };
-    var cursorWidth = 0;
-    var cursorHeight = 0;
 
+    /**
+     * Get option from DOM data
+     * @param {object} obj
+     * @param {string} name option name/key
+     */
     function getOption(obj, name) {
         let option = $(obj).data('chordsLine-options');
         if (option == undefined || !option.hasOwnProperty(name)) {
@@ -18,16 +22,16 @@
 
     /**
      * Sort chord markers within the parent chord line
-     * @param {Jquery Object} chordMarker 
+     * @param {Jquery Object} chordMarker
      */
     function sortChordMarkers(chordMarker) {
         var parent;
         var markers;
-        if (chordMarker.hasClass('chord')) {
-            parent = chordMarker.parent();
+        if ($(chordMarker).hasClass('chord')) {
+            parent = $(chordMarker).parent();
             markers = parent.children('.chord');
-        } else if (chordMarker.hasClass('chords')) {
-            markers = chordMarker.children('.chord');
+        } else if ($(chordMarker).hasClass('chords')) {
+            markers = $(chordMarker).children('.chord');
             parent = chordMarker;
         }
 
@@ -37,11 +41,53 @@
         }).appendTo(parent);
     }
 
-    function updateDimensions(obj, cursor) { 
-        
-        if (cursorWidth == '' || cursorWidth == 0 || cursor.width() > cursorWidth) {
-            cursorWidth = cursor.width();
-        }
+
+    /**
+     * Instantiate a new chord marker inside obj
+     * @param {object} obj
+     * @param {number} width the snap width of the marker
+     * @param {number} position the left offset of the marker from the left edge of the document
+     * @param {number} keyReference modulation of the chord
+     * @param {string} value chord value with parts delimited by /
+     */
+    function insertChordMarker(obj, width, position, keyReference = 0, value = null) {
+        $('<span>').chordMarker({
+            chordBuilder: getOption(obj, 'chordBuilder'),
+            contextMenu: getOption(obj, 'contextMenu'),
+            dragSnap: width,
+            leftOffset: position,
+            keySelector: getOption(obj, 'keySelector'),
+            parent: obj,
+            keyReference: keyReference,
+            value: value,
+            onDragStop: function() {
+                sortChordMarkers(obj);
+            },
+        });
+    }
+
+    /**
+     *
+     * @param {object} obj
+     * @param {string} values Chords values. String delimited by |
+     */
+    function setValue(obj, values) {
+        $(obj).children('.chord').remove();
+        var chords = values.split('|');
+        chords.forEach(chord => {
+            // Get chord parts
+            var chordPart = chord.split('/');
+            if (chordPart.length != 7) return;
+
+            var keyReference = chordPart[0]*1;
+            var position = chordPart[1]*1;
+            var measure = chordPart[2];
+            var root = chordPart[3];
+            var variation = chordPart[4];
+            var variation2 = chordPart[5];
+            var bass = chordPart[6];
+            insertChordMarker(obj, getOption(obj, 'cursorWidth'), position*getOption(obj, 'cursorWidth'), keyReference, [measure, root, variation, variation2, bass].join('/'));
+        });
     }
 
     $.fn.chordsLine = function(command, option, value) {
@@ -49,6 +95,7 @@
         if (typeof command === 'object' || command == undefined) {
             return $(this).each(function() {
 
+                console.log('set');
                 var self = this;
 
                 // Skip if this element is already processed
@@ -69,30 +116,13 @@
                     // Get position of cursor
                     let position = cursor.position().left;
                     let parent = cursor.parent();
-                    // Create chord span and add to chords line
-                    $('<span>').chordMarker({
-                        chordBuilder: settings.chordBuilder,
-                        contextMenu: settings.contextMenu,
-                        dragSnap: cursorWidth,
-                        leftOffset: position,
-                        keySelector: '#mainKey',
-                        parent: parent,
-                        onDragStop: function() {
-                            sortChordMarkers($(this));
-                        },
-                    });
+                    insertChordMarker(self, settings.cursorWidth, position);
                     // Sort chords line
-                    sortChordMarkers(parent);
+                    sortChordMarkers(parent[0]);
                 });
 
                 // Add chord cursor to chords line
                 $(self).append(cursor);
-
-                // Set chords line attributes
-                updateDimensions(self, cursor);
-                $(self).css('height', settings.height)
-                .addClass('chordsLine-processed');
-
                 // Mouseover event for chords line to make chord cursor follow the mouse cursor
                 $(self).on('mouseover', function() {
                     // When mouse is hovered to chord view, track mouse position
@@ -101,16 +131,30 @@
                         // Get new position based on mouse cursor position and offsets.
                         var diff = event.offsetX;
                         // Get remainder and remove from difference for snapping
-                        var remainder = diff%cursorWidth;
-                        cursor.css('left', diff - remainder + 'px');   
-                        // Update the chord line dimension
-                        updateDimensions(self, cursor);
+                        var remainder = diff%settings.cursorWidth;
+                        cursor.css('left', diff - remainder + 'px');
                     });
                 // Unbind mousemove event
                 }).on('mouseout', function() {
                     $(self).off('mousemove');
                 });
+
+                // Set chords line attributes
+                $(self).css('height', settings.height)
+                .addClass('chordsLine-processed');
+
              });
         }
+
+        if (typeof command == 'string') {
+            switch (command.toLocaleLowerCase()) {
+                case 'setvalue':
+                    if (typeof option != 'string') return this;
+                    return $(this).each(function() {
+                        setValue(this, option);
+                    });
+            }
+        }
+
     }
 })(jQuery)

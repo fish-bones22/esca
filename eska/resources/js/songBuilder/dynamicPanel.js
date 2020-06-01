@@ -17,7 +17,7 @@ var panelClass = panelSelector.replace(/[.,#]*/g, '');
 
 /**
  * Initialize the options
- * @param {Object} options 
+ * @param {Object} options
  */
 function initOptions(options) {
     if (!options.hasOwnProperty('panelAction') || options['panelAction'] == '') {
@@ -28,8 +28,8 @@ function initOptions(options) {
 
 /**
  * Get option value
- * @param {Object} object 
- * @param {String} key 
+ * @param {Object} object
+ * @param {String} key
  */
 function getOption(object, key) {
     var options = $(object).data('dynamicPanel-options');
@@ -41,9 +41,9 @@ function getOption(object, key) {
 
 /**
  * Set option value
- * @param {Object} object 
- * @param {String} key 
- * @param {String} value 
+ * @param {Object} object
+ * @param {String} key
+ * @param {String} value
  */
 function setOption(object, key, value) {
     var options = $(object).data('dynamicPanel-options');
@@ -58,7 +58,7 @@ function setOption(object, key, value) {
  * @param {object} obj Target DOM
  * @param {int} index Position where to insert the panel
  */
-function insertPanel(obj, index) {
+function insertPanel(obj, index, id = null) {
     // Get current count of panels
     var panelCount = getOption(obj, 'panelCount');
     if (index == undefined) {
@@ -127,6 +127,11 @@ function insertPanel(obj, index) {
     // Set panel count
     setOption(obj, 'panelCount', ++panelCount);
 
+    // Set id if given
+    if (id != null && typeof id == 'string') {
+        panel.attr('data-id', id);
+    }
+
     $(obj).trigger('dynamicPanel:insert', [ panel ]);
 
     return panel;
@@ -141,7 +146,7 @@ function focusPanelByKey(obj, panel, key) {
     // Get closest input from the next panel
     panel = panel.next(panelSelector);
     // If no next panel, create new
-    if (panel.length <= 0) { 
+    if (panel.length <= 0) {
         panel = insertPanel(obj);
     }
 
@@ -169,7 +174,7 @@ function navigatePanelByKey(panel, direction) {
 
 /**
  * Remove target panel and reorder succeeding sibling panels
- * @param {object} obj Target object 
+ * @param {object} obj Target object
  * @param {int} index panel position to remove
  */
 function removePanel(obj, index) {
@@ -195,6 +200,12 @@ function removePanel(obj, index) {
         panel = panel.next(panelSelector);
     }
     setOption(obj, 'panelCount', --panelCount);
+}
+
+function removeAll(obj) {
+    $(obj).children('.panel-item').each(function() {
+        removePanel(obj, $(this).attr('data-order')*1-1);
+    });
 }
 
 
@@ -235,7 +246,7 @@ $.fn.dynamicPanel = function(command, option, val) {
                         // Resort panel after sorting
                         var index = 1;
                         $(self).children(panelSelector).each(function() {
-                            if (index !== $(this).attr('data-order')*1) { 
+                            if (index !== $(this).attr('data-order')*1) {
                                 $(this).attr('data-order', index);
                             }
                             index++;
@@ -277,8 +288,8 @@ $.fn.dynamicPanel = function(command, option, val) {
             });
 
             }
-           
-            /** Custom events */ 
+
+            /** Custom events */
 
             // onInsert
             if (settings.hasOwnProperty('onInsert') && settings.onInsert != undefined) {
@@ -289,7 +300,7 @@ $.fn.dynamicPanel = function(command, option, val) {
             for (var i = 0; i < settings.startCount; i++) {
                 insertPanel(self);
             }
-            
+
         });
     }
 
@@ -301,15 +312,19 @@ $.fn.dynamicPanel = function(command, option, val) {
             case 'insert':
                 var panel;
                 this.each(function() {
-                    panel = insertPanel(this, option);
+                    panel = insertPanel(this, option, val);
                 });
                 return panel;
             case 'remove':
                 return this.each(function() {
                     removePanel(this, option);
                 });
+            case 'removeall':
+                return this.each(function() {
+                    removeAll(this);
+                });
         }
     }
-} 
+}
 
 })(jQuery)

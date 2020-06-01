@@ -12,24 +12,8 @@
                 <span class="error-text" style="display: none;">Do not leave empty. Write 'anonymous' if unknown</span>
             </div>
             <div class="song-tags input-container">
-                <label for="songTags">Tags</label>
-                <div class="song-tags-box">
-                    <span class="tag-item">Praise</span>
-                    <span class="tag-item">Worship</span>
-                    <span class="tag-item">English</span>
-                    <span class="tag-item">Filipino</span>
-                    <span class="tag-item">Thanksgiving</span>
-                    <span class="tag-item">Adoration</span>
-                    <span class="tag-item">Testimony</span>
-                    <span class="tag-item">Repentance</span>
-                    <span class="tag-item">Joyful</span>
-                    <span class="tag-item">Solemn</span>
-                    <span class="tag-item">Upbeat</span>
-                    <span class="tag-item">Relaxed</span>
-                    <span class="tag-item">Soulful</span>
-                    <span class="tag-item">Hymn</span>
-                </div>
-                <input type="hidden" class="song-tags-input" id="songTags" />
+                <label for="songtags">Tags</label>
+                <x-tag-selector classselector="song-tags-box" classinput="song-tags-input" id="songtags" />
                 <span class="error-text" style="display: none;">Select at least one</span>
             </div>
             <div class="song-description input-container">
@@ -39,22 +23,8 @@
         </div>
         <div class="song-musical-details">
             <div class="song-key input-container">
-                <label for="songKey">Key</label>
-                <select class="song-key-input" id="songKey">
-                    <option>Select key</option>
-                    <option value="C" data-scale="Major" selected>Key of C</option>
-                    <option value="C#" data-scale="Major">Key of C♯</option>
-                    <option value="D" data-scale="Major">Key of D</option>
-                    <option value="D#" data-scale="Major">Key of D♯</option>
-                    <option value="E" data-scale="Major">Key of E</option>
-                    <option value="F" data-scale="Major">Key of F</option>
-                    <option value="F#" data-scale="Major">Key of F♯</option>
-                    <option value="G" data-scale="Major">Key of G</option>
-                    <option value="G#" data-scale="Major">Key of G♯</option>
-                    <option value="A" data-scale="Major">Key of A</option>
-                    <option value="A#" data-scale="Major">Key of A♯</option>
-                    <option value="B" data-scale="Major">Key of B</option>
-                </select>
+                <label for="songkey">Key</label>
+                <x-key-selector class="song-key-input" id="songkey" />
                 <span class="error-text" style="display: none;">Select one</span>
             </div>
             <div class="song-time-sign input-container">

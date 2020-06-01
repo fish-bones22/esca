@@ -1,5 +1,6 @@
 
 window.musicReference = require('./_musicReference.json');
+window.songData = {};
 require('./songPart');
 require('./outline');
 require('./songDetails');
@@ -13,26 +14,38 @@ require('./chordsLine');
 require('./songLine');
 require('./sequenceBuilder');
 
+import { v4 as uuidv4 } from 'uuid';
+
+var chordMarkerContextMenu = '.chord-context-menu';
+var chordSelection = '.chord-selection-menu';
+var sequenceBox = '#sequenceBox';
+var songPartTitleContextMenu = '.song-part-title-expanded-panel';
+var songLineContextMenu = '.songline-context-menu';
+var songPartContextMenu = '.songpart-context-menu';
+var sequenceOptions = '.sequence-expanded-menu';
+var characterContextMenu = '.character-context-menu';
+var spacerContextMenu = '.spacer-context-menu';
+var songDetailsContainer = '.song-details-container';
+var songPartsContainer = '#songParts';
+
+var monospaceFontSize = '20px';
+var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
+var monospaceWidth = 0;
+var monospaceHeight = 0;
+
 $(function() {
 
-    var chordMarkerContextMenu = '.chord-context-menu';
-    var chordSelection = '.chord-selection-menu';
-    var sequenceBox = '#sequenceBox';
-    var songPartTitleContextMenu = '.song-part-title-expanded-panel';
-    var songLineContextMenu = '.songline-context-menu';
-    var sequenceOptions = '.sequence-expanded-menu';
-    var characterContextMenu = '.character-context-menu';
-    var spacerContextMenu = '.spacer-context-menu';
+    getPageDimensions();
 
    // Chord builder
     $(chordSelection).chordBuilder({
         'changeTargetOnChordChange': true,
         'songPartSelector': '.song-part-name',
         'mainRoot': function() {
-            return $('#mainKey option:selected').val();
+            return $('#mainkey option:selected').val();
         },
         'mainScale': function() {
-            return $('#mainKey option:selected').attr('data-scale');
+            return $('#mainkey option:selected').attr('data-scale');
         },
         'setTargetValue': function(ev, target, value) {
             if (target != undefined) {
@@ -141,6 +154,30 @@ $(function() {
         ]
     });
 
+    // Song part
+    $(songPartContextMenu).contextMenu({
+        'menuItems': [
+            {
+                'name': 'delete',
+                'selector': '.delete-songpart',
+                'action': function(ev, obj, target) {
+                    var index = $(target).closest('.panel-item').attr('data-order')*1-1;
+                    $(target).closest('.dynamicPanel').dynamicPanel('remove', index);
+                    $(obj).contextMenu('hide');
+                }
+            },
+            {
+                'name': 'insertBelow',
+                'selector': '.insert-songpart-below',
+                'action': function(ev, obj, target) {
+                    var index = $(target).closest('.panel-item').attr('data-order')*1;
+                    $(target).closest('.dynamicPanel').dynamicPanel('insert', index);
+                    $(obj).contextMenu('hide');
+                }
+            }
+        ]
+    });
+
     // Sequence builder
     $(sequenceOptions).contextMenu({
         'menuItems': [
@@ -214,4 +251,96 @@ $(function() {
         ]
     });
 
+    $(songDetailsContainer).songDetails({
+        'navbarSongTitle': '.song-title input',
+        'songTitleInput': '#songTitle',
+        'artistInput': '#songArtist',
+        'songTagInput': '#songtags',
+        'descriptionInput': '#songDescription',
+        'navbarKey': '#mainkey',
+        'songKeyInput': '#songkey',
+        'songTimeSignInput': '#songTimeSign',
+        'songSpeedInput': '#songSpeed'
+    });
+
+    $(songPartsContainer).songPart({
+        'contextMenu': songPartContextMenu,
+        'fontSize': monospaceFontSize,
+        'fontFamily': monospaceFontFamily,
+        'fontWidth': monospaceWidth,
+        'fontHeight': monospaceHeight
+    });
+
+    // Get song data
+    getSong();
+
 });
+
+function getPageDimensions() {
+    // Get width of a single monospace
+    var unique = uuidv4();
+    var spanTest = $('<span>')
+    .addClass(unique)
+    .css('font-family', monospaceFontFamily)
+    .css('font-size', monospaceFontSize)
+    .css('position', 'absolute')
+    .html('&nbsp;');
+    $('body').append(spanTest);
+    monospaceWidth = spanTest.width();
+    monospaceHeight = spanTest.height();
+    $('body').remove('.' + unique);
+}
+
+
+function getSong() {
+
+    var songId = $('#songId').val();
+    if (songId == '') {
+        $('#songId').val(uuidv4());
+        return;
+    }
+
+    get(songId);
+}
+
+/**
+ * Get song data from server
+ */
+function get($id) {
+    $.ajax({
+        'url': '/songbuilder/' + $id,
+        'method': 'get',
+        'contentType': 'application/json',
+        'dataType': 'json'
+    }).done(function(response) {
+        setValues(response);
+    }).fail(function(response) {
+        console.error('Cannot find song');
+    });
+}
+
+function setValues(songData) {
+    console.log(songData);
+    if (songData.hasOwnProperty('title')) {
+        $(songDetailsContainer).songDetails('set', 'title', songData.title);
+    }
+    if (songData.details.hasOwnProperty('artist')) {
+        $(songDetailsContainer).songDetails('set', 'artist', songData.details.artist);
+    }
+    if (songData.hasOwnProperty('tags')) {
+        $(songDetailsContainer).songDetails('set', 'tags', songData.tags);
+    }
+    if (songData.details.hasOwnProperty('description')) {
+        $(songDetailsContainer).songDetails('set', 'description', songData.details.description);
+    }
+    if (songData.hasOwnProperty('key') && songData.hasOwnProperty('scale')) {
+        $(songDetailsContainer).songDetails('set', 'key', [songData.key, songData.scale]);
+    }
+    if (songData.details.hasOwnProperty('timeSignature')) {
+        $(songDetailsContainer).songDetails('set', 'timeSignature', songData.details.timeSignature);
+    }
+    if (songData.details.hasOwnProperty('tempo')) {
+        $(songDetailsContainer).songDetails('set', 'tempo', songData.details.tempo);
+    }
+    $(songPartsContainer).songPart('setValue', songData.songParts);
+}

@@ -8,20 +8,20 @@
 
     /**
      * Get option value
-     * @param {Object} object 
-     * @param {String} key 
+     * @param {Object} object
+     * @param {String} key
      */
     function getOption(object, key) {
         var options = $(object).data('songLine-options');
-    
+
         if (options == undefined || !options.hasOwnProperty(key)) return null;
-    
+
         return options[key];
     }
 
     /**
      * Add spacer next to this character
-     * @param {object} obj 
+     * @param {object} obj
      * @param {number} width Width of the spacer
      */
     function addSpacer(obj, target, width) {
@@ -29,7 +29,7 @@
         var i = width;
         var arr = []
         while(--i) arr[i] = '&nbsp;';
-        
+
         var sibPrevCount = $(target).prevAll('.character').length + 1;
         var spacer = $('<span>').addClass('spacer')
         .attr('data-width', width)
@@ -62,8 +62,24 @@
 
                 // Get data
                 if ($(settings.dataSource).hasClass('changed')) {
+
+                    var preDefSpacers = [];
+                    // Get predefined spacers
+                    if ($(self).html().indexOf('{spacer-') >= 0) {
+                        var content = $(self).html();
+                        var spacers = content.match(/\{spacer-[0-9]+\}/g);
+                        spacers.forEach(spacer => {
+                            // Get position and width of the spacer
+                            var position = content.indexOf(spacer);
+                            var width = spacer.match(/\d+/g)[0];
+                            preDefSpacers.push({'position': position, 'width': width});
+                            // Remove the spacer from the content
+                            content = content.replace(/\{spacer-[0-9]+\}/, '');
+                        });
+                    }
+
                     var data = $(settings.dataSource).val();
-                    
+
                     var charArr = data.split('');
 
                     var formattedData = '';
@@ -72,6 +88,11 @@
                         formattedData += '<span class="character">' + char + '</span>';
                     });
                     $(self).html(formattedData);
+
+                    // Set predefined spacers
+                    preDefSpacers.reverse().forEach(spacer => {
+                        addSpacer(self, $(self).children('.character')[spacer.position-1], spacer.width);
+                    });
 
                     // Set event listener
                     $(self).find('.character').on('mouseover', function() {
@@ -88,7 +109,7 @@
                 }
 
             });
-    
+
         }
 
         if (typeof command == 'string') {

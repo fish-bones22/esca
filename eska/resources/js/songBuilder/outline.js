@@ -15,8 +15,10 @@ function addDetails() {
     $('.sequence-container').hide();
     $('.step.current').removeClass('current');
     $('#addDetails').addClass('current');
+    // Hide chord builder
+    $('.chord-selection-menu').chordBuilder('hide');
 
-    setPrevNext(null, addChords);
+    setPrevNext(null, addLyrics);
 }
 
 function addLyrics() {
@@ -25,9 +27,12 @@ function addLyrics() {
     $('.sequence-container').hide();
     $('.step.current').removeClass('current');
     $('#addLyrics').addClass('current');
+
     $('.song-line .lyrics-view').each(function() {
         // Set process
         $('#processing').val('lyrics');
+        // Hide chords if shown
+        $(this).parent().siblings('.chords').hide();
         // Hide input
         $(this).hide();
         // Get sibling view element
@@ -51,20 +56,10 @@ function addChords() {
     $('.song-line .lyrics input[type="text"]').each(function() {
         // Set process
         $('#processing').val('chords');
-        // Set chords only for panel items (exclude prototype items)
-        if ($(this).closest('.panel-item').length > 0) {
-            // Get chords view element and format
-            var chordsView = $(this).parent().siblings('.chords');
-            if (chordsView.length > 0) {
-                // Create chord cursor if not yet existing
-                chordsView.chordsLine({
-                    'height': $(this).css('font-size').replace(/px+/g, '')*1 + 8
-                });
-            }
-        }
+        // Show chords
+        $(this).parent().siblings('.chords').show();
         // Get sibling view element
         var lyricsView = $(this).siblings('.lyrics-view');
-
         // Hide input
         $(this).hide();
         if (lyricsView.length <= 0) return;
@@ -114,6 +109,6 @@ function setPrevNext(prev, next) {
         if (typeof prev == 'function') prev();
     }).show();
     $('.next').off('click').on('click', function() {
-        if (typeof prev == 'function') next();
+        if (typeof next == 'function') next();
     });
 }

@@ -55,7 +55,7 @@ class SongService {
         // Get song tags
         $request->tags = [];
         foreach ($song->tags as $tag) {
-            $request->tags[] = $tag;
+            $request->tags[] = $tag->id;
         }
 
         // Get sequence

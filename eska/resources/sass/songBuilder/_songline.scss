@@ -43,7 +43,7 @@
                 white-space: nowrap;
                 width: 598px;
             }
-        
+
             input {
                 border: none;
                 border-bottom: solid 1px gray;
@@ -54,13 +54,13 @@
                 }
             }
         }
-        
+
         input, .lyrics-view, .chord, .chord-cursor {
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
-            font-size: 20px;
+            font-family: inherit;
+            font-size: inherit;
         }
     }
-    
+
     .song-line-actions {
         display: flex;
         float: right;
@@ -81,7 +81,7 @@
     }
 
     &:hover, &.ui-draggale-dragging {
-        
+
         input:not(:focus) {
             background-color: $dimmer;
             cursor: pointer;

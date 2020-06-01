@@ -32,7 +32,7 @@ nav {
                         color: $dark;
                     }
                 }
-                &:hover {
+                &:hover:not(:focus) {
                     background-color: $primary_light;
                     &::placeholder {
                         color: $primary_dark;

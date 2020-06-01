@@ -731,14 +731,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 (function ($) {
   var defaults = {
-    dragSnap: 0,
-    leftOffset: 0,
-    keySelector: '#key',
-    mainKey: 'C',
-    mainScale: 'Major',
-    parent: undefined,
-    selectOnCreate: true,
-    remainSelected: false,
+    'dragSnap': 0,
+    'leftOffset': 0,
+    'keySelector': '#key',
+    'mainKey': 'C',
+    'mainScale': 'Major',
+    'parent': undefined,
+    'selectOnCreate': true,
+    'remainSelected': false,
+    'keyReference': 0,
+    'value': null,
     onDragStop: function onDragStop() {}
   };
   var ChordProcessor = window.ChordProcessor;
@@ -765,7 +767,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Update each chord
-   * @param {object} obj 
+   * @param {object} obj
    */
 
 
@@ -775,12 +777,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return;
     }
 
-    var disp = ChordProcessor.processChord($(obj).attr('data-value'), getOption(obj, 'mainRoot'), getOption(obj, 'mainScale'));
+    var disp = ChordProcessor.processChord($(obj).attr('data-value'), getOption(obj, 'mainRoot'), getOption(obj, 'mainScale'), getOption(obj, 'referenceKey'));
     $(obj).html(disp);
   }
   /**
    * Set value of chord
-   * @param {object} obj 
+   * @param {object} obj
    * @param {string} value Value of chord
    */
 
@@ -795,7 +797,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Toggle this chord marker as selected
-   * @param {object} obj 
+   * @param {object} obj
    * @param {object} marker Target chord marker
    */
 
@@ -906,14 +908,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         settings.mainRoot = $(settings.keySelector).val();
         settings.mainScale = $(settings.keySelector).find('option:selected').attr('data-scale');
-        var chordValue = $(settings.chordBuilder).chordBuilder('getChord', self);
 
-        if (settings.selectOnCreate) {
-          unselectAllMarkers();
-          selectMarker(self);
+        if (settings.value == null) {
+          var chordValue = $(settings.chordBuilder).chordBuilder('getChord', self);
+
+          if (settings.selectOnCreate) {
+            unselectAllMarkers();
+            selectMarker(self);
+          }
+
+          setValue(self, chordValue.value);
+        } else {
+          setValue(self, settings.value);
+          settings.value = null;
         }
-
-        setValue(self, chordValue.value);
       });
     }
 
@@ -959,6 +967,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 window.ChordProcessor = {
   musicReference: window.musicReference || {},
   processChord: function processChord(value, key, scale) {
+    var modulation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
     if (typeof value == 'string' && typeof scale == 'string' && typeof key == 'string') {
       var musicReference = ChordProcessor.musicReference;
       var rootKey = key;
@@ -987,7 +997,7 @@ window.ChordProcessor = {
 
       var keyNoteIndex = musicReference.notes.indexOf(musicReference.notes.find(function (note) {
         return note.name == rootKey;
-      }));
+      })) + modulation;
       var rootNoteIndex = (scaleReference.pattern.find(function (o) {
         return o.name == root;
       }).noteIndex + keyNoteIndex) % musicReference.notes.length;
@@ -1030,10 +1040,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var defaults = {
     'height': 10,
     'contextMenu': '.chord-context-menu',
-    'chordBuilder': '.chord-selection-menu'
+    'chordBuilder': '.chord-selection-menu',
+    'keySelector': '#mainkey'
   };
-  var cursorWidth = 0;
-  var cursorHeight = 0;
+  /**
+   * Get option from DOM data
+   * @param {object} obj
+   * @param {string} name option name/key
+   */
 
   function getOption(obj, name) {
     var option = $(obj).data('chordsLine-options');
@@ -1046,7 +1060,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Sort chord markers within the parent chord line
-   * @param {Jquery Object} chordMarker 
+   * @param {Jquery Object} chordMarker
    */
 
 
@@ -1054,11 +1068,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var parent;
     var markers;
 
-    if (chordMarker.hasClass('chord')) {
-      parent = chordMarker.parent();
+    if ($(chordMarker).hasClass('chord')) {
+      parent = $(chordMarker).parent();
       markers = parent.children('.chord');
-    } else if (chordMarker.hasClass('chords')) {
-      markers = chordMarker.children('.chord');
+    } else if ($(chordMarker).hasClass('chords')) {
+      markers = $(chordMarker).children('.chord');
       parent = chordMarker;
     } // Sort chords line
 
@@ -1067,16 +1081,62 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return $(elem1).offset().left > $(elem2).offset().left ? 1 : -1;
     }).appendTo(parent);
   }
+  /**
+   * Instantiate a new chord marker inside obj
+   * @param {object} obj
+   * @param {number} width the snap width of the marker
+   * @param {number} position the left offset of the marker from the left edge of the document
+   * @param {number} keyReference modulation of the chord
+   * @param {string} value chord value with parts delimited by /
+   */
 
-  function updateDimensions(obj, cursor) {
-    if (cursorWidth == '' || cursorWidth == 0 || cursor.width() > cursorWidth) {
-      cursorWidth = cursor.width();
-    }
+
+  function insertChordMarker(obj, width, position) {
+    var keyReference = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var value = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+    $('<span>').chordMarker({
+      chordBuilder: getOption(obj, 'chordBuilder'),
+      contextMenu: getOption(obj, 'contextMenu'),
+      dragSnap: width,
+      leftOffset: position,
+      keySelector: getOption(obj, 'keySelector'),
+      parent: obj,
+      keyReference: keyReference,
+      value: value,
+      onDragStop: function onDragStop() {
+        sortChordMarkers(obj);
+      }
+    });
+  }
+  /**
+   *
+   * @param {object} obj
+   * @param {string} values Chords values. String delimited by |
+   */
+
+
+  function setValue(obj, values) {
+    $(obj).children('.chord').remove();
+    var chords = values.split('|');
+    chords.forEach(function (chord) {
+      // Get chord parts
+      var chordPart = chord.split('/');
+      if (chordPart.length != 7) return;
+      var keyReference = chordPart[0] * 1;
+      var position = chordPart[1] * 1;
+      var measure = chordPart[2];
+      var root = chordPart[3];
+      var variation = chordPart[4];
+      var variation2 = chordPart[5];
+      var bass = chordPart[6];
+      insertChordMarker(obj, getOption(obj, 'cursorWidth'), position * getOption(obj, 'cursorWidth'), keyReference, [measure, root, variation, variation2, bass].join('/'));
+    });
   }
 
   $.fn.chordsLine = function (command, option, value) {
     if (_typeof(command) === 'object' || command == undefined) {
       return $(this).each(function () {
+        console.log('set');
         var self = this; // Skip if this element is already processed
 
         if ($(self).hasClass('chordsLine-processed')) return true; // Set up settings
@@ -1094,27 +1154,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         cursor.on('click', function () {
           // Get position of cursor
           var position = cursor.position().left;
-          var parent = cursor.parent(); // Create chord span and add to chords line
+          var parent = cursor.parent();
+          insertChordMarker(self, settings.cursorWidth, position); // Sort chords line
 
-          $('<span>').chordMarker({
-            chordBuilder: settings.chordBuilder,
-            contextMenu: settings.contextMenu,
-            dragSnap: cursorWidth,
-            leftOffset: position,
-            keySelector: '#mainKey',
-            parent: parent,
-            onDragStop: function onDragStop() {
-              sortChordMarkers($(this));
-            }
-          }); // Sort chords line
-
-          sortChordMarkers(parent);
+          sortChordMarkers(parent[0]);
         }); // Add chord cursor to chords line
 
-        $(self).append(cursor); // Set chords line attributes
-
-        updateDimensions(self, cursor);
-        $(self).css('height', settings.height).addClass('chordsLine-processed'); // Mouseover event for chords line to make chord cursor follow the mouse cursor
+        $(self).append(cursor); // Mouseover event for chords line to make chord cursor follow the mouse cursor
 
         $(self).on('mouseover', function () {
           // When mouse is hovered to chord view, track mouse position
@@ -1123,15 +1169,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
             var diff = event.offsetX; // Get remainder and remove from difference for snapping
 
-            var remainder = diff % cursorWidth;
-            cursor.css('left', diff - remainder + 'px'); // Update the chord line dimension
-
-            updateDimensions(self, cursor);
+            var remainder = diff % settings.cursorWidth;
+            cursor.css('left', diff - remainder + 'px');
           }); // Unbind mousemove event
         }).on('mouseout', function () {
           $(self).off('mousemove');
-        });
+        }); // Set chords line attributes
+
+        $(self).css('height', settings.height).addClass('chordsLine-processed');
       });
+    }
+
+    if (typeof command == 'string') {
+      switch (command.toLocaleLowerCase()) {
+        case 'setvalue':
+          if (typeof option != 'string') return this;
+          return $(this).each(function () {
+            setValue(this, option);
+          });
+      }
     }
   };
 })(jQuery);
@@ -1322,7 +1378,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   var panelClass = panelSelector.replace(/[.,#]*/g, '');
   /**
    * Initialize the options
-   * @param {Object} options 
+   * @param {Object} options
    */
 
   function initOptions(options) {
@@ -1334,8 +1390,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Get option value
-   * @param {Object} object 
-   * @param {String} key 
+   * @param {Object} object
+   * @param {String} key
    */
 
 
@@ -1346,9 +1402,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Set option value
-   * @param {Object} object 
-   * @param {String} key 
-   * @param {String} value 
+   * @param {Object} object
+   * @param {String} key
+   * @param {String} value
    */
 
 
@@ -1365,6 +1421,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   function insertPanel(obj, index) {
+    var id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     // Get current count of panels
     var panelCount = getOption(obj, 'panelCount');
 
@@ -1441,7 +1498,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     } // Set panel count
 
 
-    setOption(obj, 'panelCount', ++panelCount);
+    setOption(obj, 'panelCount', ++panelCount); // Set id if given
+
+    if (id != null && typeof id == 'string') {
+      panel.attr('data-id', id);
+    }
+
     $(obj).trigger('dynamicPanel:insert', [panel]);
     return panel;
   }
@@ -1483,7 +1545,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Remove target panel and reorder succeeding sibling panels
-   * @param {object} obj Target object 
+   * @param {object} obj Target object
    * @param {int} index panel position to remove
    */
 
@@ -1516,6 +1578,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     setOption(obj, 'panelCount', --panelCount);
+  }
+
+  function removeAll(obj) {
+    $(obj).children('.panel-item').each(function () {
+      removePanel(obj, $(this).attr('data-order') * 1 - 1);
+    });
   }
 
   $.fn.dynamicPanel = function (command, option, val) {
@@ -1625,13 +1693,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'insert':
           var panel;
           this.each(function () {
-            panel = insertPanel(this, option);
+            panel = insertPanel(this, option, val);
           });
           return panel;
 
         case 'remove':
           return this.each(function () {
             removePanel(this, option);
+          });
+
+        case 'removeall':
+          return this.each(function () {
+            removeAll(this);
           });
       }
     }
@@ -1660,8 +1733,10 @@ function addDetails() {
   $('.song-part-container').hide();
   $('.sequence-container').hide();
   $('.step.current').removeClass('current');
-  $('#addDetails').addClass('current');
-  setPrevNext(null, addChords);
+  $('#addDetails').addClass('current'); // Hide chord builder
+
+  $('.chord-selection-menu').chordBuilder('hide');
+  setPrevNext(null, addLyrics);
 }
 
 function addLyrics() {
@@ -1672,7 +1747,9 @@ function addLyrics() {
   $('#addLyrics').addClass('current');
   $('.song-line .lyrics-view').each(function () {
     // Set process
-    $('#processing').val('lyrics'); // Hide input
+    $('#processing').val('lyrics'); // Hide chords if shown
+
+    $(this).parent().siblings('.chords').hide(); // Hide input
 
     $(this).hide(); // Get sibling view element
 
@@ -1694,20 +1771,9 @@ function addChords() {
 
   $('.song-line .lyrics input[type="text"]').each(function () {
     // Set process
-    $('#processing').val('chords'); // Set chords only for panel items (exclude prototype items)
+    $('#processing').val('chords'); // Show chords
 
-    if ($(this).closest('.panel-item').length > 0) {
-      // Get chords view element and format
-      var chordsView = $(this).parent().siblings('.chords');
-
-      if (chordsView.length > 0) {
-        // Create chord cursor if not yet existing
-        chordsView.chordsLine({
-          'height': $(this).css('font-size').replace(/px+/g, '') * 1 + 8
-        });
-      }
-    } // Get sibling view element
-
+    $(this).parent().siblings('.chords').show(); // Get sibling view element
 
     var lyricsView = $(this).siblings('.lyrics-view'); // Hide input
 
@@ -1751,7 +1817,7 @@ function setPrevNext(prev, next) {
     if (typeof prev == 'function') prev();
   }).show();
   $('.next').off('click').on('click', function () {
-    if (typeof prev == 'function') next();
+    if (typeof next == 'function') next();
   });
 }
 
@@ -1881,63 +1947,163 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-$(function () {
-  var navbarSongTitle = '.song-title input';
-  var songTitleInput = '#songTitle';
-  var navbarKey = '#mainKey';
-  var songKeyInput = '#songKey';
-  var songTagInput = '#songTags'; // Sync changes with Song Title
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-  $(songTitleInput).on('keyup', function () {
-    $(navbarSongTitle).val($(this).val());
-  });
-  $(navbarSongTitle).on('keyup', function () {
-    $(songTitleInput).val($(this).val());
-  }); // Sync changes with Song Key
+(function ($) {
+  var defaults = {
+    'navbarSongTitle': '',
+    'songTitleInput': '',
+    'artistInput': '',
+    'songTagInput': '',
+    'descriptionInput': '',
+    'navbarKey': '',
+    'songKeyInput': '',
+    'songTimeSignInput': '',
+    'songSpeedInput': ''
+  };
+  var songData = window.songData || {};
+  /**
+   * Get option value
+   * @param {Object} object
+   * @param {String} key
+   */
 
-  $(document).on('change', [navbarKey, songKeyInput].join(','), function (ev) {
-    var target = navbarKey;
+  function getOption(object, key) {
+    var options = $(object).data('songDetails-options');
+    if (!options.hasOwnProperty(key)) return null;
+    return options[key];
+  }
 
-    if ($(this).is(navbarKey)) {
-      target = songKeyInput;
+  function setValue(obj, key, value) {
+    if (key == '' || key == undefined) return;
+
+    switch (key) {
+      case 'title':
+        var selectors = [getOption(obj, 'navbarSongTitle'), getOption(obj, 'songTitleInput')];
+        setValAttr(selectors, value);
+        break;
+
+      case 'artist':
+        var selectors = [getOption(obj, 'artistInput')];
+        setValAttr(selectors, value);
+        break;
+
+      case 'tags':
+        var selectors = [getOption(obj, 'songTagInput')];
+        setValAttr(selectors, value);
+        break;
+
+      case 'description':
+        var selector = getOption(obj, 'descriptionInput');
+        $(selector).text(value);
+        break;
+
+      case 'key':
+        var selector = getOption(obj, 'songKeyInput');
+        $(selector).find('option[value="' + value[0] + '"][data-scale="' + value[1] + '"]').prop('selected', true);
+        $(selector).trigger('change');
+        break;
+
+      case 'timeSignature':
+        var selector = getOption(obj, 'songTimeSignInput');
+        $(selector).find('option[value="' + value + '"]').prop('selected', true);
+        $(selector).trigger('change');
+        break;
+
+      case 'tempo':
+        var selector = [getOption(obj, 'songSpeedInput')];
+        setValAttr(selector, value);
+        break;
     }
 
-    var key = $(this).find('option:selected').val();
-    var scale = $(this).find('option:selected').attr('data-scale');
-    $(target).find('option[value="' + key + '"][data-scale="' + scale + '"]').prop('selected', true);
-    $(this).blur();
-    $('.chord-selection-menu').chordBuilder('update');
-  }); // Show error message if needed
+    return obj;
+  }
 
-  $('.input-container').on('inputContainer:submit', function () {
-    // If no error text element, do not engage
-    var errText = $(this).find('.error-text');
+  function setValAttr(selectors, value) {
+    selectors.forEach(function (o) {
+      if (_typeof(value) == 'object') {
+        value = value.join('|');
+      }
 
-    if (errText.length <= 0) {
-      return;
-    }
-
-    var value = $(this).find('input, select').val(); // If value of input or select is not empty, hide error message if shown
-
-    if (value != '') {
-      if (errText.is(':visible')) errText.hide();
-      return;
-    } // Show error message
-
-
-    errText.show();
-  });
-  $('.tag-item').on('click', function () {
-    // Toggles selected class
-    if ($(this).hasClass('selected')) $(this).removeClass('selected');else $(this).addClass('selected'); // Reconstruct input value
-
-    var selectedVal = [];
-    $(this).parent().find('.selected').each(function () {
-      selectedVal.push($(this).text());
+      $(o).val(value).trigger('change');
     });
-    $(songTagInput).val(selectedVal.join('|'));
-  });
-});
+  }
+
+  $.fn.songDetails = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this;
+        var settings = $.extend({}, defaults, command);
+        $(self).data('songDetails-options', settings); // Sync changes with Song Title
+
+        $(settings.songTitleInput).on('keyup', function () {
+          $(settings.navbarSongTitle).val($(this).val());
+        });
+        $(settings.navbarSongTitle).on('keyup', function () {
+          $(settings.songTitleInput).val($(this).val());
+        }); // Sync changes with Song Key
+
+        $(document).on('change', [settings.navbarKey, settings.songKeyInput].join(','), function (ev) {
+          var target = settings.navbarKey;
+
+          if ($(this).is(settings.navbarKey)) {
+            target = settings.songKeyInput;
+          }
+
+          var key = $(this).find('option:selected').val();
+          var scale = $(this).find('option:selected').attr('data-scale');
+          $(target).find('option[value="' + key + '"][data-scale="' + scale + '"]').prop('selected', true);
+          $(this).blur();
+          $('.chord-selection-menu').chordBuilder('update');
+        }); // Show error message if needed
+
+        $('.input-container').on('inputContainer:submit', function () {
+          // If no error text element, do not engage
+          var errText = $(this).find('.error-text');
+
+          if (errText.length <= 0) {
+            return;
+          }
+
+          var value = $(this).find('input, select').val(); // If value of input or select is not empty, hide error message if shown
+
+          if (value != '') {
+            if (errText.is(':visible')) errText.hide();
+            return;
+          } // Show error message
+
+
+          errText.show();
+        });
+        $(settings.songTagInput).on('change', function () {
+          var tags = $(this).val().split('|');
+          tags.forEach(function (o) {
+            $('.tag-item[data-value="' + o + '"]').addClass('selected');
+          });
+        });
+        $('.tag-item').on('click', function () {
+          // Toggles selected class
+          if ($(this).hasClass('selected')) $(this).removeClass('selected');else $(this).addClass('selected'); // Reconstruct input value
+
+          var selectedVal = [];
+          $(this).parent().find('.selected').each(function () {
+            selectedVal.push($(this).attr('data-value'));
+          });
+          $(settings.songTagInput).val(selectedVal.join('|'));
+        });
+      });
+    }
+
+    if (typeof command == 'string') {
+      switch (command.toLocaleLowerCase()) {
+        case 'set':
+          return $(this).each(function () {
+            setValue(this, option, value);
+          });
+      }
+    }
+  };
+})(jQuery);
 
 /***/ }),
 
@@ -1958,8 +2124,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   };
   /**
    * Get option value
-   * @param {Object} object 
-   * @param {String} key 
+   * @param {Object} object
+   * @param {String} key
    */
 
   function getOption(object, key) {
@@ -1969,7 +2135,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Add spacer next to this character
-   * @param {object} obj 
+   * @param {object} obj
    * @param {number} width Width of the spacer
    */
 
@@ -2007,13 +2173,35 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         $(self).data('songLine-options', settings); // Get data
 
         if ($(settings.dataSource).hasClass('changed')) {
+          var preDefSpacers = []; // Get predefined spacers
+
+          if ($(self).html().indexOf('{spacer-') >= 0) {
+            var content = $(self).html();
+            var spacers = content.match(/\{spacer-[0-9]+\}/g);
+            spacers.forEach(function (spacer) {
+              // Get position and width of the spacer
+              var position = content.indexOf(spacer);
+              var width = spacer.match(/\d+/g)[0];
+              preDefSpacers.push({
+                'position': position,
+                'width': width
+              }); // Remove the spacer from the content
+
+              content = content.replace(/\{spacer-[0-9]+\}/, '');
+            });
+          }
+
           var data = $(settings.dataSource).val();
           var charArr = data.split('');
           var formattedData = '';
           charArr.forEach(function (_char) {
             formattedData += '<span class="character">' + _char + '</span>';
           });
-          $(self).html(formattedData); // Set event listener
+          $(self).html(formattedData); // Set predefined spacers
+
+          preDefSpacers.reverse().forEach(function (spacer) {
+            addSpacer(self, $(self).children('.character')[spacer.position - 1], spacer.width);
+          }); // Set event listener
 
           $(self).find('.character').on('mouseover', function () {
             $(this).css('border-right', '2.5px solid lightgray');
@@ -2058,91 +2246,201 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! uuid */ "./node_modules/uuid/index.js");
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(uuid__WEBPACK_IMPORTED_MODULE_0__);
-
-$(document).ready(function () {
-  // Fold/Expand action of song part panel
-  $(document).on('click', '.fold, .expand', function () {
-    if ($(this).hasClass('fold')) {
-      $(this).siblings('.stanza-container').hide();
-      $(this).siblings('.expand').show();
-    } else {
-      $(this).siblings('.stanza-container').show();
-      $(this).siblings('.fold').show();
-    }
-
-    $(this).hide();
-  }); // More menu action of song panel
-
-  $(document).on('click', '.more', function (event) {
-    var menu = $(this).siblings('.expanded-menu');
-    $('.expanded-menu.expanded').not(menu).removeClass('expanded');
-    menu.toggleClass('expanded');
-  });
-  $(document).on('mouseup', function (event) {
-    var more = $('.more');
-
-    if (!more.is(event.target) && more.has(event.target).length <= 0) {
-      $('.expanded-menu.expanded').removeClass('expanded');
-      return true;
-    }
-  }); // Insert below action of song panels
-
-  $(document).on('click', '.insert-below', function () {
-    var index = $(this).closest('.song-part').attr('data-order') * 1;
-    $('#songParts').dynamicPanel('insert', index);
-  }); // Activate dynamic panel for song parts
-
-  $('#songParts').dynamicPanel({
-    'key': 'songPart',
-    'panelTemplate': '.song-part-template',
-    'removerSelector': '.delete-line',
-    // Draggable options
-    'draggable': {
-      'cancel': ['.chord-cursor', '.chord', '.close', '.more', '.song-line', '.song-part-title']
-    },
-    'onInsert': function onInsert(event, panel) {
-      // Generate GUID and create id for stanza
-      var id = 'stanza' + Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])().replace(/[{,},-]*/g, ''); // Activate dynamic panel for song lines
-
-      panel.find('.stanza').attr('id', id).dynamicPanel({
-        'key': 'stanza',
-        'panelTemplate': '.content-prototype',
-        'removerSelector': '.delete-line',
-        'autoformatPaste': true,
-        // Draggable options
-        'draggable': {
-          'cancel': ['.chord-cursor', '.chord', '.close', '.more', '.lyrics']
-        },
-        'onInsert': function onInsert(innerEv, songlinePanel) {
-          // Generate GUID and create id for song line
-          var lineId = 'line' + Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])().replace(/[{,},-]*/g, '');
-          songlinePanel.attr('id', lineId); // Process chords line when inserting new line from chords mode
-
-          if ($('#processing').val() == 'chords') {
-            songlinePanel.find('.chords').chordsLine({
-              'height': songlinePanel.find('.lyrics input[type="text"]').css('font-size').replace(/px+/g, '') * 1 + 8
-            });
-          } // Set up context menu
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 
-          songlinePanel.find('.line-options').on('click', function () {
-            $('.songline-context-menu').contextMenu('toggle', this);
-          }); // Set up change listener for input texts
 
-          songlinePanel.find('.lyrics input[type="text"]').on('change', function () {
-            $(this).addClass('changed');
-          });
+(function ($) {
+  var defaults = {
+    'contextMenu': '',
+    'songPartTitleInput': '.song-part-title .song-part-name',
+    'fontHeight': 5,
+    'fontWidth': 5
+  };
+  /**
+   * Get option value
+   * @param {Object} object
+   * @param {String} key
+   */
+
+  function getOption(object, key) {
+    var options = $(object).data('songPart-options');
+    if (!options.hasOwnProperty(key)) return null;
+    return options[key];
+  }
+  /**
+   * Fill song part container with values
+   * @param {object} obj
+   * @param {object} values collection of song parts
+   */
+
+
+  function fillSongparts(obj, values) {
+    // Remove autogenerated song parts
+    $(obj).dynamicPanel('removeAll'); // Iterate values song parts
+
+    values.forEach(function (songLine) {
+      var panel = $(obj).dynamicPanel('insert', null, songLine['id']); // Set ID
+
+      panel.attr('data-id', songLine['id']);
+      panel.attr('data-order', songLine['order']);
+      panel.attr('data-reference-key', songLine['referenceKey']); // Set song title
+
+      panel.find(getOption(obj, 'songPartTitleInput')).html(songLine['name']);
+      panel.find(getOption(obj, 'songPartTitleInput')).attr('data-name', songLine['name']); // Get lyrics and chords string
+
+      var lyrDisplay = songLine['lyrics']['display'];
+      var lyrContent = songLine['lyrics']['content'];
+      var chords = songLine['chords']['content']; // Parse lyrics and chords line
+
+      var lyrDispArr = lyrDisplay.split('{newline}');
+      var lyrContArr = lyrContent.split('{newline}');
+      var chordsArr = chords.split('{newline}'); // Fill only if lyrics and chords have the same lines
+
+      if (lyrDispArr.length == lyrContArr.length && lyrDispArr.length == chordsArr.length) {
+        // Remove existing song lines first
+        panel.find('.stanza').dynamicPanel('removeAll');
+
+        for (var i = 0; i < lyrDispArr.length; i++) {
+          // Insert new song line
+          fillSongLine(panel, lyrDispArr[i], lyrContArr[i], chordsArr[i]);
         }
-      }); // Set add stanza button target
+      }
+    });
+  }
+  /**
+   * Set lyrics and chords value to the song line
+   * @param {object} panel Target panel to add lyrics to
+   * @param {string} lyricsDisplay Lyrics display text
+   * @param {string} lyricsContent Lyrics content text
+   * @param {string} chordsContent Chords line value
+   */
 
-      panel.find('.add-stanza').attr('data-target', '#' + id); // Set up song part title
 
-      panel.find('.song-part-title .song-part-name').on('click', function () {
-        $('.song-part-title-expanded-panel').contextMenu('show', this);
+  function fillSongLine(panel, lyricsDisplay, lyricsContent, chordsContent) {
+    // Create new song line panel
+    var linePanel = panel.find('.stanza').dynamicPanel('insert'); // Set value to lyrics input and set changed flag
+
+    linePanel.find('.lyrics input[type="text"]').val(lyricsDisplay);
+    linePanel.find('.lyrics input[type="text"]').addClass('changed'); // Set content to lyrics view
+
+    linePanel.find('.lyrics .lyrics-view').html(lyricsContent); // Set content to chords view
+
+    linePanel.find('.chords').chordsLine('setValue', chordsContent);
+  }
+
+  $.fn.songPart = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this;
+        var settings = $.extend({}, defaults, command);
+        $(self).data('songPart-options', settings); // Activate dynamic panel for song parts
+
+        $(self).dynamicPanel({
+          'key': 'songPart',
+          'panelTemplate': '.song-part-template',
+          // Draggable options
+          'draggable': {
+            'cancel': ['.chord-cursor', '.chord', '.close', '.more', '.song-line', '.song-part-title']
+          },
+          'onInsert': function onInsert(event, panel) {
+            // More menu action of song panel
+            panel.find('.more').on('click', function (event) {
+              $(settings.contextMenu).contextMenu('toggle', this);
+            }); // Set font family and size based on settings
+
+            panel.css('font-size', settings.fontSize);
+            panel.css('font-family', settings.fontFamily); // Insert below action of song panels
+
+            panel.find('.insert-below').on('click', function () {
+              var index = $(this).closest('.song-part').attr('data-order') * 1;
+              $(self).dynamicPanel('insert', index);
+            }); // Fold/Expand action of song part panel
+
+            $(panel).find('.fold, .expand').on('click', function () {
+              if ($(this).hasClass('fold')) {
+                $(this).siblings('.stanza-container').hide();
+                $(this).siblings('.expand').show();
+              } else {
+                $(this).siblings('.stanza-container').show();
+                $(this).siblings('.fold').show();
+              }
+
+              $(this).hide();
+            }); // Generate GUID and create id for stanza
+
+            var uuid = panel.attr('data-id');
+
+            if (uuid == undefined || uuid == '') {
+              uuid = Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])();
+              panel.attr('data-id', uuid);
+            }
+
+            var id = 'stanza' + uuid.replace(/[{,},-]*/g, ''); // Activate dynamic panel for song lines
+
+            panel.find('.stanza').attr('id', id).dynamicPanel({
+              'key': 'stanza',
+              'panelTemplate': '.content-prototype',
+              'removerSelector': '.delete-line',
+              'autoformatPaste': true,
+              // Draggable options
+              'draggable': {
+                'cancel': ['.chord-cursor', '.chord', '.close', '.more', '.lyrics']
+              },
+              'onInsert': function onInsert(innerEv, songlinePanel) {
+                // Generate GUID and create id for song line
+                var uuid = Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])();
+                var lineId = 'line' + uuid.replace(/[{,},-]*/g, '');
+                songlinePanel.attr('data-id', uuid);
+                songlinePanel.attr('id', lineId); // Set up context menu
+
+                songlinePanel.find('.line-options').on('click', function () {
+                  $('.songline-context-menu').contextMenu('toggle', this);
+                }); // Set up change listener for input texts
+
+                songlinePanel.find('.lyrics input[type="text"]').on('change', function () {
+                  $(this).addClass('changed');
+                }); // Set up chords line
+
+                var chordsView = songlinePanel.find('.chords');
+
+                if (chordsView.length > 0) {
+                  // Initialize chords line
+                  chordsView.chordsLine({
+                    'height': settings.fontHeight + 4,
+                    'cursorWidth': settings.fontWidth
+                  });
+                } // hide chords view initially when not on chords mode
+
+
+                if ($('#processing').val() != 'chords') {
+                  chordsView.hide();
+                }
+              }
+            }); // Set add stanza button target
+
+            panel.find('.add-stanza').attr('data-target', '#' + id); // Set up song part title
+
+            panel.find('.song-part-title .song-part-name').on('click', function () {
+              $('.song-part-title-expanded-panel').contextMenu('show', this);
+            });
+          }
+        });
       });
     }
-  });
-});
+
+    if (typeof command == 'string') {
+      switch (command.toLocaleLowerCase()) {
+        case 'setvalue':
+          return $(this).each(function () {
+            if (_typeof(option) != 'object') return; // Not array
+
+            fillSongparts(this, option);
+          });
+      }
+    }
+  };
+})(jQuery);
 
 /***/ }),
 
@@ -2150,10 +2448,15 @@ $(document).ready(function () {
 /*!*************************************************!*\
   !*** ./resources/js/songBuilder/songbuilder.js ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! uuid */ "./node_modules/uuid/index.js");
+/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(uuid__WEBPACK_IMPORTED_MODULE_0__);
 window.musicReference = __webpack_require__(/*! ./_musicReference.json */ "./resources/js/songBuilder/_musicReference.json");
+window.songData = {};
 
 __webpack_require__(/*! ./songPart */ "./resources/js/songBuilder/songPart.js");
 
@@ -2177,24 +2480,33 @@ __webpack_require__(/*! ./songLine */ "./resources/js/songBuilder/songLine.js");
 
 __webpack_require__(/*! ./sequenceBuilder */ "./resources/js/songBuilder/sequenceBuilder.js");
 
+
+var chordMarkerContextMenu = '.chord-context-menu';
+var chordSelection = '.chord-selection-menu';
+var sequenceBox = '#sequenceBox';
+var songPartTitleContextMenu = '.song-part-title-expanded-panel';
+var songLineContextMenu = '.songline-context-menu';
+var songPartContextMenu = '.songpart-context-menu';
+var sequenceOptions = '.sequence-expanded-menu';
+var characterContextMenu = '.character-context-menu';
+var spacerContextMenu = '.spacer-context-menu';
+var songDetailsContainer = '.song-details-container';
+var songPartsContainer = '#songParts';
+var monospaceFontSize = '20px';
+var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
+var monospaceWidth = 0;
+var monospaceHeight = 0;
 $(function () {
-  var chordMarkerContextMenu = '.chord-context-menu';
-  var chordSelection = '.chord-selection-menu';
-  var sequenceBox = '#sequenceBox';
-  var songPartTitleContextMenu = '.song-part-title-expanded-panel';
-  var songLineContextMenu = '.songline-context-menu';
-  var sequenceOptions = '.sequence-expanded-menu';
-  var characterContextMenu = '.character-context-menu';
-  var spacerContextMenu = '.spacer-context-menu'; // Chord builder
+  getPageDimensions(); // Chord builder
 
   $(chordSelection).chordBuilder({
     'changeTargetOnChordChange': true,
     'songPartSelector': '.song-part-name',
     'mainRoot': function mainRoot() {
-      return $('#mainKey option:selected').val();
+      return $('#mainkey option:selected').val();
     },
     'mainScale': function mainScale() {
-      return $('#mainKey option:selected').attr('data-scale');
+      return $('#mainkey option:selected').attr('data-scale');
     },
     'setTargetValue': function setTargetValue(ev, target, value) {
       if (target != undefined) {
@@ -2287,6 +2599,26 @@ $(function () {
         $(obj).contextMenu('hide');
       }
     }]
+  }); // Song part
+
+  $(songPartContextMenu).contextMenu({
+    'menuItems': [{
+      'name': 'delete',
+      'selector': '.delete-songpart',
+      'action': function action(ev, obj, target) {
+        var index = $(target).closest('.panel-item').attr('data-order') * 1 - 1;
+        $(target).closest('.dynamicPanel').dynamicPanel('remove', index);
+        $(obj).contextMenu('hide');
+      }
+    }, {
+      'name': 'insertBelow',
+      'selector': '.insert-songpart-below',
+      'action': function action(ev, obj, target) {
+        var index = $(target).closest('.panel-item').attr('data-order') * 1;
+        $(target).closest('.dynamicPanel').dynamicPanel('insert', index);
+        $(obj).contextMenu('hide');
+      }
+    }]
   }); // Sequence builder
 
   $(sequenceOptions).contextMenu({
@@ -2352,7 +2684,99 @@ $(function () {
       }
     }]
   });
+  $(songDetailsContainer).songDetails({
+    'navbarSongTitle': '.song-title input',
+    'songTitleInput': '#songTitle',
+    'artistInput': '#songArtist',
+    'songTagInput': '#songtags',
+    'descriptionInput': '#songDescription',
+    'navbarKey': '#mainkey',
+    'songKeyInput': '#songkey',
+    'songTimeSignInput': '#songTimeSign',
+    'songSpeedInput': '#songSpeed'
+  });
+  $(songPartsContainer).songPart({
+    'contextMenu': songPartContextMenu,
+    'fontSize': monospaceFontSize,
+    'fontFamily': monospaceFontFamily,
+    'fontWidth': monospaceWidth,
+    'fontHeight': monospaceHeight
+  }); // Get song data
+
+  getSong();
 });
+
+function getPageDimensions() {
+  // Get width of a single monospace
+  var unique = Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])();
+  var spanTest = $('<span>').addClass(unique).css('font-family', monospaceFontFamily).css('font-size', monospaceFontSize).css('position', 'absolute').html('&nbsp;');
+  $('body').append(spanTest);
+  monospaceWidth = spanTest.width();
+  monospaceHeight = spanTest.height();
+  $('body').remove('.' + unique);
+}
+
+function getSong() {
+  var songId = $('#songId').val();
+
+  if (songId == '') {
+    $('#songId').val(Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])());
+    return;
+  }
+
+  get(songId);
+}
+/**
+ * Get song data from server
+ */
+
+
+function get($id) {
+  $.ajax({
+    'url': '/songbuilder/' + $id,
+    'method': 'get',
+    'contentType': 'application/json',
+    'dataType': 'json'
+  }).done(function (response) {
+    setValues(response);
+  }).fail(function (response) {
+    console.error('Cannot find song');
+  });
+}
+
+function setValues(songData) {
+  console.log(songData);
+
+  if (songData.hasOwnProperty('title')) {
+    $(songDetailsContainer).songDetails('set', 'title', songData.title);
+  }
+
+  if (songData.details.hasOwnProperty('artist')) {
+    $(songDetailsContainer).songDetails('set', 'artist', songData.details.artist);
+  }
+
+  if (songData.hasOwnProperty('tags')) {
+    $(songDetailsContainer).songDetails('set', 'tags', songData.tags);
+  }
+
+  if (songData.details.hasOwnProperty('description')) {
+    $(songDetailsContainer).songDetails('set', 'description', songData.details.description);
+  }
+
+  if (songData.hasOwnProperty('key') && songData.hasOwnProperty('scale')) {
+    $(songDetailsContainer).songDetails('set', 'key', [songData.key, songData.scale]);
+  }
+
+  if (songData.details.hasOwnProperty('timeSignature')) {
+    $(songDetailsContainer).songDetails('set', 'timeSignature', songData.details.timeSignature);
+  }
+
+  if (songData.details.hasOwnProperty('tempo')) {
+    $(songDetailsContainer).songDetails('set', 'tempo', songData.details.tempo);
+  }
+
+  $(songPartsContainer).songPart('setValue', songData.songParts);
+}
 
 /***/ }),
 
