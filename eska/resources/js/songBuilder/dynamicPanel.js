@@ -34,7 +34,7 @@ function initOptions(options) {
 function getOption(object, key) {
     var options = $(object).data('dynamicPanel-options');
 
-    if (!options.hasOwnProperty(key)) return null;
+    if (options == undefined || !options.hasOwnProperty(key)) return null;
 
     return options[key];
 }

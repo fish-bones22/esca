@@ -1,8 +1,29 @@
 button {
+    background-color: #ffffff;
+    border: 1px solid $dark;
+    color: $darker;
     cursor: pointer;
+    &:hover {
+        background-color: #ffffff;
+        border: 1px solid $darker;
+    }
     &:focus {
         outline: none;
     }
+}
+.btn-primary {
+    background-color: $primary;
+    border: 1px solid $primary;
+    color: white;
+    padding: 5px 12px;
+    &:hover {
+        background-color: $primary_dark;
+        border: 1px solid $primary_dark;
+        color: white;
+    }
+}
+.btn-secondary {
+    padding: 5px 12px;
 }
 // action buttons
 .btn-action {
@@ -24,6 +45,7 @@ button {
     color: $secondary;
     background-color: white;
     background-color: transparent;
+    padding: 0 12px;
     &:hover {
         border: 1px solid gray;
         color: gray;

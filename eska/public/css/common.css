@@ -45,11 +45,36 @@ body {
 }
 
 button {
+  background-color: #ffffff;
+  border: 1px solid lightgray;
+  color: gray;
   cursor: pointer;
+}
+
+button:hover {
+  background-color: #ffffff;
+  border: 1px solid gray;
 }
 
 button:focus {
   outline: none;
+}
+
+.btn-primary {
+  background-color: #2a9d8f;
+  border: 1px solid #2a9d8f;
+  color: white;
+  padding: 5px 12px;
+}
+
+.btn-primary:hover {
+  background-color: #23837b;
+  border: 1px solid #23837b;
+  color: white;
+}
+
+.btn-secondary {
+  padding: 5px 12px;
 }
 
 .btn-action {
@@ -74,6 +99,7 @@ button:focus {
   color: #f4a261;
   background-color: white;
   background-color: transparent;
+  padding: 0 12px;
 }
 
 .btn-link:hover {
@@ -88,6 +114,7 @@ button:focus {
 
 label {
   color: gray;
+  margin: 2px 10px;
 }
 
 input,
@@ -95,12 +122,14 @@ select,
 textarea {
   border: 1px solid lightgray;
   font-size: 18px;
+  padding: 3px 10px;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   border: 1px solid gray;
+  outline: none;
 }
 
 input::-moz-placeholder, select::-moz-placeholder, textarea::-moz-placeholder {
@@ -122,6 +151,7 @@ textarea::placeholder {
 }
 
 select option {
+  font-size: 14px;
   padding: 0;
 }
 
@@ -130,5 +160,56 @@ select option:focus {
   background-color: paleturquoise;
   border: none;
   outline: none;
+}
+
+.context-menu {
+  background: white;
+  border: 1px solid lightgray;
+  position: absolute;
+  width: 140px;
+  z-index: 2;
+}
+
+.context-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.context-menu ul li {
+  cursor: pointer;
+  padding: 4px 10px;
+}
+
+.context-menu ul li:hover {
+  background-color: #e9c46a;
+  color: white;
+}
+
+.context-menu ul li span {
+  font-size: 13px;
+}
+
+.dialogBox {
+  background-color: white;
+  border: 1px solid lightgray;
+  bottom: 0;
+  left: 0;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  margin: auto;
+  padding: 30px 30px 20px 30px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 350px;
+  z-index: 999;
+}
+
+.dialogBox .dialog-controls {
+  float: right;
+  margin-top: 20px;
+  position: relative;
 }
 

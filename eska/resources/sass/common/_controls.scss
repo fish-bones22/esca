@@ -1,12 +1,15 @@
 label {
     color: $darker;
+    margin: 2px 10px;
 }
 // Form controls
 input, select, textarea {
     border: 1px solid $dark;
     font-size: 18px;
+    padding: 3px 10px;
     &:focus {
         border: 1px solid $darker;
+        outline: none;
     }
     &::placeholder {
         color: $dark;
@@ -16,6 +19,7 @@ input, select, textarea {
 // Select
 select {
     option {
+        font-size: 14px;
         padding: 0;
         &:hover,&:focus {
             background-color: paleturquoise;

@@ -48905,6 +48905,260 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/js/common/contextMenu.js":
+/*!********************************************!*\
+  !*** ./resources/js/common/contextMenu.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {
+    'menuItems': [{
+      'name': 'close',
+      'selector': '.close',
+      'action': function action(ev, obj, target) {
+        hide(obj, target);
+      }
+    }],
+    'onShow': function onShow(ev, obj, target) {},
+    'onHide': function onHide(ev, obj) {},
+    'nesting': false
+  };
+  /**
+   * Get option value
+   * @param {Object} object 
+   * @param {String} key 
+   */
+
+  function getOption(object, key) {
+    var options = $(object).data('contextMenu-options');
+    if (!options.hasOwnProperty(key)) return null;
+    return options[key];
+  }
+  /**
+   * Hide context menu
+   * @param {Object} obj 
+   */
+
+
+  function hide(obj) {
+    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    $(obj).trigger('contextMenu:hide', [obj, target]);
+    $(obj).hide();
+    $(obj).data('target', null);
+  }
+  /**
+   * Hide context menu
+   * @param {Object} obj 
+   */
+
+
+  function hideAll() {
+    $('.contextMenu:visible').each(function () {
+      hide(this, $(this).data('target'));
+    });
+  }
+  /**
+   * Show context menu and set target
+   * @param {object} obj 
+   * @param {object} target Calling DOM of the context menu
+   */
+
+
+  function show(obj, target) {
+    if (target != undefined) {
+      // Compute where to place menu
+      var left = $(target).offset().left;
+      var width = $(obj).width();
+      var viewPortWidth = $(document).width();
+      left = left + width > viewPortWidth ? viewPortWidth - width - 20 : left;
+      $(obj).trigger('contextMenu:hide', [obj, target]);
+      $(obj).data('target', target);
+      $(obj).css('left', left).css('top', $(target).offset().top + $(target).height());
+    }
+
+    if (!getOption(obj, 'nesting')) hideAll();
+    $(obj).show();
+    $(obj).trigger('contextMenu:show', [obj, target]);
+  }
+  /**
+   * Hide menu if shown, show if hidden
+   * @param {object} target Calling DOM of the context menu
+   */
+
+
+  function toggle(obj, target) {
+    if ($(obj).is(':hidden')) {
+      show(obj, target);
+    } else {
+      hide(obj, target);
+    }
+  }
+
+  $.fn.contextMenu = function (command, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this; // Combine menu items array from default and command
+
+        command.menuItems = defaults.menuItems.concat(command.hasOwnProperty('menuItems') ? command.menuItems : []); // Extend settings from default 
+
+        var settings = $.extend({}, defaults, command);
+        $(self).data('contextMenu-options', settings); // Collapse context menu when clicked outside
+
+        $(document).on('click', function (event) {
+          if (!$(self).is(event.target) && $(event.target).closest($(self).data('target')).length <= 0 && $(event.target).closest(self).length <= 0 && !$(self).is(':hidden')) {
+            hide(self, $(self).data('target'));
+          }
+        }); // Set up context menu items click event listener
+
+        settings.menuItems.forEach(function (element) {
+          $(self).on('contextMenu:' + element.name, element.action);
+          $(self).find(element.selector).on('click', {
+            'obj': self
+          }, function (ev) {
+            $(self).trigger('contextMenu:' + element.name, [self, $(self).data('target')]);
+          });
+        }); // Disable right-click for context menu
+
+        $(self).on('contextmenu', function (ev) {
+          ev.preventDefault();
+        }); // Custom events
+
+        $(self).on('contextMenu:show', settings.onShow);
+        $(self).on('contextMenu:hide', settings.onHide);
+        $(self).addClass('contextMenu');
+      });
+    }
+
+    switch (command.toLowerCase()) {
+      case 'hide':
+        return $(this).each(function () {
+          hide(this, value);
+        });
+
+      case 'hideall':
+        hideAll();
+        return $(this);
+
+      case 'show':
+        return $(this).each(function () {
+          show(this, value);
+        });
+
+      case 'toggle':
+        return $(this).each(function () {
+          toggle(this, value);
+        });
+
+      case 'isshown':
+        return !$(this).is(':hidden');
+
+      case 'ishidden':
+        return $(this).is(':hidden');
+    }
+  };
+})(jQuery);
+
+/***/ }),
+
+/***/ "./resources/js/common/dialogBox.js":
+/*!******************************************!*\
+  !*** ./resources/js/common/dialogBox.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {
+    'caller': null,
+    'messagePanel': '.message',
+    'controls': [{
+      'name': 'close',
+      'selector': '.close',
+      'action': function action(event, dialogBox, caller) {
+        hide(dialogBox);
+      }
+    }]
+  };
+  /**
+   * Get option value
+   * @param {Object} object
+   * @param {String} key
+   */
+
+  function getOption(obj, option) {
+    var options = $(obj).data('dialogBox-options');
+    if (options == undefined || !options.hasOwnProperty(option)) return null;
+    return options[option];
+  }
+  /**
+   * Show dialog box with message
+   * @param {object} obj
+   * @param {string} message Text to show
+   */
+
+
+  function show(obj, message) {
+    var caller = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var messagePanel = $(obj).find(getOption(obj, 'messagePanel'));
+    if (messagePanel.length > 0) messagePanel.html(message);
+    $(obj).show();
+  }
+  /**
+   * Hide dialog box
+   * @param {object} obj
+   */
+
+
+  function hide(obj) {
+    $(obj).hide();
+  }
+
+  $.fn.dialogBox = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this;
+        var settings = $.extend({}, defaults, command);
+        $(self).data('dialogBox-options', settings);
+        $(self).addClass('dialogBox'); // Set draggable
+
+        $(self).draggable({
+          'addClasses': false,
+          'grid': [10, 10]
+        }); // Set up control events
+
+        settings.controls.forEach(function (control) {
+          $(self).find(control.selector).on('click', function () {
+            $(self).trigger('dialogBox:' + control.name, [self, settings.caller]);
+          });
+          $(self).on('dialogBox:' + control.name, control.action);
+        });
+      });
+    }
+
+    if (typeof command == 'string') {
+      switch (command.toLocaleLowerCase()) {
+        case 'show':
+          return $(this).each(function () {
+            show(this, option, value);
+          });
+
+        case 'hide':
+          return $(this).each(function () {
+            hide(this);
+          });
+      }
+    }
+  };
+})(jQuery);
+
+/***/ }),
+
 /***/ "./resources/js/main.js":
 /*!******************************!*\
   !*** ./resources/js/main.js ***!
@@ -48916,7 +49170,11 @@ window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jqu
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-__webpack_require__(/*! jquery-ui-dist/jquery-ui */ "./node_modules/jquery-ui-dist/jquery-ui.js"); // Polyfills
+__webpack_require__(/*! jquery-ui-dist/jquery-ui */ "./node_modules/jquery-ui-dist/jquery-ui.js");
+
+__webpack_require__(/*! ./common/contextMenu */ "./resources/js/common/contextMenu.js");
+
+__webpack_require__(/*! ./common/dialogBox */ "./resources/js/common/dialogBox.js"); // Polyfills
 
 
 if (window.NodeList && !NodeList.prototype.forEach) {

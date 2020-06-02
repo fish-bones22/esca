@@ -95,7 +95,6 @@
         if (typeof command === 'object' || command == undefined) {
             return $(this).each(function() {
 
-                console.log('set');
                 var self = this;
 
                 // Skip if this element is already processed

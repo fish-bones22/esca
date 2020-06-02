@@ -1,0 +1,19 @@
+.dialogBox {
+    background-color: white;
+    border: 1px solid $dark;
+    bottom: 0;
+    left:0;
+    height: fit-content;
+    margin: auto;
+    padding: 30px 30px 20px 30px;
+    position: fixed;
+    right:0;
+    top: 0;
+    width: 350px;
+    z-index: 999;
+    .dialog-controls {
+        float: right;
+        margin-top: 20px;
+        position: relative;
+    }
+}

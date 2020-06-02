@@ -1,11 +1,32 @@
 .sequence-container {
     border: 1px solid lightgray;
-    margin: 20px 0;
-    padding: 10px;
+    padding: 15px 20px 20px 20px;
     .sequence-details {
-       margin: 0 0 20px 0;
+        margin-bottom: 20px;
+        .other-sequence-actions {
+            float: right;
+        }
+        .edit-details {
+            margin: 0 60px 20px 20px;
+            .input-container {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+                input, textarea {
+                    max-width: 390px;
+                }
+                textarea {
+                    resize: vertical;
+                }
+            }
+        }
+    }
+    .sequence-title {
+        font-weight: 500;
+       margin: 0 0 10px 0;
     }
     #sequenceBox {
+        padding: 10px;
         margin-left: 20px;
         .sequence-item {
             display: flex;
@@ -57,6 +78,6 @@
         }
     }
     .sequence-actions {
-        margin: 10px 0;
+        margin: 0 30px 10px 30px;
     }
 }

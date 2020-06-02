@@ -22,6 +22,8 @@ ESKA
 @include('Songbuilder.ContextMenus._songPartTitle')
 @include('Songbuilder.ContextMenus._songLine')
 @include('Songbuilder.ContextMenus._songPart')
+{{-- Dialog Boxes --}}
+@include('Songbuilder.DialogBoxes._selectOtherSequence')
 {{-- Content --}}
 @include('Songbuilder._navigation')
 <div class="container">

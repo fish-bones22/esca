@@ -4,7 +4,7 @@ $(document).ready(function() {
     $('#addChords').click(addChords);
     $('#addLyrics').click(addLyrics);
     $('#createSequence').click(setSequence);
-
+    //setSequence();
     addDetails();
 
 });
@@ -97,7 +97,7 @@ function setSequence() {
     // Hide chord builder
     $('.chord-selection-menu').chordBuilder('hide');
 
-    // Init sequence builder
+    // // Init sequence builder
     $('#sequenceBox').sequenceBuilder('setSequenceSelect');
 
     // Set action buttons

@@ -66,6 +66,7 @@ class SongService {
             foreach ($sequence->songParts as $songPart) {
                 $sequenceSongParts[] = [
                     'songPart' => $songPart->id,
+                    'name' => $songPart->name,
                     'order' => $songPart->pivot->order,
                     'referenceKey' => $songPart->pivot->reference_key,
                     'repeat' => $songPart->pivot->repeat
@@ -75,7 +76,7 @@ class SongService {
                 'id' => $sequence->id,
                 'referenceKey' => $sequence->reference_key,
                 'description' => $sequence->description,
-                'default' => $sequence->default,
+                'default' => $sequence->default == 1,
                 'name' => $sequence->name,
                 'songParts' => $sequenceSongParts
             ];

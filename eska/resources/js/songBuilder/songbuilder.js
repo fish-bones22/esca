@@ -9,7 +9,6 @@ require('./chordProcessor');
 require('./chordBuilder');
 require('./chordMarker');
 require('./dynamicPanel');
-require('./contextMenu');
 require('./chordsLine');
 require('./songLine');
 require('./sequenceBuilder');
@@ -27,6 +26,13 @@ var characterContextMenu = '.character-context-menu';
 var spacerContextMenu = '.spacer-context-menu';
 var songDetailsContainer = '.song-details-container';
 var songPartsContainer = '#songParts';
+var otherSequence = '.select-other-sequence';
+var otherSequenceSelection = '#otherSequences';
+var otherSequenceDialog = '.select-other-sequence-dialog';
+var sequenceIdInput = '#sequenceId';
+var sequenceNameInput = '#sequenceName';
+var sequenceDescriptionInput = '#sequenceDescription';
+var sequenceMakeDefaultCheckbox = '#sequenceDefault';
 
 var monospaceFontSize = '20px';
 var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
@@ -54,29 +60,8 @@ $(function() {
         }
     });
 
-
-    // SEQUENCE BUILDER
-    $(sequenceBox).sequenceBuilder({
-        'noNameSubstitute': {
-            'find': '[no-name]',
-            'replace': '<span class="text-muted">No name</span>'
-        },
-        'defaultSelect': function() {
-            var select = [];
-            $('.song-part.panel-item .song-part-title').each(function() {
-                var name = $(this).find('.song-part-name').attr('data-name');
-                if (name == '' || name == undefined) {
-                    name = '[no-name]';
-                }
-                select.push({
-                    'name': name,
-                    'id': $(this).parent().find('.stanza').attr('id')
-                });
-            });
-            return select;
-        }
-    });
-
+    // DIALOG BOXES
+    $(otherSequenceDialog).dialogBox();
 
     // CONTEXT MENUS
 
@@ -271,6 +256,39 @@ $(function() {
         'fontHeight': monospaceHeight
     });
 
+    // SEQUENCE BUILDER
+    $(sequenceBox).sequenceBuilder({
+        'otherSequenceSelection': otherSequenceSelection,
+        'sequenceIdInput': sequenceIdInput,
+        'sequenceNameInput': sequenceNameInput,
+        'sequenceDescriptionInput': sequenceDescriptionInput,
+        'sequenceMakeDefaultCheckbox': sequenceMakeDefaultCheckbox,
+        'otherSequenceSelect': {
+            'selector':  otherSequence,
+            'action': function (ev) {
+                $(otherSequenceDialog).dialogBox('show', 'HELLO', otherSequence);
+            }
+        },
+        'noNameSubstitute': {
+            'find': '[no-name]',
+            'replace': '<span class="text-muted">No name</span>'
+        },
+        'defaultSelect': function() {
+            var select = [];
+            $('.song-part.panel-item .song-part-title').each(function() {
+                var name = $(this).find('.song-part-name').attr('data-name');
+                if (name == '' || name == undefined) {
+                    name = '[no-name]';
+                }
+                select.push({
+                    'name': name,
+                    'id': $(this).parent().attr('data-id')
+                });
+            });
+            return select;
+        }
+    });
+
     // Get song data
     getSong();
 
@@ -316,11 +334,13 @@ function get($id) {
         setValues(response);
     }).fail(function(response) {
         console.error('Cannot find song');
+        console.error(response);
     });
 }
 
 function setValues(songData) {
     console.log(songData);
+    // Set details
     if (songData.hasOwnProperty('title')) {
         $(songDetailsContainer).songDetails('set', 'title', songData.title);
     }
@@ -342,5 +362,9 @@ function setValues(songData) {
     if (songData.details.hasOwnProperty('tempo')) {
         $(songDetailsContainer).songDetails('set', 'tempo', songData.details.tempo);
     }
+    // Set song parts
     $(songPartsContainer).songPart('setValue', songData.songParts);
+    // Set sequence
+    $(sequenceBox).sequenceBuilder('setValue', songData.sequence.find(o => o.default));
+    $(sequenceBox).sequenceBuilder('setOtherSequencesSelection', songData.sequence);
 }
