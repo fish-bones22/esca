@@ -1,0 +1,28 @@
+.loading-panel {
+    background-color: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2147483647;
+    .loading-icon {
+        bottom: 0;
+        height: 50px;
+        left: 0;
+        margin: auto;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 50px;
+        img {
+            height: inherit;
+            width: inherit;
+            animation: spin 5s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+
+            @keyframes spin {
+                from { transform: rotate(0); }
+                to { transform: rotate(360deg); }
+            }
+        }
+    }
+}

@@ -13,6 +13,10 @@ import { v4 as uuidv4 } from 'uuid';
             'selector':  '',
             'action': function (ev) {}
         },
+        'newSequence': {
+            'selector': '',
+            'action': function (ev) {}
+        },
     };
 
     /**
@@ -29,7 +33,7 @@ import { v4 as uuidv4 } from 'uuid';
     }
 
     /**
-     *
+     * Modify all the sequence songpart selections in the sequence panel
      * @param {object} obj
      * @param {Array} select array to get select data from
      */
@@ -59,7 +63,8 @@ import { v4 as uuidv4 } from 'uuid';
             options.push(option);
 
             if (panelCount <= 0) {
-                $(obj).dynamicPanel('insert');
+                var panel = $(obj).dynamicPanel('insert');
+                panel.find('select option[value="' + elem.id + '"]').prop('selected', true);
             }
         });
 
@@ -75,29 +80,46 @@ import { v4 as uuidv4 } from 'uuid';
         });
     }
 
+    /**
+     *
+     * @param {object} obj
+     * @param {object} sequence the sequence object
+     */
     function setValue(obj, sequence) {
 
         if (sequence == undefined || !sequence.hasOwnProperty('name')) return;
-
+        // Get selectors
         var idInput = getOption(obj, 'sequenceIdInput');
         var nameInput = getOption(obj, 'sequenceNameInput');
         var descInput = getOption(obj, 'sequenceDescriptionInput');
         var defCheck = getOption(obj, 'sequenceMakeDefaultCheckbox');
-
+        // Set values
         $(idInput).val(sequence.id);
         $(nameInput).val(sequence.name);
         $(descInput).text(sequence.description);
         $(defCheck).prop('checked', sequence.default);
+        // Re-init the songpart selections
         setSequenceSelect(obj);
+        // Set the value of the songpart selections
         fillSequenceSongParts(obj, sequence.songParts);
     }
 
+    /**
+     *
+     * @param {object} obj
+     * @param {array} songParts Collection of songpart objects
+     */
     function fillSequenceSongParts(obj, songParts) {
+
+        if (songParts == undefined || typeof songParts != 'object') return;
+
         // Remove existing panels first
         $(obj).dynamicPanel('removeAll');
 
         songParts.forEach(songPart => {
+            // Insert panel
             var panel = $(obj).dynamicPanel('insert');
+            // Set the panel's song part selection value based on ID, if none, based on name.
             var opt = panel.find('select option[value="' + songPart.songPart + '"]');
             if (opt.length > 0) {
                 opt.prop('selected', true);
@@ -112,11 +134,73 @@ import { v4 as uuidv4 } from 'uuid';
         });
     }
 
-    function setOtherSequenceSelection(obj, values) {
+    /**
+     * Modify other sequence selection for the song
+     * @param {object} obj
+     * @param {array} otherSequences Collection of sequence object
+     */
+    function setOtherSequenceSelection(obj, otherSequences) {
+        // Get other sequence selection selector
         var otherSequenceSelection = getOption(obj, 'otherSequenceSelection');
-        values.forEach(value => {
+        // Iterate on the collection and fill selection
+        otherSequences.forEach(value => {
             $(otherSequenceSelection).append($('<option>').val(value.id).html(value.name));
         });
+    }
+
+    /**
+     * Remove values of sequence properties and songparts
+     * @param {object} obj
+     */
+    function clearSequence(obj) {
+        // Get selectors
+        var idInput = getOption(obj, 'sequenceIdInput');
+        var nameInput = getOption(obj, 'sequenceNameInput');
+        var descInput = getOption(obj, 'sequenceDescriptionInput');
+        var defCheck = getOption(obj, 'sequenceMakeDefaultCheckbox');
+        // Clear properties
+        $(idInput).val('');
+        $(nameInput).val('');
+        $(descInput).val('');
+        $(defCheck).prop('checked', false);
+        // Reset panels
+        $(obj).dynamicPanel('removeAll');
+        setSequenceSelect(obj);
+    }
+
+    function getValues(obj) {
+        var idInput = getOption(obj, 'sequenceIdInput');
+        var nameInput = getOption(obj, 'sequenceNameInput');
+        var descInput = getOption(obj, 'sequenceDescriptionInput');
+        var defCheck = getOption(obj, 'sequenceMakeDefaultCheckbox');
+
+        var id = $(idInput).val() != '' ? $(idInput).val() : uuidv4();
+        var name = $(nameInput).val();
+        var description = $(descInput).val();
+        var makeDefault = $(defCheck).prop('checked');
+
+        var songParts = [];
+        $(obj).children('.panel-item').each(function() {
+            var referenceKey = 0;
+            var songpart = $(this).find('select').val();
+            var repeat  = $(this).find('.repeat-input input[type="number"]').val() || 1;
+            var order = $(this).attr('data-order');
+            songParts.push({
+                'order': order,
+                'referenceKey': referenceKey,
+                'repeat': repeat,
+                'songPart': songpart
+            });
+        });
+
+        return [{
+            'id': id,
+            'name': name,
+            'description': description,
+            'default': makeDefault,
+            'referenceKey': 0,
+            'songParts': songParts
+        }];
     }
 
     $.fn.sequenceBuilder = function(command, option, value) {
@@ -151,6 +235,7 @@ import { v4 as uuidv4 } from 'uuid';
                 });
 
                 $(settings.otherSequenceSelect.selector).on('click', settings.otherSequenceSelect.action);
+                $(settings.newSequence.selector).on('click', settings.newSequence.action);
 
                 setSequenceSelect(self);
             });
@@ -164,7 +249,7 @@ import { v4 as uuidv4 } from 'uuid';
                     return $(this).each(function() {
                         setSequenceSelect(this, option)
                     });
-                case 'setvalue':
+                case 'setvalues':
                     if (typeof option != 'object') return this;
                     return $(this).each(function() {
                         setValue(this, option)
@@ -174,7 +259,15 @@ import { v4 as uuidv4 } from 'uuid';
                     if (typeof option != 'object') return this;
                     return $(this).each(function() {
                         setOtherSequenceSelection(this, option);
-                    })
+                    });
+
+                case 'clear':
+                    return $(this).each(function() {
+                        clearSequence(this);
+                    });
+
+                case 'getvalues':
+                    return getValues(this);
             }
         }
     }

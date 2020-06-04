@@ -12,6 +12,7 @@ require('./dynamicPanel');
 require('./chordsLine');
 require('./songLine');
 require('./sequenceBuilder');
+require('./outline');
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -26,6 +27,9 @@ var characterContextMenu = '.character-context-menu';
 var spacerContextMenu = '.spacer-context-menu';
 var songDetailsContainer = '.song-details-container';
 var songPartsContainer = '#songParts';
+var songPartsParentContainer = '.song-part-container';
+var sequenceContainer = '.sequence-container';
+var newSequence = '.new-sequence';
 var otherSequence = '.select-other-sequence';
 var otherSequenceSelection = '#otherSequences';
 var otherSequenceDialog = '.select-other-sequence-dialog';
@@ -33,6 +37,18 @@ var sequenceIdInput = '#sequenceId';
 var sequenceNameInput = '#sequenceName';
 var sequenceDescriptionInput = '#sequenceDescription';
 var sequenceMakeDefaultCheckbox = '#sequenceDefault';
+var informationDialogBox = '.information-dialog';
+var warningDialogBox = '.warning-dialog';
+var stepOutline = '.step-outline';
+var addDetailsButton = '#addDetails';
+var addLyricsButton = '#addLyrics';
+var addChordsButton = '#addChords';
+var createSequenceButton = '#createSequence';
+var previousButton = '#previous';
+var nextButton = '#next';
+var optionsButton = '#options';
+var songBuilderActionsMenu = '.song-builder-actions-menu'
+var loadingScreen = '.loading-panel';
 
 var monospaceFontSize = '20px';
 var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
@@ -61,9 +77,66 @@ $(function() {
     });
 
     // DIALOG BOXES
-    $(otherSequenceDialog).dialogBox();
+    $(otherSequenceDialog).dialogBox({
+        'cancelInputs': true,
+        'controls': [
+            {
+                'name': 'close',
+                'selector': '.close',
+                'action': function(event, dialogBox, callback) {
+                    $(otherSequenceDialog).dialogBox('hide');
+                }
+            },
+            {
+                'name': 'choose',
+                'selector': '.choose-other-sequence',
+                'action': function(event, dialogBox, callback) {
+                    if (typeof callback == 'function') callback();
+                    $(otherSequenceDialog).dialogBox('hide');
+                }
+            }
+        ]
+    });
+    $(warningDialogBox).dialogBox({
+        'cancelInputs': true,
+        'messagePanel': '.message',
+        'controls': [
+            {
+                'name': 'close',
+                'selector': '.close',
+                'action': function(event, dialogBox, callback) {
+                    $(warningDialogBox).dialogBox('hide');
+                }
+            },
+            {
+                'name': 'okay',
+                'selector': '.okay',
+                'action': function(event, dialogBox, callback) {
+                    if (typeof callback == 'function') callback();
+                    $(warningDialogBox).dialogBox('hide');
+                }
+            }
+        ]
+    });
+    $(informationDialogBox).dialogBox({
+        'cancelInputs': true
+    });
+
+    // Loading screen
+    $(loadingScreen).loadingScreen();
 
     // CONTEXT MENUS
+
+    $(songBuilderActionsMenu).contextMenu({
+        'menuItems': [{
+            'name': 'finish',
+            'selector': '#finish',
+            'action': function(ev, obj, target) {
+                collectValuesAndSave();
+                $(obj).contextMenu('hide');
+            }
+        }]
+    });
 
     // Chord marker
     $(chordMarkerContextMenu).contextMenu({
@@ -146,8 +219,8 @@ $(function() {
                 'name': 'delete',
                 'selector': '.delete-songpart',
                 'action': function(ev, obj, target) {
-                    var index = $(target).closest('.panel-item').attr('data-order')*1-1;
-                    $(target).closest('.dynamicPanel').dynamicPanel('remove', index);
+                    var panel = $(target).closest('.panel-item');
+                    checkSongpartSequences(panel);
                     $(obj).contextMenu('hide');
                 }
             },
@@ -263,10 +336,21 @@ $(function() {
         'sequenceNameInput': sequenceNameInput,
         'sequenceDescriptionInput': sequenceDescriptionInput,
         'sequenceMakeDefaultCheckbox': sequenceMakeDefaultCheckbox,
+        'newSequence': {
+            'selector': newSequence,
+            'action': function (ev) {
+                $(warningDialogBox).dialogBox('show', 'This will discard any unsaved changes to the sequence. Continue?', function() {
+                    $(sequenceBox).sequenceBuilder('clear');
+                })
+            }
+        },
         'otherSequenceSelect': {
             'selector':  otherSequence,
             'action': function (ev) {
-                $(otherSequenceDialog).dialogBox('show', 'HELLO', otherSequence);
+                $(otherSequenceDialog).dialogBox('show', null, function() {
+                    var seqId = $(otherSequenceSelection).val();
+                    getSequence(seqId);
+                });
             }
         },
         'noNameSubstitute': {
@@ -289,6 +373,41 @@ $(function() {
         }
     });
 
+    $(stepOutline).outline({
+        'nextSelector': nextButton,
+        'previousSelector': previousButton,
+        'controls': [
+            {
+                'runOnInit': true,
+                'name': 'setdetails',
+                'selector': addDetailsButton,
+                'action': addDetails
+            },
+            {
+                'runOnInit': false,
+                'name': 'setlyrics',
+                'selector': addLyricsButton,
+                'action': addLyrics
+            },
+            {
+                'runOnInit': false,
+                'name': 'setchords',
+                'selector': addChordsButton,
+                'action': addChords
+            },
+            {
+                'runOnInit': false,
+                'name': 'createsequence',
+                'selector': createSequenceButton,
+                'action': setSequence
+            }
+        ]
+    });
+
+    $(optionsButton).on('click', function() {
+        $(songBuilderActionsMenu).contextMenu('show', this);
+    });
+
     // Get song data
     getSong();
 
@@ -306,7 +425,7 @@ function getPageDimensions() {
     $('body').append(spanTest);
     monospaceWidth = spanTest.width();
     monospaceHeight = spanTest.height();
-    $('body').remove('.' + unique);
+    $('.' + unique).remove();
 }
 
 
@@ -325,18 +444,26 @@ function getSong() {
  * Get song data from server
  */
 function get($id) {
+    $(loadingScreen).loadingScreen('show');
     $.ajax({
-        'url': '/songbuilder/' + $id,
+        'url': '/song/' + $id,
         'method': 'get',
         'contentType': 'application/json',
         'dataType': 'json'
     }).done(function(response) {
+        if ('error' in response) {
+            $(informationDialogBox).dialogBox('show', 'Uh-oh, something happened.<hr/>Technical message: '+ response['error']);
+            return;
+        }
         setValues(response);
     }).fail(function(response) {
-        console.error('Cannot find song');
+        $(informationDialogBox).dialogBox('show', 'Uh-oh, something bad happened.');
         console.error(response);
+    }).always(function() {
+        $(loadingScreen).loadingScreen('hide');
     });
 }
+
 
 function setValues(songData) {
     console.log(songData);
@@ -363,8 +490,222 @@ function setValues(songData) {
         $(songDetailsContainer).songDetails('set', 'tempo', songData.details.tempo);
     }
     // Set song parts
-    $(songPartsContainer).songPart('setValue', songData.songParts);
+    $(songPartsContainer).songPart('setValues', songData.songParts);
     // Set sequence
-    $(sequenceBox).sequenceBuilder('setValue', songData.sequence.find(o => o.default));
+    $(sequenceBox).sequenceBuilder('setValues', songData.sequence.find(o => o.default));
     $(sequenceBox).sequenceBuilder('setOtherSequencesSelection', songData.sequence);
+}
+
+function getSequence(sequenceId) {
+    $.ajax({
+        'url': '/sequence/' + sequenceId,
+        'method': 'get',
+        'contentType': 'application/json',
+        'dataType': 'json'
+    }).done(function(response) {
+        $(sequenceBox).sequenceBuilder('setValues', response);
+    }).fail(function(response) {
+        console.error('Cannot find sequence ' + sequenceId);
+        console.error(response);
+    });
+}
+
+
+function getValues() {
+    return {
+        'id': $('#songId').val() != '' ? $('#songId').val() : uuidv4(),
+        'title': $(songDetailsContainer).songDetails('get', 'title'),
+        'key': $(songDetailsContainer).songDetails('get', 'key')[0],
+        'scale': $(songDetailsContainer).songDetails('get', 'key')[1],
+        'details': {
+            'artist': $(songDetailsContainer).songDetails('get', 'artist'),
+            'description': $(songDetailsContainer).songDetails('get', 'description'),
+            'timeSignature': $(songDetailsContainer).songDetails('get', 'timeSignature'),
+            'tempo': $(songDetailsContainer).songDetails('get', 'tempo')
+        },
+        'tags': $(songDetailsContainer).songDetails('get', 'tags'),
+        'songParts': $(songPartsContainer).songPart('getValues'),
+        'sequence': $(sequenceBox).sequenceBuilder('getValues')
+    }
+}
+
+function addDetails(ev) {
+    $(songDetailsContainer).show();
+    $(songPartsParentContainer).hide();
+    $(sequenceContainer).hide();
+    // Hide chord builder
+    $(chordSelection).chordBuilder('hide');
+    $(previousButton).hide();
+
+    $('.step.current').removeClass('current');
+    $(addDetailsButton).addClass('current');
+    $(stepOutline).outline('setPrevious', null);
+    $(stepOutline).outline('setNext', addLyrics);
+}
+
+function addLyrics(ev) {
+
+    $(songDetailsContainer).hide();
+    $(songPartsParentContainer).show();
+    $(sequenceContainer).hide();
+
+    $('.song-line .lyrics-view').each(function() {
+        // Set process
+        $('#processing').val('lyrics');
+        // Hide chords if shown
+        $(this).parent().siblings('.chords').hide();
+        // Hide input
+        $(this).hide();
+        // Get sibling view element
+        var lyricsInput = $(this).siblings('input[type="text"]');
+        if (lyricsInput.length <= 0) return;
+        // Set view element text
+        lyricsInput.show();
+    });
+    $(chordSelection).chordBuilder('hide');
+    $(previousButton).show();
+
+    $('.step.current').removeClass('current');
+    $(addLyricsButton).addClass('current');
+    $(stepOutline).outline('setPrevious', addDetails);
+    $(stepOutline).outline('setNext', addChords);
+}
+
+function addChords(ev) {
+    $(songDetailsContainer).hide();
+    $(songPartsParentContainer).show();
+    $(sequenceContainer).hide();
+
+    // Get each lyrics line and display
+    $('.song-line.panel-item .lyrics input[type="text"]').each(function() {
+        // Set process
+        $('#processing').val('chords');
+        // Show chords
+        $(this).parent().siblings('.chords').show();
+        // Hide input
+        $(this).hide();
+        var lyricsView = $(this).siblings('.lyrics-view');
+        if (lyricsView.length <= 0) return;
+        lyricsView.songLine('processLine');
+        lyricsView.show();
+
+    });
+    $(previousButton).show();
+
+    $('.step.current').removeClass('current');
+    $(addChordsButton).addClass('current');
+    $(stepOutline).outline('setPrevious', addLyrics);
+    $(stepOutline).outline('setNext', setSequence);
+}
+
+function setSequence(ev) {
+    // Hide other panels
+    $(songDetailsContainer).hide();
+    $(songPartsParentContainer).hide();
+    $(sequenceContainer).show();
+
+    // Set processing value
+    $('#processing').val('sequence');
+
+    // Hide chord builder
+    $('.chord-selection-menu').chordBuilder('hide');
+
+    // // Init sequence builder
+    $(sequenceBox).sequenceBuilder('setSequenceSelect');
+    $(previousButton).show();
+    $('.step.current').removeClass('current');
+    $(createSequenceButton).addClass('current');
+    $(stepOutline).outline('setPrevious', addChords);
+    $(stepOutline).outline('setNext', collectValuesAndSave);
+}
+
+/**
+ * Gets related sequences for a songpart from the server
+ */
+function checkSongpartSequences(songPart) {
+    var id = songPart.attr('data-id');
+    var index = songPart.attr('data-order')*1 - 1;
+    var sequences = [];
+    $(loadingScreen).loadingScreen('show');
+    $.ajax({
+        'url': '/songpart/' + id + '/sequences',
+        'method': 'get',
+        'contentType': 'application/json',
+        'dataType': 'json'
+    }).done(function(response) {
+        // If array and not empty
+        if (response != null && Array.isArray(response)) {
+            response.forEach(sequence => {
+                sequences.push(sequence.name);
+            })
+        } else {
+            sequences = getFallbackSequences(songPart);
+        }
+    }).fail(function(response) {
+        // Log error
+        console.log("No sequence found for songpart " + id);
+        console.log(response);
+        // Get fallback
+        sequences = getFallbackSequences(songPart);
+    }).always(function() {
+        $(loadingScreen).loadingScreen('hide');
+        // Warn user about related sequences before removing
+        if (sequences.length > 0) {
+            $(warningDialogBox).dialogBox('show',
+            'Deleting this will modify the following sequences.<br/><ul><li>' + sequences.join('</li><li>') + '</li></ul>Are you sure?',
+            function() {
+                $(songPart).parent().dynamicPanel('remove', index);
+            });
+        }
+        // Remove if no related sequences
+        else {
+            $(songPart).parent().dynamicPanel('remove', index);
+        }
+    });
+}
+
+function post(song) {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    return $.ajax({
+        'url': '/song',
+        'method': 'post',
+        'contentType': 'application/json',
+        'dataType': 'json',
+        'data': JSON.stringify(song)
+    })
+}
+
+function collectValuesAndSave() {
+
+    $(warningDialogBox).dialogBox('show', 'Do you want to save? Make sure everything is in place.', function() {
+            $(loadingScreen).loadingScreen('show');
+            var song = getValues();
+            post(song).done(function(response) {
+                if ('error' in response) {
+                    $(informationDialogBox).dialogBox('show', 'Saving failed. Please try again.<hr/>Technical message: ' + response['error']);
+                    return;
+                }
+                $(informationDialogBox).dialogBox('show', 'Saving complete!');
+            }).fail(function(response) {
+                $(informationDialogBox).dialogBox('show', 'Saving failed completely. Please try again.');
+                console.error(response);
+            }).always(function() {
+                $(loadingScreen).loadingScreen('hide');
+            })
+    })
+
+}
+
+/**
+ * Gets related sequences for a songpart stored in its data attribute
+ * This method of getting sequences can end up getting stale data as sequences might have been updated.
+ */
+function getFallbackSequences(songPart) {
+    var fallbackSequence = songPart.attr('data-sequences');
+    if (fallbackSequence == '' || fallbackSequence == undefined) return [];
+    return fallbackSequence.split('|');
 }

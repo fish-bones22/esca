@@ -49,6 +49,79 @@
         $('.lyrics .temp-spacer').remove();
     }
 
+    /**
+     * Get lyrics line value
+     */
+    function getValue(obj) {
+        var lyrics = [];
+        $(obj).children('span').each(function() {
+            if ($(this).hasClass('character'))
+                lyrics.push($(this).text());
+            else if ($(this).hasClass('spacer')) {
+                lyrics.push('{spacer-' + $(this).attr('data-width') + '}');
+            }
+        });
+
+        return lyrics.join('');
+    }
+
+    /**
+     *
+     * @param {object} obj
+     */
+    function processLine(obj) {
+
+        var settings = $(obj).data('songLine-options');
+        // Get data
+        if ($(settings.dataSource).hasClass('changed')) {
+
+            var preDefSpacers = [];
+            // Get predefined spacers
+            if ($(obj).html().indexOf('{spacer-') >= 0) {
+                var content = $(obj).html();
+                var spacers = content.match(/\{spacer-[0-9]+\}/g);
+                spacers.forEach(spacer => {
+                    // Get position and width of the spacer
+                    var position = content.indexOf(spacer);
+                    var width = spacer.match(/\d+/g)[0];
+                    preDefSpacers.push({'position': position, 'width': width});
+                    // Remove the spacer from the content
+                    content = content.replace(/\{spacer-[0-9]+\}/, '');
+                });
+            }
+
+            var data = $(settings.dataSource).val();
+
+            var charArr = data.split('');
+
+            var formattedData = '';
+
+            charArr.forEach(char => {
+                formattedData += '<span class="character">' + char + '</span>';
+            });
+            $(obj).html(formattedData);
+
+            // Set predefined spacers
+            preDefSpacers.reverse().forEach(spacer => {
+                addSpacer(obj, $(obj).children('.character')[spacer.position-1], spacer.width);
+            });
+
+            // Set event listener
+            $(obj).find('.character').on('mouseover', function() {
+                $(this).css('border-right', '2.5px solid lightgray');
+            }).on('mouseleave', function() {
+                $(this).css('border-right', 'none');
+            }).on('contextmenu', function(ev) {
+                ev.preventDefault();
+                $(this).css('border-right', 'none');
+                $(settings.contextMenu).contextMenu('show', this);
+            });
+
+            $(settings.dataSource).removeClass('changed');
+        }
+
+    }
+
     $.fn.songLine = function(command, option, value) {
 
 
@@ -60,54 +133,7 @@
                 var settings = $.extend({}, defaults, command);
                 $(self).data('songLine-options', settings);
 
-                // Get data
-                if ($(settings.dataSource).hasClass('changed')) {
-
-                    var preDefSpacers = [];
-                    // Get predefined spacers
-                    if ($(self).html().indexOf('{spacer-') >= 0) {
-                        var content = $(self).html();
-                        var spacers = content.match(/\{spacer-[0-9]+\}/g);
-                        spacers.forEach(spacer => {
-                            // Get position and width of the spacer
-                            var position = content.indexOf(spacer);
-                            var width = spacer.match(/\d+/g)[0];
-                            preDefSpacers.push({'position': position, 'width': width});
-                            // Remove the spacer from the content
-                            content = content.replace(/\{spacer-[0-9]+\}/, '');
-                        });
-                    }
-
-                    var data = $(settings.dataSource).val();
-
-                    var charArr = data.split('');
-
-                    var formattedData = '';
-
-                    charArr.forEach(char => {
-                        formattedData += '<span class="character">' + char + '</span>';
-                    });
-                    $(self).html(formattedData);
-
-                    // Set predefined spacers
-                    preDefSpacers.reverse().forEach(spacer => {
-                        addSpacer(self, $(self).children('.character')[spacer.position-1], spacer.width);
-                    });
-
-                    // Set event listener
-                    $(self).find('.character').on('mouseover', function() {
-                        $(this).css('border-right', '2.5px solid lightgray');
-                    }).on('mouseleave', function() {
-                        $(this).css('border-right', 'none');
-                    }).on('contextmenu', function(ev) {
-                        ev.preventDefault();
-                        $(this).css('border-right', 'none');
-                        $(settings.contextMenu).contextMenu('show', this);
-                    });
-
-                    $(settings.dataSource).removeClass('changed');
-                }
-
+                processLine(self);
             });
 
         }
@@ -122,6 +148,12 @@
                     return $(this).each(function() {
                             cleanLine();
                         });
+                case 'getvalue':
+                    return getValue(this);
+                case 'processline':
+                    return $(this).each(function() {
+                        processLine(this);
+                    })
             }
         }
     }

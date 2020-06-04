@@ -45,15 +45,8 @@ body {
 }
 
 button {
-  background-color: #ffffff;
-  border: 1px solid lightgray;
-  color: gray;
+  padding: 5px 12px;
   cursor: pointer;
-}
-
-button:hover {
-  background-color: #ffffff;
-  border: 1px solid gray;
 }
 
 button:focus {
@@ -64,7 +57,6 @@ button:focus {
   background-color: #2a9d8f;
   border: 1px solid #2a9d8f;
   color: white;
-  padding: 5px 12px;
 }
 
 .btn-primary:hover {
@@ -73,8 +65,26 @@ button:focus {
   color: white;
 }
 
-.btn-secondary {
-  padding: 5px 12px;
+.btn-accent {
+  background-color: #e9c46a;
+  border: 1px solid #e9c46a;
+  color: white;
+}
+
+.btn-accent:hover {
+  background-color: #f4a261;
+  border: 1px solid #f4a261;
+  color: white;
+}
+
+.btn-white {
+  background-color: white;
+  border: 1px solid white;
+  color: gray;
+}
+
+.btn-white:hover {
+  background-color: #eaeaea;
 }
 
 .btn-action {
@@ -82,6 +92,7 @@ button:focus {
   border: none;
   color: gray;
   float: right;
+  padding: 1px 0;
 }
 
 .btn-action:hover {
@@ -191,9 +202,10 @@ select option:focus {
 }
 
 .dialogBox {
-  background-color: white;
+  background-color: #2a9d8f;
   border: 1px solid lightgray;
   bottom: 0;
+  color: white;
   left: 0;
   height: -webkit-fit-content;
   height: -moz-fit-content;
@@ -207,9 +219,75 @@ select option:focus {
   z-index: 999;
 }
 
+.dialogBox label {
+  color: white;
+}
+
+.dialogBox select {
+  background-color: #2a9d8f;
+  border: none;
+  color: white;
+}
+
+.dialogBox select:hover:not(:focus) {
+  background-color: #23837b;
+}
+
+.dialogBox select:focus {
+  background-color: white;
+  color: black;
+}
+
 .dialogBox .dialog-controls {
   float: right;
   margin-top: 20px;
   position: relative;
+}
+
+.loading-panel {
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100%;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2147483647;
+}
+
+.loading-panel .loading-icon {
+  bottom: 0;
+  height: 50px;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50px;
+}
+
+.loading-panel .loading-icon img {
+  height: inherit;
+  width: inherit;
+  -webkit-animation: spin 5s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+          animation: spin 5s infinite cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+@-webkit-keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 

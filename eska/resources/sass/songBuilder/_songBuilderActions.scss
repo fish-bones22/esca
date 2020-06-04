@@ -17,11 +17,21 @@
             position: relative;
         }
     }
-    .next {
+    #options {
+        // background-color: $primary_dark;
+        color: $primary_lighter;
+        border-left: 1px solid $primary_dark;
+        float: right;
+        padding: 0;
+        &:hover {
+            color: $primary_light;
+        }
+    }
+    #next {
         float: right;
         padding: 0 15px 0 20px;
     }
-    .previous {
+    #previous {
         float: left;
         padding: 0 20px 0 15px;
     }

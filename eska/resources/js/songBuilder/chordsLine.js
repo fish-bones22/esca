@@ -90,6 +90,21 @@
         });
     }
 
+    /**
+     * Get the value of chords in this chord line in array form
+     * @param {object} obj
+     */
+    function getValue(obj) {
+        var chords = [];
+        $(obj).find('.chord').each(function() {
+            var keyReference = $(this).chordMarker('option', 'keyReference');
+            var position = $(this).attr('data-position');
+            var value = $(this).attr('data-value');
+            chords.push([keyReference, position, value].join('/'));
+        });
+        return chords;
+    }
+
     $.fn.chordsLine = function(command, option, value) {
 
         if (typeof command === 'object' || command == undefined) {
@@ -152,6 +167,8 @@
                     return $(this).each(function() {
                         setValue(this, option);
                     });
+                case 'getvalue':
+                    return getValue(this);
             }
         }
 

@@ -1,12 +1,6 @@
 button {
-    background-color: #ffffff;
-    border: 1px solid $dark;
-    color: $darker;
+    padding: 5px 12px;
     cursor: pointer;
-    &:hover {
-        background-color: #ffffff;
-        border: 1px solid $darker;
-    }
     &:focus {
         outline: none;
     }
@@ -15,15 +9,29 @@ button {
     background-color: $primary;
     border: 1px solid $primary;
     color: white;
-    padding: 5px 12px;
     &:hover {
         background-color: $primary_dark;
         border: 1px solid $primary_dark;
         color: white;
     }
 }
-.btn-secondary {
-    padding: 5px 12px;
+.btn-accent {
+    background-color: $accent;
+    border: 1px solid $accent;
+    color: white;
+    &:hover {
+        background-color: $secondary;
+        border: 1px solid $secondary;
+        color: white;
+    }
+}
+.btn-white {
+    background-color: white;
+    border: 1px solid white;
+    color: $darker;
+    &:hover {
+        background-color: $dimmer;
+    }
 }
 // action buttons
 .btn-action {
@@ -31,6 +39,7 @@ button {
     border:none;
     color: gray;
     float: right;
+    padding: 1px 0;
     &:hover {
         color: darkgray;
         border:none;

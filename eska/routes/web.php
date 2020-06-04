@@ -18,5 +18,9 @@ Route::get('/songbuilder', function() {
     return view('SongBuilder/songBuilder');
 });
 
-Route::post('/songbuilder', 'SongController@upsert');
-Route::get('/songbuilder/{id}', 'SongController@get');
+Route::post('/song', 'SongController@upsert');
+Route::get('/song/{id}', 'SongController@get');
+
+Route::get('/sequence/{id}', 'SequenceController@get');
+
+Route::get('/songpart/{id}/sequences', 'SongpartController@getSequences');

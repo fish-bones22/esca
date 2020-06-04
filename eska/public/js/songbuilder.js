@@ -488,7 +488,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Generate custom chord selection
-   * @param {object} obj 
+   * @param {object} obj
    */
 
 
@@ -512,7 +512,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Construct chords from selection
-   * @param {object} obj 
+   * @param {object} obj
    */
 
 
@@ -527,7 +527,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     if (measureVal != undefined && customVal != undefined) {
       var measureDis = $(obj).find('.measure.selected').attr('data-display');
-      chordValue = [measureVal, 'custom', customVal].join('/');
+      chordValue = [measureVal, 'custom', customVal, '', ''].join('/');
       chordDisplay = [measureDis, customVal].join(''); // Set value to displayer
 
       view.attr('data-value', chordValue);
@@ -552,7 +552,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var root = $(obj).find('.root.selected').attr('data-display');
     var variation = $(obj).find('.selected.chord-variation').attr('data-display');
     var otherVar = $(obj).find('.selected.chord-other').attr('data-display');
-    var bass = $(obj).find('.selected.bass').attr('data-display'); // Build string 
+    var bass = $(obj).find('.selected.bass').attr('data-display'); // Build string
 
     chordValue = [measureVal, rootVal, variationVal, otherVarVal, bassVal].join('/');
     chordDisplay = [measure, root, variation, otherVar, bass].join(''); // Set value to displayer
@@ -562,7 +562,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Show chord builder panel and target
-   * @param {object} obj 
+   * @param {object} obj
    * @param {object} target Chord marker target to set
    */
 
@@ -573,7 +573,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Hide chord builder panel
-   * @param {object} obj 
+   * @param {object} obj
    */
 
 
@@ -583,7 +583,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
   /**
    * Set target
-   * @param {object} obj 
+   * @param {object} obj
    */
 
 
@@ -598,7 +598,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if ($(event.target).hasClass('selected') && $(event.target).closest('.section').attr('data-required') == undefined || $(event.target).hasClass('selected') && $(event.target).closest('.section').attr('data-required') != undefined && $(event.data.obj).find('.item.custom-item.selected').length > 0) {
       $(event.target).removeClass('selected');
     } else {
-      // For custom items, unselect custom items if another custom item is selected 
+      // For custom items, unselect custom items if another custom item is selected
       // Or root item is selected
       if ($(event.target).hasClass('custom-item') || $(event.target).hasClass('root')) {
         $(event.data.obj).find('.root.selected').removeClass('selected');
@@ -651,7 +651,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         $(document).on('click', '.chord-builder .section .item', {
           'obj': self
-        }, onItemClick); // Activate draggable 
+        }, onItemClick); // Activate draggable
 
         $(self).draggable({
           'cursor': 'grabbing',
@@ -777,7 +777,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return;
     }
 
-    var disp = ChordProcessor.processChord($(obj).attr('data-value'), getOption(obj, 'mainRoot'), getOption(obj, 'mainScale'), getOption(obj, 'referenceKey'));
+    var keySelector = getOption(obj, 'keySelector');
+    var mainRoot = $(keySelector).val();
+    var mainScale = $(keySelector).find('option:selected').attr('data-scale');
+    var disp = ChordProcessor.processChord($(obj).attr('data-value'), mainRoot, mainScale, getOption(obj, 'referenceKey'));
     $(obj).html(disp);
   }
   /**
@@ -950,6 +953,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'unselectall':
           unselectAllMarkers();
           return this;
+
+        case 'option':
+          if (typeof option != 'string') return null;
+          return getOption(this, option);
       }
     }
   };
@@ -1132,6 +1139,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       insertChordMarker(obj, getOption(obj, 'cursorWidth'), position * getOption(obj, 'cursorWidth'), keyReference, [measure, root, variation, variation2, bass].join('/'));
     });
   }
+  /**
+   * Get the value of chords in this chord line in array form
+   * @param {object} obj
+   */
+
+
+  function getValue(obj) {
+    var chords = [];
+    $(obj).find('.chord').each(function () {
+      var keyReference = $(this).chordMarker('option', 'keyReference');
+      var position = $(this).attr('data-position');
+      var value = $(this).attr('data-value');
+      chords.push([keyReference, position, value].join('/'));
+    });
+    return chords;
+  }
 
   $.fn.chordsLine = function (command, option, value) {
     if (_typeof(command) === 'object' || command == undefined) {
@@ -1186,6 +1209,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return $(this).each(function () {
             setValue(this, option);
           });
+
+        case 'getvalue':
+          return getValue(this);
       }
     }
   };
@@ -1560,107 +1586,98 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-$(document).ready(function () {
-  $('#addDetails').click(addDetails);
-  $('#addChords').click(addChords);
-  $('#addLyrics').click(addLyrics);
-  $('#createSequence').click(setSequence); //setSequence();
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-  addDetails();
-});
+(function ($) {
+  var defaults = {
+    'nextAction': function nextAction() {},
+    'prevAction': function prevAction() {},
+    'previousSelector': '',
+    'nextSelector': '',
+    'controls': [{
+      'runOnInit': false,
+      'name': 'default',
+      'selector': '#default',
+      'action': function action(event) {}
+    }]
+  };
+  /**
+   * Get option value
+   * @param {Object} object
+   * @param {String} key
+   */
 
-function addDetails() {
-  $('.song-details-container').show();
-  $('.song-part-container').hide();
-  $('.sequence-container').hide();
-  $('.step.current').removeClass('current');
-  $('#addDetails').addClass('current'); // Hide chord builder
+  function getOption(object, key) {
+    var options = $(object).data('outline-options');
+    if (options == undefined || !options.hasOwnProperty(key)) return null;
+    return options[key];
+  }
+  /**
+   * Set option value
+   * @param {Object} object
+   * @param {String} key
+   */
 
-  $('.chord-selection-menu').chordBuilder('hide');
-  setPrevNext(null, addLyrics);
-}
 
-function addLyrics() {
-  $('.song-details-container').hide();
-  $('.song-part-container').show();
-  $('.sequence-container').hide();
-  $('.step.current').removeClass('current');
-  $('#addLyrics').addClass('current');
-  $('.song-line .lyrics-view').each(function () {
-    // Set process
-    $('#processing').val('lyrics'); // Hide chords if shown
+  function setOption(object, key, value) {
+    var options = $(object).data('outline-options');
+    options[key] = value;
+    $(object).data('outline-options', options);
+  }
+  /**
+   * Unset then set next button callback
+   * @param {function} callback
+   */
 
-    $(this).parent().siblings('.chords').hide(); // Hide input
 
-    $(this).hide(); // Get sibling view element
+  function setNext(obj, callback) {
+    $(getOption(obj, 'nextSelector')).off('click').on('click', callback);
+  }
+  /**
+   * Unset then set previous button callback
+   * @param {function} callback
+   */
 
-    var lyricsInput = $(this).siblings('input[type="text"]');
-    if (lyricsInput.length <= 0) return; // Set view element text
 
-    lyricsInput.show();
-  });
-  $('.chord-selection-menu').chordBuilder('hide');
-  setPrevNext(addDetails, addChords);
-}
+  function setPrevious(obj, callback) {
+    $(getOption(obj, 'previousSelector')).off('click').on('click', callback);
+  }
 
-function addChords() {
-  $('.song-details-container').hide();
-  $('.song-part-container').show();
-  $('.sequence-container').hide();
-  $('.step.current').removeClass('current');
-  $('#addChords').addClass('current'); // Get each lyrics line and display
+  $.fn.outline = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this;
+        var settings = $.extend({}, defaults, command);
+        $(self).data('outline-options', settings);
+        settings.controls.forEach(function (control) {
+          $(self).on('outline:' + control.name, control.action); // Run on start
 
-  $('.song-line .lyrics input[type="text"]').each(function () {
-    // Set process
-    $('#processing').val('chords'); // Show chords
+          if (control.runOnInit) {
+            $(self).trigger('outline:' + control.name);
+          }
 
-    $(this).parent().siblings('.chords').show(); // Get sibling view element
+          $(self).find(control.selector).on('click', function () {
+            $(self).trigger('outline:' + control.name);
+          });
+        });
+      });
+    }
 
-    var lyricsView = $(this).siblings('.lyrics-view'); // Hide input
+    if (typeof command == 'string') {
+      switch (command.toLocaleLowerCase()) {
+        case 'setnext':
+          return $(this).each(function () {
+            setNext(this, option);
+          });
 
-    $(this).hide();
-    if (lyricsView.length <= 0) return; // Get text from lyrics text input and format
-
-    lyricsView.songLine({
-      'dataSource': this,
-      'contextMenu': '.character-context-menu',
-      'spacerContextMenu': '.spacer-context-menu'
-    }); // Set view element text
-
-    lyricsView.show();
-  });
-  setPrevNext(addLyrics, setSequence);
-}
-
-function setSequence() {
-  // Hide other panels
-  $('.song-details-container').hide();
-  $('.song-part-container').hide(); // Show this panel
-
-  $('.sequence-container').show(); // Set visual indicator
-
-  $('.step.current').removeClass('current');
-  $('#createSequence').addClass('current'); // Set processing value
-
-  $('#processing').val('sequence'); // Hide chord builder
-
-  $('.chord-selection-menu').chordBuilder('hide'); // // Init sequence builder
-
-  $('#sequenceBox').sequenceBuilder('setSequenceSelect'); // Set action buttons
-
-  setPrevNext(addChords, function () {
-    alert('Done');
-  });
-}
-
-function setPrevNext(prev, next) {
-  $('.previous').off('click').on('click', function () {
-    if (typeof prev == 'function') prev();
-  }).show();
-  $('.next').off('click').on('click', function () {
-    if (typeof next == 'function') next();
-  });
-}
+        case 'setprevious':
+          return $(this).each(function () {
+            setPrevious(this, option);
+          });
+      }
+    }
+  };
+})(jQuery);
 
 /***/ }),
 
@@ -1691,6 +1708,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     'otherSequenceSelect': {
       'selector': '',
       'action': function action(ev) {}
+    },
+    'newSequence': {
+      'selector': '',
+      'action': function action(ev) {}
     }
   };
   /**
@@ -1705,7 +1726,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     return options[key];
   }
   /**
-   *
+   * Modify all the sequence songpart selections in the sequence panel
    * @param {object} obj
    * @param {Array} select array to get select data from
    */
@@ -1739,7 +1760,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       options.push(option);
 
       if (panelCount <= 0) {
-        $(obj).dynamicPanel('insert');
+        var panel = $(obj).dynamicPanel('insert');
+        panel.find('select option[value="' + elem.id + '"]').prop('selected', true);
       }
     }); // Set select of protype item
 
@@ -1754,26 +1776,45 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       selectInp.children('option[value="' + selectedVal + '"]').prop('selected', true);
     });
   }
+  /**
+   *
+   * @param {object} obj
+   * @param {object} sequence the sequence object
+   */
+
 
   function setValue(obj, sequence) {
-    if (sequence == undefined || !sequence.hasOwnProperty('name')) return;
+    if (sequence == undefined || !sequence.hasOwnProperty('name')) return; // Get selectors
+
     var idInput = getOption(obj, 'sequenceIdInput');
     var nameInput = getOption(obj, 'sequenceNameInput');
     var descInput = getOption(obj, 'sequenceDescriptionInput');
-    var defCheck = getOption(obj, 'sequenceMakeDefaultCheckbox');
+    var defCheck = getOption(obj, 'sequenceMakeDefaultCheckbox'); // Set values
+
     $(idInput).val(sequence.id);
     $(nameInput).val(sequence.name);
     $(descInput).text(sequence.description);
-    $(defCheck).prop('checked', sequence["default"]);
-    setSequenceSelect(obj);
+    $(defCheck).prop('checked', sequence["default"]); // Re-init the songpart selections
+
+    setSequenceSelect(obj); // Set the value of the songpart selections
+
     fillSequenceSongParts(obj, sequence.songParts);
   }
+  /**
+   *
+   * @param {object} obj
+   * @param {array} songParts Collection of songpart objects
+   */
+
 
   function fillSequenceSongParts(obj, songParts) {
-    // Remove existing panels first
+    if (songParts == undefined || _typeof(songParts) != 'object') return; // Remove existing panels first
+
     $(obj).dynamicPanel('removeAll');
     songParts.forEach(function (songPart) {
-      var panel = $(obj).dynamicPanel('insert');
+      // Insert panel
+      var panel = $(obj).dynamicPanel('insert'); // Set the panel's song part selection value based on ID, if none, based on name.
+
       var opt = panel.find('select option[value="' + songPart.songPart + '"]');
 
       if (opt.length > 0) {
@@ -1789,12 +1830,73 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
     });
   }
+  /**
+   * Modify other sequence selection for the song
+   * @param {object} obj
+   * @param {array} otherSequences Collection of sequence object
+   */
 
-  function setOtherSequenceSelection(obj, values) {
-    var otherSequenceSelection = getOption(obj, 'otherSequenceSelection');
-    values.forEach(function (value) {
+
+  function setOtherSequenceSelection(obj, otherSequences) {
+    // Get other sequence selection selector
+    var otherSequenceSelection = getOption(obj, 'otherSequenceSelection'); // Iterate on the collection and fill selection
+
+    otherSequences.forEach(function (value) {
       $(otherSequenceSelection).append($('<option>').val(value.id).html(value.name));
     });
+  }
+  /**
+   * Remove values of sequence properties and songparts
+   * @param {object} obj
+   */
+
+
+  function clearSequence(obj) {
+    // Get selectors
+    var idInput = getOption(obj, 'sequenceIdInput');
+    var nameInput = getOption(obj, 'sequenceNameInput');
+    var descInput = getOption(obj, 'sequenceDescriptionInput');
+    var defCheck = getOption(obj, 'sequenceMakeDefaultCheckbox'); // Clear properties
+
+    $(idInput).val('');
+    $(nameInput).val('');
+    $(descInput).val('');
+    $(defCheck).prop('checked', false); // Reset panels
+
+    $(obj).dynamicPanel('removeAll');
+    setSequenceSelect(obj);
+  }
+
+  function getValues(obj) {
+    var idInput = getOption(obj, 'sequenceIdInput');
+    var nameInput = getOption(obj, 'sequenceNameInput');
+    var descInput = getOption(obj, 'sequenceDescriptionInput');
+    var defCheck = getOption(obj, 'sequenceMakeDefaultCheckbox');
+    var id = $(idInput).val() != '' ? $(idInput).val() : Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])();
+    var name = $(nameInput).val();
+    var description = $(descInput).val();
+    var makeDefault = $(defCheck).prop('checked');
+    var songParts = [];
+    $(obj).children('.panel-item').each(function () {
+      var referenceKey = 0;
+      var songpart = $(this).find('select').val();
+      var repeat = $(this).find('.repeat-input input[type="number"]').val() || 1;
+      var order = $(this).attr('data-order');
+      songParts.push({
+        'order': order,
+        'referenceKey': referenceKey,
+        'repeat': repeat,
+        'songPart': songpart
+      });
+    });
+    return [{
+      'id': id,
+      'name': name,
+      'description': description,
+      'default': makeDefault,
+      'referenceKey': 0,
+      'songParts': songParts
+    }];
   }
 
   $.fn.sequenceBuilder = function (command, option, value) {
@@ -1823,6 +1925,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
         });
         $(settings.otherSequenceSelect.selector).on('click', settings.otherSequenceSelect.action);
+        $(settings.newSequence.selector).on('click', settings.newSequence.action);
         setSequenceSelect(self);
       });
     }
@@ -1834,7 +1937,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             setSequenceSelect(this, option);
           });
 
-        case 'setvalue':
+        case 'setvalues':
           if (_typeof(option) != 'object') return this;
           return $(this).each(function () {
             setValue(this, option);
@@ -1845,6 +1948,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return $(this).each(function () {
             setOtherSequenceSelection(this, option);
           });
+
+        case 'clear':
+          return $(this).each(function () {
+            clearSequence(this);
+          });
+
+        case 'getvalues':
+          return getValues(this);
       }
     }
   };
@@ -1885,6 +1996,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (!options.hasOwnProperty(key)) return null;
     return options[key];
   }
+  /**
+   * Insert values to song detals. Accepted keys: title, artist, tags, description, key, timeSignature, tempo
+   * @param {object} obj
+   * @param {string} key Key of the property to set
+   * @param {string|array} value Values of the property
+   */
+
 
   function setValue(obj, key, value) {
     if (key == '' || key == undefined) return;
@@ -1930,6 +2048,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     return obj;
   }
+  /**
+   * Set value to HTML element
+   * @param {array} selectors Elements to set value
+   * @param {string} value
+   */
+
 
   function setValAttr(selectors, value) {
     selectors.forEach(function (o) {
@@ -1939,6 +2063,37 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       $(o).val(value).trigger('change');
     });
+  }
+
+  function getValue(obj, key) {
+    if (key == '' || key == undefined) return '';
+
+    switch (key) {
+      case 'title':
+        return $(getOption(obj, 'songTitleInput')).val();
+
+      case 'artist':
+        return $(getOption(obj, 'artistInput')).val();
+
+      case 'tags':
+        var tags = $(getOption(obj, 'songTagInput')).val();
+        return tags.split('|');
+
+      case 'description':
+        return $(getOption(obj, 'descriptionInput')).val();
+
+      case 'key':
+        return [$(getOption(obj, 'songKeyInput')).val(), $(getOption(obj, 'songKeyInput')).find('option:selected').attr('data-scale')];
+
+      case 'timeSignature':
+        return $(getOption(obj, 'songTimeSignInput')).val();
+
+      case 'tempo':
+        return $(getOption(obj, 'songSpeedInput')).val();
+
+      default:
+        return '';
+    }
   }
 
   $.fn.songDetails = function (command, option, value) {
@@ -1967,6 +2122,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           $(target).find('option[value="' + key + '"][data-scale="' + scale + '"]').prop('selected', true);
           $(this).blur();
           $('.chord-selection-menu').chordBuilder('update');
+          $('.chord').chordMarker('update');
         }); // Show error message if needed
 
         $('.input-container').on('inputContainer:submit', function () {
@@ -2012,6 +2168,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return $(this).each(function () {
             setValue(this, option, value);
           });
+
+        case 'get':
+          return getValue(this, option);
       }
     }
   };
@@ -2076,56 +2235,80 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   function cleanLine() {
     $('.lyrics .temp-spacer').remove();
   }
+  /**
+   * Get lyrics line value
+   */
+
+
+  function getValue(obj) {
+    var lyrics = [];
+    $(obj).children('span').each(function () {
+      if ($(this).hasClass('character')) lyrics.push($(this).text());else if ($(this).hasClass('spacer')) {
+        lyrics.push('{spacer-' + $(this).attr('data-width') + '}');
+      }
+    });
+    return lyrics.join('');
+  }
+  /**
+   *
+   * @param {object} obj
+   */
+
+
+  function processLine(obj) {
+    var settings = $(obj).data('songLine-options'); // Get data
+
+    if ($(settings.dataSource).hasClass('changed')) {
+      var preDefSpacers = []; // Get predefined spacers
+
+      if ($(obj).html().indexOf('{spacer-') >= 0) {
+        var content = $(obj).html();
+        var spacers = content.match(/\{spacer-[0-9]+\}/g);
+        spacers.forEach(function (spacer) {
+          // Get position and width of the spacer
+          var position = content.indexOf(spacer);
+          var width = spacer.match(/\d+/g)[0];
+          preDefSpacers.push({
+            'position': position,
+            'width': width
+          }); // Remove the spacer from the content
+
+          content = content.replace(/\{spacer-[0-9]+\}/, '');
+        });
+      }
+
+      var data = $(settings.dataSource).val();
+      var charArr = data.split('');
+      var formattedData = '';
+      charArr.forEach(function (_char) {
+        formattedData += '<span class="character">' + _char + '</span>';
+      });
+      $(obj).html(formattedData); // Set predefined spacers
+
+      preDefSpacers.reverse().forEach(function (spacer) {
+        addSpacer(obj, $(obj).children('.character')[spacer.position - 1], spacer.width);
+      }); // Set event listener
+
+      $(obj).find('.character').on('mouseover', function () {
+        $(this).css('border-right', '2.5px solid lightgray');
+      }).on('mouseleave', function () {
+        $(this).css('border-right', 'none');
+      }).on('contextmenu', function (ev) {
+        ev.preventDefault();
+        $(this).css('border-right', 'none');
+        $(settings.contextMenu).contextMenu('show', this);
+      });
+      $(settings.dataSource).removeClass('changed');
+    }
+  }
 
   $.fn.songLine = function (command, option, value) {
     if (command == undefined || _typeof(command) == 'object') {
       return $(this).each(function () {
         var self = this;
         var settings = $.extend({}, defaults, command);
-        $(self).data('songLine-options', settings); // Get data
-
-        if ($(settings.dataSource).hasClass('changed')) {
-          var preDefSpacers = []; // Get predefined spacers
-
-          if ($(self).html().indexOf('{spacer-') >= 0) {
-            var content = $(self).html();
-            var spacers = content.match(/\{spacer-[0-9]+\}/g);
-            spacers.forEach(function (spacer) {
-              // Get position and width of the spacer
-              var position = content.indexOf(spacer);
-              var width = spacer.match(/\d+/g)[0];
-              preDefSpacers.push({
-                'position': position,
-                'width': width
-              }); // Remove the spacer from the content
-
-              content = content.replace(/\{spacer-[0-9]+\}/, '');
-            });
-          }
-
-          var data = $(settings.dataSource).val();
-          var charArr = data.split('');
-          var formattedData = '';
-          charArr.forEach(function (_char) {
-            formattedData += '<span class="character">' + _char + '</span>';
-          });
-          $(self).html(formattedData); // Set predefined spacers
-
-          preDefSpacers.reverse().forEach(function (spacer) {
-            addSpacer(self, $(self).children('.character')[spacer.position - 1], spacer.width);
-          }); // Set event listener
-
-          $(self).find('.character').on('mouseover', function () {
-            $(this).css('border-right', '2.5px solid lightgray');
-          }).on('mouseleave', function () {
-            $(this).css('border-right', 'none');
-          }).on('contextmenu', function (ev) {
-            ev.preventDefault();
-            $(this).css('border-right', 'none');
-            $(settings.contextMenu).contextMenu('show', this);
-          });
-          $(settings.dataSource).removeClass('changed');
-        }
+        $(self).data('songLine-options', settings);
+        processLine(self);
       });
     }
 
@@ -2139,6 +2322,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'clean':
           return $(this).each(function () {
             cleanLine();
+          });
+
+        case 'getvalue':
+          return getValue(this);
+
+        case 'processline':
+          return $(this).each(function () {
+            processLine(this);
           });
       }
     }
@@ -2167,7 +2358,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     'contextMenu': '',
     'songPartTitleInput': '.song-part-title .song-part-name',
     'fontHeight': 5,
-    'fontWidth': 5
+    'fontWidth': 5,
+    'sequences': []
   };
   /**
    * Get option value
@@ -2177,8 +2369,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   function getOption(object, key) {
     var options = $(object).data('songPart-options');
-    if (!options.hasOwnProperty(key)) return null;
+    if (options == undefined || !options.hasOwnProperty(key)) return null;
     return options[key];
+  }
+  /**
+   * Set option value
+   * @param {Object} obj
+   * @param {String} option
+   * @param {any} value
+   */
+
+
+  function setOption(obj, option, value) {
+    var options = $(obj).data('songPart-options');
+    options[option] = value;
+    $(obj).data('songPart-options', options);
   }
   /**
    * Fill song part container with values
@@ -2191,19 +2396,31 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // Remove autogenerated song parts
     $(obj).dynamicPanel('removeAll'); // Iterate values song parts
 
-    values.forEach(function (songLine) {
-      var panel = $(obj).dynamicPanel('insert', null, songLine['id']); // Set ID
+    values.forEach(function (songPart) {
+      var panel = $(obj).dynamicPanel('insert', null, songPart['id']); // Set ID
 
-      panel.attr('data-id', songLine['id']);
-      panel.attr('data-order', songLine['order']);
-      panel.attr('data-reference-key', songLine['referenceKey']); // Set song title
+      panel.attr('data-id', songPart['id']);
+      panel.attr('data-order', songPart['order']);
+      panel.attr('data-reference-key', songPart['referenceKey']);
 
-      panel.find(getOption(obj, 'songPartTitleInput')).html(songLine['name']);
-      panel.find(getOption(obj, 'songPartTitleInput')).attr('data-name', songLine['name']); // Get lyrics and chords string
+      if (songPart.hasOwnProperty('sequences') && Array.isArray(songPart['sequences'])) {
+        var sequences = [];
+        songPart['sequences'].forEach(function (part) {
+          sequences.push(part.name);
+        });
+        panel.attr('data-sequences', sequences.join('|'));
+      } // Set song title
 
-      var lyrDisplay = songLine['lyrics']['display'];
-      var lyrContent = songLine['lyrics']['content'];
-      var chords = songLine['chords']['content']; // Parse lyrics and chords line
+
+      if (songPart['name'] != '' && songPart['name'] != null) {
+        panel.find(getOption(obj, 'songPartTitleInput')).html(songPart['name']);
+        panel.find(getOption(obj, 'songPartTitleInput')).attr('data-name', songPart['name']);
+      } // Get lyrics and chords string
+
+
+      var lyrDisplay = songPart['lyrics']['display'];
+      var lyrContent = songPart['lyrics']['content'];
+      var chords = songPart['chords']['content']; // Parse lyrics and chords line
 
       var lyrDispArr = lyrDisplay.split('{newline}');
       var lyrContArr = lyrContent.split('{newline}');
@@ -2239,6 +2456,43 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     linePanel.find('.lyrics .lyrics-view').html(lyricsContent); // Set content to chords view
 
     linePanel.find('.chords').chordsLine('setValue', chordsContent);
+  }
+
+  function getSongParts(obj) {
+    var songParts = [];
+    $(obj).children('.panel-item').each(function () {
+      // Get properties
+      var id = $(this).attr('data-id');
+      var name = $(this).find('.song-part-name').attr('data-name');
+      var order = $(this).attr('data-order'); // Get lyrics and chords
+
+      var songPartChords = [];
+      var songPartLyricsCont = [];
+      var songPartLyricsDisp = [];
+      $(this).find('.panel-item .song-line-content').each(function () {
+        $(this).find('.lyrics-view').songLine('processLine');
+        var chords = $(this).children('.chords').chordsLine('getValue');
+        var lyricsDisplay = $(this).find('.lyrics input[type="text"]').val();
+        var lyricsContent = $(this).find('.lyrics-view').songLine('getValue');
+        songPartChords.push(chords.join('|'));
+        songPartLyricsCont.push(lyricsContent);
+        songPartLyricsDisp.push(lyricsDisplay);
+      });
+      songParts.push({
+        'referenceKey': 0,
+        'id': id,
+        'name': name,
+        'order': order,
+        'lyrics': {
+          'content': songPartLyricsCont.join('{newline}'),
+          'display': songPartLyricsDisp.join('{newline}')
+        },
+        'chords': {
+          'content': songPartChords.join('{newline}')
+        }
+      });
+    });
+    return songParts;
   }
 
   $.fn.songPart = function (command, option, value) {
@@ -2312,7 +2566,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
                 songlinePanel.find('.lyrics input[type="text"]').on('change', function () {
                   $(this).addClass('changed');
-                }); // Set up chords line
+                }); // Set up lyrics line
+                // Get sibling view element
+
+                var lyricsView = songlinePanel.find('.lyrics-view');
+
+                if (lyricsView.length > 0) {
+                  lyricsView.songLine({
+                    'dataSource': songlinePanel.find('.lyrics input[type="text"]'),
+                    'contextMenu': '.character-context-menu',
+                    'spacerContextMenu': '.spacer-context-menu'
+                  });
+                } // Set up chords line
+
 
                 var chordsView = songlinePanel.find('.chords');
 
@@ -2343,12 +2609,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     if (typeof command == 'string') {
       switch (command.toLocaleLowerCase()) {
-        case 'setvalue':
+        case 'option':
+          if (typeof option != 'string') return;
+          return getOption(this, option);
+
+        case 'setvalues':
           return $(this).each(function () {
             if (_typeof(option) != 'object') return; // Not array
 
             fillSongparts(this, option);
           });
+
+        case 'getvalues':
+          return getSongParts(this);
       }
     }
   };
@@ -2390,6 +2663,8 @@ __webpack_require__(/*! ./songLine */ "./resources/js/songBuilder/songLine.js");
 
 __webpack_require__(/*! ./sequenceBuilder */ "./resources/js/songBuilder/sequenceBuilder.js");
 
+__webpack_require__(/*! ./outline */ "./resources/js/songBuilder/outline.js");
+
 
 var chordMarkerContextMenu = '.chord-context-menu';
 var chordSelection = '.chord-selection-menu';
@@ -2402,6 +2677,9 @@ var characterContextMenu = '.character-context-menu';
 var spacerContextMenu = '.spacer-context-menu';
 var songDetailsContainer = '.song-details-container';
 var songPartsContainer = '#songParts';
+var songPartsParentContainer = '.song-part-container';
+var sequenceContainer = '.sequence-container';
+var newSequence = '.new-sequence';
 var otherSequence = '.select-other-sequence';
 var otherSequenceSelection = '#otherSequences';
 var otherSequenceDialog = '.select-other-sequence-dialog';
@@ -2409,6 +2687,18 @@ var sequenceIdInput = '#sequenceId';
 var sequenceNameInput = '#sequenceName';
 var sequenceDescriptionInput = '#sequenceDescription';
 var sequenceMakeDefaultCheckbox = '#sequenceDefault';
+var informationDialogBox = '.information-dialog';
+var warningDialogBox = '.warning-dialog';
+var stepOutline = '.step-outline';
+var addDetailsButton = '#addDetails';
+var addLyricsButton = '#addLyrics';
+var addChordsButton = '#addChords';
+var createSequenceButton = '#createSequence';
+var previousButton = '#previous';
+var nextButton = '#next';
+var optionsButton = '#options';
+var songBuilderActionsMenu = '.song-builder-actions-menu';
+var loadingScreen = '.loading-panel';
 var monospaceFontSize = '20px';
 var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
 var monospaceWidth = 0;
@@ -2432,8 +2722,57 @@ $(function () {
     }
   }); // DIALOG BOXES
 
-  $(otherSequenceDialog).dialogBox(); // CONTEXT MENUS
-  // Chord marker
+  $(otherSequenceDialog).dialogBox({
+    'cancelInputs': true,
+    'controls': [{
+      'name': 'close',
+      'selector': '.close',
+      'action': function action(event, dialogBox, callback) {
+        $(otherSequenceDialog).dialogBox('hide');
+      }
+    }, {
+      'name': 'choose',
+      'selector': '.choose-other-sequence',
+      'action': function action(event, dialogBox, callback) {
+        if (typeof callback == 'function') callback();
+        $(otherSequenceDialog).dialogBox('hide');
+      }
+    }]
+  });
+  $(warningDialogBox).dialogBox({
+    'cancelInputs': true,
+    'messagePanel': '.message',
+    'controls': [{
+      'name': 'close',
+      'selector': '.close',
+      'action': function action(event, dialogBox, callback) {
+        $(warningDialogBox).dialogBox('hide');
+      }
+    }, {
+      'name': 'okay',
+      'selector': '.okay',
+      'action': function action(event, dialogBox, callback) {
+        if (typeof callback == 'function') callback();
+        $(warningDialogBox).dialogBox('hide');
+      }
+    }]
+  });
+  $(informationDialogBox).dialogBox({
+    'cancelInputs': true
+  }); // Loading screen
+
+  $(loadingScreen).loadingScreen(); // CONTEXT MENUS
+
+  $(songBuilderActionsMenu).contextMenu({
+    'menuItems': [{
+      'name': 'finish',
+      'selector': '#finish',
+      'action': function action(ev, obj, target) {
+        collectValuesAndSave();
+        $(obj).contextMenu('hide');
+      }
+    }]
+  }); // Chord marker
 
   $(chordMarkerContextMenu).contextMenu({
     'menuItems': [{
@@ -2502,8 +2841,8 @@ $(function () {
       'name': 'delete',
       'selector': '.delete-songpart',
       'action': function action(ev, obj, target) {
-        var index = $(target).closest('.panel-item').attr('data-order') * 1 - 1;
-        $(target).closest('.dynamicPanel').dynamicPanel('remove', index);
+        var panel = $(target).closest('.panel-item');
+        checkSongpartSequences(panel);
         $(obj).contextMenu('hide');
       }
     }, {
@@ -2605,10 +2944,21 @@ $(function () {
     'sequenceNameInput': sequenceNameInput,
     'sequenceDescriptionInput': sequenceDescriptionInput,
     'sequenceMakeDefaultCheckbox': sequenceMakeDefaultCheckbox,
+    'newSequence': {
+      'selector': newSequence,
+      'action': function action(ev) {
+        $(warningDialogBox).dialogBox('show', 'This will discard any unsaved changes to the sequence. Continue?', function () {
+          $(sequenceBox).sequenceBuilder('clear');
+        });
+      }
+    },
     'otherSequenceSelect': {
       'selector': otherSequence,
       'action': function action(ev) {
-        $(otherSequenceDialog).dialogBox('show', 'HELLO', otherSequence);
+        $(otherSequenceDialog).dialogBox('show', null, function () {
+          var seqId = $(otherSequenceSelection).val();
+          getSequence(seqId);
+        });
       }
     },
     'noNameSubstitute': {
@@ -2631,6 +2981,34 @@ $(function () {
       });
       return select;
     }
+  });
+  $(stepOutline).outline({
+    'nextSelector': nextButton,
+    'previousSelector': previousButton,
+    'controls': [{
+      'runOnInit': true,
+      'name': 'setdetails',
+      'selector': addDetailsButton,
+      'action': addDetails
+    }, {
+      'runOnInit': false,
+      'name': 'setlyrics',
+      'selector': addLyricsButton,
+      'action': addLyrics
+    }, {
+      'runOnInit': false,
+      'name': 'setchords',
+      'selector': addChordsButton,
+      'action': addChords
+    }, {
+      'runOnInit': false,
+      'name': 'createsequence',
+      'selector': createSequenceButton,
+      'action': setSequence
+    }]
+  });
+  $(optionsButton).on('click', function () {
+    $(songBuilderActionsMenu).contextMenu('show', this);
   }); // Get song data
 
   getSong();
@@ -2643,7 +3021,7 @@ function getPageDimensions() {
   $('body').append(spanTest);
   monospaceWidth = spanTest.width();
   monospaceHeight = spanTest.height();
-  $('body').remove('.' + unique);
+  $('.' + unique).remove();
 }
 
 function getSong() {
@@ -2662,16 +3040,24 @@ function getSong() {
 
 
 function get($id) {
+  $(loadingScreen).loadingScreen('show');
   $.ajax({
-    'url': '/songbuilder/' + $id,
+    'url': '/song/' + $id,
     'method': 'get',
     'contentType': 'application/json',
     'dataType': 'json'
   }).done(function (response) {
+    if ('error' in response) {
+      $(informationDialogBox).dialogBox('show', 'Uh-oh, something happened.<hr/>Technical message: ' + response['error']);
+      return;
+    }
+
     setValues(response);
   }).fail(function (response) {
-    console.error('Cannot find song');
+    $(informationDialogBox).dialogBox('show', 'Uh-oh, something bad happened.');
     console.error(response);
+  }).always(function () {
+    $(loadingScreen).loadingScreen('hide');
   });
 }
 
@@ -2707,12 +3093,213 @@ function setValues(songData) {
   } // Set song parts
 
 
-  $(songPartsContainer).songPart('setValue', songData.songParts); // Set sequence
+  $(songPartsContainer).songPart('setValues', songData.songParts); // Set sequence
 
-  $(sequenceBox).sequenceBuilder('setValue', songData.sequence.find(function (o) {
+  $(sequenceBox).sequenceBuilder('setValues', songData.sequence.find(function (o) {
     return o["default"];
   }));
   $(sequenceBox).sequenceBuilder('setOtherSequencesSelection', songData.sequence);
+}
+
+function getSequence(sequenceId) {
+  $.ajax({
+    'url': '/sequence/' + sequenceId,
+    'method': 'get',
+    'contentType': 'application/json',
+    'dataType': 'json'
+  }).done(function (response) {
+    $(sequenceBox).sequenceBuilder('setValues', response);
+  }).fail(function (response) {
+    console.error('Cannot find sequence ' + sequenceId);
+    console.error(response);
+  });
+}
+
+function getValues() {
+  return {
+    'id': $('#songId').val() != '' ? $('#songId').val() : Object(uuid__WEBPACK_IMPORTED_MODULE_0__["v4"])(),
+    'title': $(songDetailsContainer).songDetails('get', 'title'),
+    'key': $(songDetailsContainer).songDetails('get', 'key')[0],
+    'scale': $(songDetailsContainer).songDetails('get', 'key')[1],
+    'details': {
+      'artist': $(songDetailsContainer).songDetails('get', 'artist'),
+      'description': $(songDetailsContainer).songDetails('get', 'description'),
+      'timeSignature': $(songDetailsContainer).songDetails('get', 'timeSignature'),
+      'tempo': $(songDetailsContainer).songDetails('get', 'tempo')
+    },
+    'tags': $(songDetailsContainer).songDetails('get', 'tags'),
+    'songParts': $(songPartsContainer).songPart('getValues'),
+    'sequence': $(sequenceBox).sequenceBuilder('getValues')
+  };
+}
+
+function addDetails(ev) {
+  $(songDetailsContainer).show();
+  $(songPartsParentContainer).hide();
+  $(sequenceContainer).hide(); // Hide chord builder
+
+  $(chordSelection).chordBuilder('hide');
+  $(previousButton).hide();
+  $('.step.current').removeClass('current');
+  $(addDetailsButton).addClass('current');
+  $(stepOutline).outline('setPrevious', null);
+  $(stepOutline).outline('setNext', addLyrics);
+}
+
+function addLyrics(ev) {
+  $(songDetailsContainer).hide();
+  $(songPartsParentContainer).show();
+  $(sequenceContainer).hide();
+  $('.song-line .lyrics-view').each(function () {
+    // Set process
+    $('#processing').val('lyrics'); // Hide chords if shown
+
+    $(this).parent().siblings('.chords').hide(); // Hide input
+
+    $(this).hide(); // Get sibling view element
+
+    var lyricsInput = $(this).siblings('input[type="text"]');
+    if (lyricsInput.length <= 0) return; // Set view element text
+
+    lyricsInput.show();
+  });
+  $(chordSelection).chordBuilder('hide');
+  $(previousButton).show();
+  $('.step.current').removeClass('current');
+  $(addLyricsButton).addClass('current');
+  $(stepOutline).outline('setPrevious', addDetails);
+  $(stepOutline).outline('setNext', addChords);
+}
+
+function addChords(ev) {
+  $(songDetailsContainer).hide();
+  $(songPartsParentContainer).show();
+  $(sequenceContainer).hide(); // Get each lyrics line and display
+
+  $('.song-line.panel-item .lyrics input[type="text"]').each(function () {
+    // Set process
+    $('#processing').val('chords'); // Show chords
+
+    $(this).parent().siblings('.chords').show(); // Hide input
+
+    $(this).hide();
+    var lyricsView = $(this).siblings('.lyrics-view');
+    if (lyricsView.length <= 0) return;
+    lyricsView.songLine('processLine');
+    lyricsView.show();
+  });
+  $(previousButton).show();
+  $('.step.current').removeClass('current');
+  $(addChordsButton).addClass('current');
+  $(stepOutline).outline('setPrevious', addLyrics);
+  $(stepOutline).outline('setNext', setSequence);
+}
+
+function setSequence(ev) {
+  // Hide other panels
+  $(songDetailsContainer).hide();
+  $(songPartsParentContainer).hide();
+  $(sequenceContainer).show(); // Set processing value
+
+  $('#processing').val('sequence'); // Hide chord builder
+
+  $('.chord-selection-menu').chordBuilder('hide'); // // Init sequence builder
+
+  $(sequenceBox).sequenceBuilder('setSequenceSelect');
+  $(previousButton).show();
+  $('.step.current').removeClass('current');
+  $(createSequenceButton).addClass('current');
+  $(stepOutline).outline('setPrevious', addChords);
+  $(stepOutline).outline('setNext', collectValuesAndSave);
+}
+/**
+ * Gets related sequences for a songpart from the server
+ */
+
+
+function checkSongpartSequences(songPart) {
+  var id = songPart.attr('data-id');
+  var index = songPart.attr('data-order') * 1 - 1;
+  var sequences = [];
+  $(loadingScreen).loadingScreen('show');
+  $.ajax({
+    'url': '/songpart/' + id + '/sequences',
+    'method': 'get',
+    'contentType': 'application/json',
+    'dataType': 'json'
+  }).done(function (response) {
+    // If array and not empty
+    if (response != null && Array.isArray(response)) {
+      response.forEach(function (sequence) {
+        sequences.push(sequence.name);
+      });
+    } else {
+      sequences = getFallbackSequences(songPart);
+    }
+  }).fail(function (response) {
+    // Log error
+    console.log("No sequence found for songpart " + id);
+    console.log(response); // Get fallback
+
+    sequences = getFallbackSequences(songPart);
+  }).always(function () {
+    $(loadingScreen).loadingScreen('hide'); // Warn user about related sequences before removing
+
+    if (sequences.length > 0) {
+      $(warningDialogBox).dialogBox('show', 'Deleting this will modify the following sequences.<br/><ul><li>' + sequences.join('</li><li>') + '</li></ul>Are you sure?', function () {
+        $(songPart).parent().dynamicPanel('remove', index);
+      });
+    } // Remove if no related sequences
+    else {
+        $(songPart).parent().dynamicPanel('remove', index);
+      }
+  });
+}
+
+function post(song) {
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+  return $.ajax({
+    'url': '/song',
+    'method': 'post',
+    'contentType': 'application/json',
+    'dataType': 'json',
+    'data': JSON.stringify(song)
+  });
+}
+
+function collectValuesAndSave() {
+  $(warningDialogBox).dialogBox('show', 'Do you want to save? Make sure everything is in place.', function () {
+    $(loadingScreen).loadingScreen('show');
+    var song = getValues();
+    post(song).done(function (response) {
+      if ('error' in response) {
+        $(informationDialogBox).dialogBox('show', 'Saving failed. Please try again.<hr/>Technical message: ' + response['error']);
+        return;
+      }
+
+      $(informationDialogBox).dialogBox('show', 'Saving complete!');
+    }).fail(function (response) {
+      $(informationDialogBox).dialogBox('show', 'Saving failed completely. Please try again.');
+      console.error(response);
+    }).always(function () {
+      $(loadingScreen).loadingScreen('hide');
+    });
+  });
+}
+/**
+ * Gets related sequences for a songpart stored in its data attribute
+ * This method of getting sequences can end up getting stale data as sequences might have been updated.
+ */
+
+
+function getFallbackSequences(songPart) {
+  var fallbackSequence = songPart.attr('data-sequences');
+  if (fallbackSequence == '' || fallbackSequence == undefined) return [];
+  return fallbackSequence.split('|');
 }
 
 /***/ }),

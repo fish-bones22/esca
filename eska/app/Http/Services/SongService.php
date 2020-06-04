@@ -13,17 +13,20 @@ use Illuminate\Support\Facades\DB;
 
 class SongService {
 
-    public function __construct()
-    {
+    private $sequenceService;
 
+    public function __construct(SequenceService $sequenceService)
+    {
+        $this->sequenceService = $sequenceService;
     }
 
-    public function getSong($id) {
+    public function getSong($id, $defaultSequenceOnly = true) {
 
         $song = Song::find($id);
 
         $request = new SongRequest;
 
+        $request->id = $id;
         $request->title = $song->title;
         $request->key = $song->key;
         $request->scale = $song->scale;
@@ -37,6 +40,16 @@ class SongService {
         // Get song parts
         $request->songParts = [];
         foreach ($song->songParts as $songPart) {
+            $sequences = [];
+            $ids = [];
+            foreach ($songPart->sequence as $sequence) {
+                if (in_array($sequence->id, $ids)) continue;
+                $sequences[] = [
+                    'id' => $sequence->id,
+                    'name' => $sequence->name
+                ];
+                $ids[] = $sequence->id;
+            }
             $request->songParts[] = [
                 'id' => $songPart->id,
                 'name' => $songPart->name,
@@ -48,7 +61,8 @@ class SongService {
                 ],
                 'chords' => [
                     'content' => $songPart->chords,
-                ]
+                ],
+                'sequences' => $sequences
             ];
         }
 
@@ -61,25 +75,12 @@ class SongService {
         // Get sequence
         $request->sequence = [];
         foreach ($song->sequences as $sequence) {
-            // Get sequence song parts
-            $sequenceSongParts = [];
-            foreach ($sequence->songParts as $songPart) {
-                $sequenceSongParts[] = [
-                    'songPart' => $songPart->id,
-                    'name' => $songPart->name,
-                    'order' => $songPart->pivot->order,
-                    'referenceKey' => $songPart->pivot->reference_key,
-                    'repeat' => $songPart->pivot->repeat
-                ];
+            // Get sequences
+            if ($defaultSequenceOnly && !$sequence->default) {
+                $request->sequence[] = ['id' => $sequence->id, 'name' => $sequence->name];
+            } else {
+                $request->sequence[] = $this->sequenceService->formatToRequest($sequence);
             }
-            $request->sequence[] = [
-                'id' => $sequence->id,
-                'referenceKey' => $sequence->reference_key,
-                'description' => $sequence->description,
-                'default' => $sequence->default == 1,
-                'name' => $sequence->name,
-                'songParts' => $sequenceSongParts
-            ];
         }
 
         return $request;
@@ -111,7 +112,7 @@ class SongService {
 
             // Set song details
             foreach ($request->details as $key => $detail) {
-                $mdlDetail = $song->details->where('key', $key)->first();
+                $mdlDetail = SongDetail::where('key', $key)->where('song_id', $song->id)->first();
                 if ($mdlDetail == null) {
                     $mdlDetail = new SongDetail;
                     $mdlDetail->key = $key;
@@ -124,8 +125,9 @@ class SongService {
             }
 
             // Set song parts
+            $songPartsProcess = [];
             foreach ($request->songParts as $songPart) {
-                $mdlSongPart = $song->songParts->find($songPart['id']);
+                $mdlSongPart = SongPart::find($songPart['id']);
                 if ($mdlSongPart == null) {
                     $mdlSongPart = new SongPart();
                     $mdlSongPart->id = $songPart['id'];
@@ -150,14 +152,24 @@ class SongService {
                     $mdlSongPart->chords = $songPart['chords']['content'];
                 }
                 if (!$mdlSongPart->save()) throw new \Exception('Failed to save song part '.$songPart['name']);
+                $songPartsProcess[] = $mdlSongPart->id;
             }
+            // Delete un-updated rows
+            SongPart::where('song_id', $song->id)
+            ->whereNotIn('id', $songPartsProcess)
+            ->delete();
 
             // Set song tags
             $song->tags()->sync($request->tags);
 
             // Set sequence
-            foreach ($request->sequences as $sequence) {
-                $mdlSequence = $song->sequences->find($sequence['id']);
+            foreach ($request->sequence as $sequence) {
+
+                $mdlSequence = null;
+
+                if ($sequence['id'] != '')
+                    $mdlSequence = $song->sequences->find($sequence['id']);
+
                 if ($mdlSequence == null) {
                     $mdlSequence = new Sequence();
                     $mdlSequence->id = $sequence['id'];
@@ -172,9 +184,15 @@ class SongService {
                 if ($mdlSequence->name != $sequence['name']) {
                     $mdlSequence->name = $sequence['name'];
                 }
-                if ($mdlSequence->default != $sequence['default']) {
-                    $mdlSequence->default = $sequence['default'];
+
+                // Unset existing default sequences if this sequence is set to default
+                if ($sequence['default'] === true) {
+                    foreach (Sequence::where('default', true)->where('song_id', $song->id)->get() as $default) {
+                        $default->default = false;
+                        $default->save();
+                    }
                 }
+                $mdlSequence->default = $sequence['default'] == true;
 
                 if (!$mdlSequence->save()) throw new \Exception('Failed to save sequence '.$sequence['name']);
 
@@ -184,7 +202,7 @@ class SongService {
                     // Get look up value with same sequence_id, songpart_id, order
                     $sequenceLookup = DB::table('sequence_lookup')
                     ->where('songpart_id', $songPart['songPart'])
-                    ->where('sequence_id', $sequence['id'])
+                    ->where('sequence_id', $mdlSequence->id)
                     ->where('order', $songPart['order'])->first();
                     // Query has value, update
                     if ($sequenceLookup != null) {
@@ -193,7 +211,7 @@ class SongService {
                         || $sequenceLookup->reference_key != $songPart['referenceKey'])
                             DB::table('sequence_lookup')
                             ->where('songpart_id', $songPart['songPart'])
-                            ->where('sequence_id', $sequence['id'])
+                            ->where('sequence_id', $mdlSequence->id)
                             ->where('order', $songPart['order'])
                             ->update([
                                 'repeat' => $songPart['repeat'],
@@ -211,7 +229,7 @@ class SongService {
                             'order' => $songPart['order'],
                             'reference_key' => $songPart['referenceKey'],
                             'songpart_id' => $songPart['songPart'],
-                            'sequence_id' => $sequence['id'],
+                            'sequence_id' => $mdlSequence->id,
                             'updated_at' => $now,
                             'created_at' => $now
                             ]);
@@ -222,7 +240,7 @@ class SongService {
                 }
                 // Delete un-updated rows
                 DB::table('sequence_lookup')
-                ->where('sequence_id', $sequence['id'])
+                ->where('sequence_id', $mdlSequence->id)
                 ->whereNotIn('id', $ids)
                 ->delete();
             }

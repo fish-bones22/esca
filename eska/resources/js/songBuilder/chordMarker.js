@@ -23,6 +23,7 @@
         }
         return option[name];
     }
+
     function setOption(obj, name, value) {
         let option = $(obj).data('chordMarker-options');
         if (option == undefined || !option.hasOwnProperty(name)) {
@@ -41,7 +42,11 @@
             $(obj).html('&nbsp;');
             return;
         }
-        var disp = ChordProcessor.processChord($(obj).attr('data-value'), getOption(obj, 'mainRoot'),  getOption(obj, 'mainScale'), getOption(obj, 'referenceKey'));
+        var keySelector = getOption(obj, 'keySelector');
+        var mainRoot = $(keySelector).val();
+        var mainScale = $(keySelector).find('option:selected').attr('data-scale');
+
+        var disp = ChordProcessor.processChord($(obj).attr('data-value'), mainRoot,  mainScale, getOption(obj, 'referenceKey'));
         $(obj).html(disp);
     }
 
@@ -217,6 +222,9 @@
                 case 'unselectall':
                     unselectAllMarkers();
                     return this;
+                case 'option':
+                    if (typeof option != 'string') return null;
+                    return getOption(this, option);
             }
         }
 

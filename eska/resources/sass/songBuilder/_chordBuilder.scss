@@ -60,6 +60,7 @@
                             border:1px solid lightgray;
                             margin: 0 auto;
                             width: 160px;
+                            padding: 0;
                             &:focus {
                                 outline: none;
                             }
@@ -72,6 +73,7 @@
                 border-radius: 5px;
                 float: unset;
                 margin-left: 10px;
+                padding: 2px 6px;
                 span {
                     font-size: 16px;
                 }

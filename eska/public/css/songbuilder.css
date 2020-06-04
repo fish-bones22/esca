@@ -254,7 +254,6 @@ nav .song-information .song-key select option {
 
 .song-line .song-line-actions .close {
   cursor: pointer;
-  padding: 1px 0;
 }
 
 .song-line .song-line-actions .close .selected {
@@ -373,12 +372,23 @@ nav .song-information .song-key select option {
   position: relative;
 }
 
-.song-builder-actions .next {
+.song-builder-actions #options {
+  color: #7cd3c9;
+  border-left: 1px solid #23837b;
+  float: right;
+  padding: 0;
+}
+
+.song-builder-actions #options:hover {
+  color: #5cafa5;
+}
+
+.song-builder-actions #next {
   float: right;
   padding: 0 15px 0 20px;
 }
 
-.song-builder-actions .previous {
+.song-builder-actions #previous {
   float: left;
   padding: 0 20px 0 15px;
 }
@@ -418,6 +428,10 @@ nav .song-information .song-key select option {
 
 .song-part-container .song-part-title .song-part-name span {
   color: lightgray;
+}
+
+.song-part-container .btn-action {
+  padding: 1px 0;
 }
 
 .song-part-container .expanded-menu {
@@ -600,6 +614,7 @@ nav .song-information .song-key select option {
   border: 1px solid lightgray;
   margin: 0 auto;
   width: 160px;
+  padding: 0;
 }
 
 .chord-selection-menu .content .body .section.custom-text .custom-item input:focus {
@@ -611,6 +626,7 @@ nav .song-information .song-key select option {
   border-radius: 5px;
   float: unset;
   margin-left: 10px;
+  padding: 2px 6px;
 }
 
 .chord-selection-menu .content .body .edit-custom-text span {
@@ -698,6 +714,10 @@ nav .song-information .song-key select option {
 
 .sequence-container #sequenceBox .sequence-item .repeat .repeat-input input:focus {
   outline: none;
+}
+
+.sequence-container #sequenceBox .sequence-item .repeat .repeat-input .clear {
+  padding: 4px 2px 0 2px;
 }
 
 .sequence-container #sequenceBox .sequence-item .repeat .repeat-input .clear span {
@@ -810,12 +830,23 @@ nav .song-information .song-key select option {
   position: relative;
 }
 
-.song-builder-actions .next {
+.song-builder-actions #options {
+  color: #7cd3c9;
+  border-left: 1px solid #23837b;
+  float: right;
+  padding: 0;
+}
+
+.song-builder-actions #options:hover {
+  color: #5cafa5;
+}
+
+.song-builder-actions #next {
   float: right;
   padding: 0 15px 0 20px;
 }
 
-.song-builder-actions .previous {
+.song-builder-actions #previous {
   float: left;
   padding: 0 20px 0 15px;
 }

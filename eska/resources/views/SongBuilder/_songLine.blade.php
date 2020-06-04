@@ -4,7 +4,7 @@
             <div class="chords"></div>
             <div class="lyrics">
                 <div class="lyrics-view"></div>
-                <input type="text" placeholder="Click to add lyrics" />
+                <input type="text" placeholder="Click to add lyrics" class="changed" />
             </div>
         </div>
         <span class="song-line-actions" tabindex="-1">

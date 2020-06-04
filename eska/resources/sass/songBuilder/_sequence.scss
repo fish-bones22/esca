@@ -58,8 +58,11 @@
                             outline: none;
                         }
                     }
-                    .clear span {
-                        font-size: 14px;
+                    .clear {
+                        padding: 4px 2px 0 2px;
+                        span {
+                            font-size: 14px;
+                        }
                     }
                 }
             }

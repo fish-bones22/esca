@@ -49075,26 +49075,41 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 (function ($) {
   var defaults = {
-    'caller': null,
+    'cancelInputs': false,
+    'callback': null,
     'messagePanel': '.message',
     'controls': [{
       'name': 'close',
       'selector': '.close',
-      'action': function action(event, dialogBox, caller) {
+      'action': function action(event, dialogBox, callback) {
         hide(dialogBox);
       }
     }]
   };
+  var zIndex = 999;
   /**
    * Get option value
-   * @param {Object} object
-   * @param {String} key
+   * @param {Object} obj
+   * @param {String} option
    */
 
   function getOption(obj, option) {
     var options = $(obj).data('dialogBox-options');
     if (options == undefined || !options.hasOwnProperty(option)) return null;
     return options[option];
+  }
+  /**
+   * Set option value
+   * @param {Object} obj
+   * @param {String} option
+   * @param {any} value
+   */
+
+
+  function setOption(obj, option, value) {
+    var options = $(obj).data('dialogBox-options');
+    options[option] = value;
+    $(obj).data('dialogBox-options', options);
   }
   /**
    * Show dialog box with message
@@ -49105,8 +49120,18 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   function show(obj, message) {
     var caller = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    hide($('.dialogBox'));
     var messagePanel = $(obj).find(getOption(obj, 'messagePanel'));
     if (messagePanel.length > 0) messagePanel.html(message);
+
+    if (typeof caller == 'function') {
+      setOption(obj, 'callback', caller);
+    }
+
+    if (getOption(obj, 'cancelInputs')) {
+      cancelInputs(obj);
+    }
+
     $(obj).show();
   }
   /**
@@ -49117,6 +49142,29 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   function hide(obj) {
     $(obj).hide();
+
+    if (getOption(obj, 'cancelInputs') && $('.dialogBox-backdrop').length > 0) {
+      $('.dialogBox-backdrop').remove();
+    }
+  }
+  /**
+   *
+   */
+
+
+  function cancelInputs(obj) {
+    var blocker = $('<div>').addClass('dialogBox-backdrop').css('width', '100%').css('height', '100%').css('top', 0).css('position', 'fixed').css('background-color', 'rgba(0, 0, 0, 0.2)').css('z-index', zIndex - 1).on('click', function () {
+      var opacity = 0.4;
+      var interval = undefined;
+      $(this).css('background-color', 'rgba(0, 0, 0, ' + opacity + ')');
+      window.clearInterval(interval);
+      interval = window.setInterval(function () {
+        opacity -= 0.05;
+        blocker.css('background-color', 'rgba(0, 0, 0, ' + opacity + ')');
+        if (opacity <= 0.35) window.clearInterval(interval);
+      }, 50);
+    });
+    $('body').append(blocker);
   }
 
   $.fn.dialogBox = function (command, option, value) {
@@ -49130,11 +49178,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         $(self).draggable({
           'addClasses': false,
           'grid': [10, 10]
-        }); // Set up control events
+        });
+        $(self).css('z-index', zIndex); // Set up control events
 
         settings.controls.forEach(function (control) {
           $(self).find(control.selector).on('click', function () {
-            $(self).trigger('dialogBox:' + control.name, [self, settings.caller]);
+            $(self).trigger('dialogBox:' + control.name, [self, settings.callback]);
+            setOption(self, 'callback', null);
           });
           $(self).on('dialogBox:' + control.name, control.action);
         });
@@ -49159,6 +49209,60 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 /***/ }),
 
+/***/ "./resources/js/common/loadingScreen.js":
+/*!**********************************************!*\
+  !*** ./resources/js/common/loadingScreen.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {};
+
+  function showPanel(obj) {
+    var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    $(obj).show();
+
+    if (duration != null) {
+      window.setTimeout(function () {
+        hidePanel(obj);
+      }, duration);
+    }
+  }
+
+  function hidePanel(obj) {
+    $(obj).hide();
+  }
+
+  $.fn.loadingScreen = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this;
+        var settings = $.extend({}, defaults, command);
+        $(self).data('loadingScreen-options', settings);
+      });
+    }
+
+    if (typeof command == 'string') {
+      switch (command.toLocaleLowerCase()) {
+        case 'show':
+          return $(this).each(function () {
+            showPanel(this, option);
+          });
+
+        case 'hide':
+          return $(this).each(function () {
+            hidePanel(this);
+          });
+      }
+    }
+  };
+})(jQuery);
+
+/***/ }),
+
 /***/ "./resources/js/main.js":
 /*!******************************!*\
   !*** ./resources/js/main.js ***!
@@ -49174,7 +49278,9 @@ __webpack_require__(/*! jquery-ui-dist/jquery-ui */ "./node_modules/jquery-ui-di
 
 __webpack_require__(/*! ./common/contextMenu */ "./resources/js/common/contextMenu.js");
 
-__webpack_require__(/*! ./common/dialogBox */ "./resources/js/common/dialogBox.js"); // Polyfills
+__webpack_require__(/*! ./common/dialogBox */ "./resources/js/common/dialogBox.js");
+
+__webpack_require__(/*! ./common/loadingScreen */ "./resources/js/common/loadingScreen.js"); // Polyfills
 
 
 if (window.NodeList && !NodeList.prototype.forEach) {

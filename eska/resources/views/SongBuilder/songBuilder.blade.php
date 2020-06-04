@@ -24,6 +24,9 @@ ESKA
 @include('Songbuilder.ContextMenus._songPart')
 {{-- Dialog Boxes --}}
 @include('Songbuilder.DialogBoxes._selectOtherSequence')
+@include('Shared.DialogBoxes._warning')
+@include('Shared.DialogBoxes._information')
+@include('Shared.DialogBoxes._loader')
 {{-- Content --}}
 @include('Songbuilder._navigation')
 <div class="container">
@@ -55,9 +58,8 @@ ESKA
         },
         'tags' : [ '9db87722-47c0-4fd0-ae3a-eb6c432624f3',
                     '3c9dec5e-7987-4d37-812f-f184cbc21e61',
-                    '08202b04-98d2-4a4b-bcde-43cf69539c82',
-                    'ec8dcaba-2192-48f4-940b-5d123be46fc7',
-                    'cef391a4-0200-440d-bfd3-4bbc2616edcc' ],
+                    '08202b04-98d2-4a4b-bcde-43cf69539c82'
+                 ],
         'songParts' : [
             {
                 'id' : '815fe3d4-3f14-4ad4-b461-f2afc524cb84',
@@ -69,7 +71,7 @@ ESKA
                     'display' : 'This is the lyric{newline}Hello world this is the lyric'
                 },
                 'chords' : {
-                    'content' : '0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/7/|0/16/whole/4/M//'
+                    'content' : '0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/dom7/|0/22/whole/4/M//{newline}0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/maj7/|0/25/no/4/M//'
                 }
             },
             {
@@ -82,16 +84,16 @@ ESKA
                     'display' : 'This is the chorus{newline}Hello world this is the chorus'
                 },
                 'chords' : {
-                    'content' : '0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/7/|0/16/whole/4/M//'
+                    'content' : '0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/dom7/|0/22/whole/4/M//{newline}0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/maj7/|0/25/no/4/M//'
                 }
             }
         ],
-        'sequences' : [
+        'sequence' : [
             {
                 'id' : 'b33388b4-8ed7-4a15-aaad-49e706ca1bb3',
                 'name' : 'Default Sequence',
                 'referenceKey' : 0,
-                'description' : '',
+                'description' : 'Original sequence as releaased',
                 'default' : true,
                 'songParts' : [
                     {
@@ -125,6 +127,33 @@ ESKA
                         'repeat' : 1
                     }
                 ]
+            },
+            {
+                'id' : '0b93c4e2-1d6f-4b1b-a508-51b97013c7d8',
+                'name' : 'Short Sequence',
+                'referenceKey' : 0,
+                'description' : 'Quick short sequence',
+                'default' : false,
+                'songParts' : [
+                    {
+                        'songPart' : '815fe3d4-3f14-4ad4-b461-f2afc524cb84',
+                        'order' : 1,
+                        'referenceKey' : 0,
+                        'repeat' : 1
+                    },
+                    {
+                        'songPart' : 'a81dd9a2-0bb5-4e50-a064-5881d2dcb6dd',
+                        'order' : 2,
+                        'referenceKey' : 0,
+                        'repeat' : 2
+                    },
+                    {
+                        'songPart' : 'a81dd9a2-0bb5-4e50-a064-5881d2dcb6dd',
+                        'order' : 5,
+                        'referenceKey' : 1,
+                        'repeat' : 1
+                    }
+                ]
             }
         ]
 
@@ -136,7 +165,7 @@ ESKA
 
     function get() {
         $.ajax({
-            'url': '/songbuilder/611c3248-7326-448b-b66c-5199f9009dc8',
+            'url': '/song/611c3248-7326-448b-b66c-5199f9009dc8',
             'method': 'get',
             'contentType': 'application/json',
             'dataType': 'json'
@@ -156,7 +185,7 @@ ESKA
             }
         });
         $.ajax({
-            'url': '/songbuilder',
+            'url': '/song',
             'method': 'post',
             'contentType': 'application/json',
             'data': JSON.stringify(song)

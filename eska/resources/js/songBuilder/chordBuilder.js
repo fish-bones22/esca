@@ -28,11 +28,11 @@
     }
 
     function initializePanel(obj) {
-        
+
         // Get root key and scale
         let root = getOption(obj, 'mainRoot');
         let scale = getOption(obj, 'mainScale');
-        
+
         root = typeof root == 'function' ? root() : root;
         scale = typeof scale == 'function' ? scale() : scale;
 
@@ -83,7 +83,7 @@
             }
             section.append(item);
             section2.append(item2);
-            
+
         }
         $('.key-view-root').html(root);
         $('.key-view-scale').html(scale);
@@ -96,7 +96,7 @@
 
         for (var i = 0; i < chordsReference.variations.length; i++) {
             var item;
-            if (chordsReference.variations[i].precedence == 0) 
+            if (chordsReference.variations[i].precedence == 0)
             {
                 item = $('<span>').addClass('item chord-variation');
             } else {
@@ -118,7 +118,7 @@
             }
         }
         generateCustom(obj);
-        
+
         // Empty values
         chordValue = '';
         chordDisplay = '';
@@ -130,7 +130,7 @@
 
     /**
      * Generate custom chord selection
-     * @param {object} obj 
+     * @param {object} obj
      */
     function generateCustom(obj) {
         // Add songparts
@@ -138,7 +138,7 @@
         var count = 0;
         section.empty();
         $(getOption(obj, 'songPartSelector')).each(function() {
-            if ($(this).attr('data-name') == '') return; 
+            if ($(this).attr('data-name') == '') return;
             var name = $(this).attr('data-name');
             var item = $('<span>').addClass('item custom-item')
             .attr('data-value', name)
@@ -155,10 +155,10 @@
     }
     /**
      * Construct chords from selection
-     * @param {object} obj 
+     * @param {object} obj
      */
     function buildChord(obj) {
-        
+
         // Get first three essential selections
         var measureVal = $(obj).find('.measure.selected').attr('data-value');
         var rootVal = $(obj).find('.root.selected').attr('data-value');
@@ -170,7 +170,7 @@
         // When custom panel is selected
         if (measureVal != undefined && customVal != undefined) {
             var measureDis = $(obj).find('.measure.selected').attr('data-display');
-            chordValue =  [measureVal, 'custom', customVal ].join('/');
+            chordValue =  [measureVal, 'custom', customVal, '', '' ].join('/');
             chordDisplay = [measureDis, customVal ].join('');
             // Set value to displayer
             view.attr('data-value', chordValue);
@@ -195,7 +195,7 @@
         var variation = $(obj).find('.selected.chord-variation').attr('data-display');
         var otherVar = $(obj).find('.selected.chord-other').attr('data-display');
         var bass = $(obj).find('.selected.bass').attr('data-display');
-        // Build string 
+        // Build string
         chordValue =  [measureVal, rootVal, variationVal, otherVarVal, bassVal ].join('/');
         chordDisplay = [measure, root, variation, otherVar, bass ].join('');
         // Set value to displayer
@@ -204,7 +204,7 @@
     }
     /**
      * Show chord builder panel and target
-     * @param {object} obj 
+     * @param {object} obj
      * @param {object} target Chord marker target to set
      */
     function showPanel(obj, target) {
@@ -213,7 +213,7 @@
     }
     /**
      * Hide chord builder panel
-     * @param {object} obj 
+     * @param {object} obj
      */
     function hidePanel(obj) {
         setTarget(obj, null);
@@ -221,7 +221,7 @@
     }
     /**
      * Set target
-     * @param {object} obj 
+     * @param {object} obj
      */
     function setTarget(obj, target, setImmediately = false) {
         $(obj).data('target', target);
@@ -230,14 +230,14 @@
 
     function onItemClick(event) {
         // Toggle select
-        if (($(event.target).hasClass('selected') 
+        if (($(event.target).hasClass('selected')
         && $(event.target).closest('.section').attr('data-required') == undefined)
-        || ($(event.target).hasClass('selected') 
+        || ($(event.target).hasClass('selected')
         && $(event.target).closest('.section').attr('data-required') != undefined
         && $(event.data.obj).find('.item.custom-item.selected').length > 0)) {
             $(event.target).removeClass('selected');
         } else {
-            // For custom items, unselect custom items if another custom item is selected 
+            // For custom items, unselect custom items if another custom item is selected
             // Or root item is selected
             if ($(event.target).hasClass('custom-item') || $(event.target).hasClass('root')) {
                 $(event.data.obj).find('.root.selected').removeClass('selected');
@@ -287,7 +287,7 @@
                 });
                 // Toggle item selected state
                 $(document).on('click', '.chord-builder .section .item', { 'obj': self }, onItemClick);
-                // Activate draggable 
+                // Activate draggable
                 $(self).draggable({
                     'cursor': 'grabbing',
                     'cancel': 'button,.item'
@@ -334,19 +334,19 @@
                         'value': chordValue,
                         'display': chordDisplay
                     };
-                case 'settarget': 
+                case 'settarget':
                     return $(this).each(function() {
                         setTarget(this, option, value);
-                    });   
+                    });
                 case 'generatecustom':
                     return $(this).each(function() {
                         generateCustom(this);
-                    });   
+                    });
                 case 'update':
                     return $(this).each(function() {
                         initializePanel(this);
-                    });   
-                     
+                    });
+
             }
         }
     }

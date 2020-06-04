@@ -28,7 +28,12 @@
         return options[key];
     }
 
-
+    /**
+     * Insert values to song detals. Accepted keys: title, artist, tags, description, key, timeSignature, tempo
+     * @param {object} obj
+     * @param {string} key Key of the property to set
+     * @param {string|array} value Values of the property
+     */
     function setValue(obj, key, value) {
 
         if (key == '' || key == undefined) return;
@@ -69,6 +74,11 @@
         return obj
     }
 
+    /**
+     * Set value to HTML element
+     * @param {array} selectors Elements to set value
+     * @param {string} value
+     */
     function setValAttr(selectors, value) {
         selectors.forEach(o => {
             if (typeof value == 'object') {
@@ -76,6 +86,30 @@
             }
             $(o).val(value).trigger('change');
         });
+    }
+
+
+    function getValue(obj, key) {
+        if (key == '' || key == undefined) return '';
+
+        switch(key) {
+            case 'title':
+                return $(getOption(obj, 'songTitleInput')).val();
+            case 'artist':
+                return $(getOption(obj, 'artistInput')).val();
+            case 'tags':
+                var tags = $(getOption(obj, 'songTagInput')).val();
+                return tags.split('|');
+            case 'description':
+                return $(getOption(obj, 'descriptionInput')).val();
+            case 'key':
+                return [$(getOption(obj, 'songKeyInput')).val(), $(getOption(obj, 'songKeyInput')).find('option:selected').attr('data-scale')];
+            case 'timeSignature':
+                return $(getOption(obj, 'songTimeSignInput')).val();
+            case 'tempo':
+                return $(getOption(obj, 'songSpeedInput')).val();
+            default: return '';
+        }
     }
 
     $.fn.songDetails = function(command, option, value) {
@@ -109,6 +143,7 @@
                     $(target).find('option[value="' + key + '"][data-scale="' + scale + '"]').prop('selected', true);
                     $(this).blur();
                     $('.chord-selection-menu').chordBuilder('update');
+                    $('.chord').chordMarker('update');
                 });
 
                 // Show error message if needed
@@ -156,6 +191,8 @@
                     return $(this).each(function() {
                         setValue(this, option, value);
                     });
+                case 'get':
+                    return getValue(this, option);
             }
         }
     }

@@ -1,7 +1,8 @@
 .dialogBox {
-    background-color: white;
+    background-color: $primary;
     border: 1px solid $dark;
     bottom: 0;
+    color: white;
     left:0;
     height: fit-content;
     margin: auto;
@@ -11,6 +12,21 @@
     top: 0;
     width: 350px;
     z-index: 999;
+    label {
+        color: white;
+    }
+    select {
+        background-color: $primary;
+        border: none;
+        color: white;
+        &:hover:not(:focus) {
+            background-color: $primary_dark;
+        }
+        &:focus {
+            background-color: white;
+            color: black;
+        }
+    }
     .dialog-controls {
         float: right;
         margin-top: 20px;
