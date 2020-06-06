@@ -7,6 +7,9 @@
             display: flex;
             flex-direction: column;
             margin: 15px 10px;
+            label {
+                white-space: nowrap;
+            }
             select {
                 option {
                     font-size: 14px;
@@ -16,17 +19,32 @@
                 resize: vertical;
             }
             .error-text {
-                color: darkred;
+                color: $red;
+                display: none;
                 font-size: 14px;
                 font-style: italic;
                 margin-bottom: 10px;
+            }
+            .key-scale-select {
+                display: flex;
+                flex-direction: row;
+            }
+            &.has-error {
+                .error-text {
+                    display: block;
+                }
             }
         }
         .song-musical-details {
             display: flex;
             margin: 20px 0;
             .input-container {
-                width: 20em;
+                &.song-time-sign {
+                    flex-grow: 1;
+                }
+                .song-speed-input {
+                    width: 150px;
+                }
             }
         }
         .song-tags {

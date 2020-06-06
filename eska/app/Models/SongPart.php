@@ -10,7 +10,7 @@ class SongPart extends UuidKey
 {
     protected $table = 'songparts';
 
-    protected $fillable = ['id', 'name', 'reference_key', 'lyrics', 'lyrics_display', 'chords'];
+    protected $fillable = ['id', 'name', 'reference_key', 'scale', 'lyrics', 'lyrics_display', 'chords'];
 
     public function song() {
         return $this->belongsTo('App\Models\Song');

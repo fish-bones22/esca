@@ -22,6 +22,7 @@ ESKA
 @include('Songbuilder.ContextMenus._songPartTitle')
 @include('Songbuilder.ContextMenus._songLine')
 @include('Songbuilder.ContextMenus._songPart')
+@include('Songbuilder.ContextMenus._modulation')
 {{-- Dialog Boxes --}}
 @include('Songbuilder.DialogBoxes._selectOtherSequence')
 @include('Shared.DialogBoxes._warning')
@@ -31,13 +32,15 @@ ESKA
 @include('Songbuilder._navigation')
 <div class="container">
     @include('Songbuilder._outline')
-    @include('Songbuilder._contentSongDetails')
-    @include('Songbuilder._contentSongParts')
-    @include('Songbuilder._contentSequence')
+    <div class="overflow-window">
+        @include('Songbuilder._contentSongDetails')
+        @include('Songbuilder._contentSongParts')
+        @include('Songbuilder._contentSequence')
+    </div>
     @include('Songbuilder._contentActions')
 </div>
 <input type="hidden" id="processing" value=""/>
-<input type="hidden" id="songId" value="611c3248-7326-448b-b66c-5199f9009dc8"/>
+<input type="hidden" id="songId" value=""/>
 @stop
 
 @section('script')
@@ -66,12 +69,13 @@ ESKA
                 'name' : 'Verse 1',
                 'order' : 1,
                 'referenceKey' : 0,
+                'scale' : 'major',
                 'lyrics' : {
                     'content' : 'This is the lyric{newline}He{spacer-1}llo world this is the lyric',
                     'display' : 'This is the lyric{newline}Hello world this is the lyric'
                 },
                 'chords' : {
-                    'content' : '0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/dom7/|0/22/whole/4/M//{newline}0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/maj7/|0/25/no/4/M//'
+                    'content' : '0/major|0/major/3/whole/1/M//|0/major/8/whole/5/M//|0/major/14/whole/6/m/dom7/|0/major/22/whole/4/M//{newline}0/major|0/major/3/whole/1/M//|0/major/8/whole/5/M//|0/major/14/whole/6/m/maj7/|0/major/25/no/4/M//'
                 }
             },
             {
@@ -79,12 +83,13 @@ ESKA
                 'name' : 'Chorus',
                 'order' : 2,
                 'referenceKey' : 0,
+                'scale' : 'major',
                 'lyrics' : {
                     'content' : 'This is the chorus{newline}He{spacer-1}llo world this is the chorus',
                     'display' : 'This is the chorus{newline}Hello world this is the chorus'
                 },
                 'chords' : {
-                    'content' : '0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/dom7/|0/22/whole/4/M//{newline}0/3/whole/1/M//|0/8/whole/5/M//|0/14/whole/6/m/maj7/|0/25/no/4/M//'
+                    'content' : '0/major|0/major/3/whole/1/M//|0/major/8/whole/5/M//|0/major/14/whole/6/m/dom7/|0/major/22/whole/4/M//{newline}0/major|0/major/3/whole/1/M//|0/major/8/whole/5/M//|0/major/14/whole/6/m/maj7/|0/major/25/no/4/M//'
                 }
             }
         ],

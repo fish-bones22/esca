@@ -42,13 +42,12 @@
                     outline: none;
                 }
             }
-            .repeat {
-                margin-left: 80px;
+            .repeat, .modulation {
+                margin-left: 10px;
                 display: flex;
-                .repeat-input {
+                .repeat-input, .modulation-input {
                     border: 1px solid $dark;
                     display: flex;
-                    margin: 0 0 0 15px;
                     input {
                         border: none;
                         font-size: 16px;
@@ -67,7 +66,10 @@
                 }
             }
             .sequence-item-actions {
-                margin-left: auto;
+                flex-grow: 1;
+                button {
+                    float: right;
+                }
                 span {
                     color: $dimmer;
                     &:hover {

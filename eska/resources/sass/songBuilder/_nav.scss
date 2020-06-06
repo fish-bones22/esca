@@ -22,8 +22,10 @@ nav {
                 border: none;
                 color: white;
                 font-size: 18px;
+                font-weight: 600;
                 padding: 5px 10px;
-                width: 250px;
+                text-align: right;
+                width: 200px;
                 &:focus {
                     background-color: white;
                     color: black;

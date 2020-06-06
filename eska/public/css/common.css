@@ -35,9 +35,8 @@ body {
   margin: 0;
 }
 
-.container {
-  width: 48em;
-  margin: 50px auto;
+textarea {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .text-muted {
@@ -125,7 +124,12 @@ button:focus {
 
 label {
   color: gray;
+  font-size: 13px;
   margin: 2px 10px;
+}
+
+label.check-label {
+  font-size: 16px;
 }
 
 input,
@@ -177,7 +181,10 @@ select option:focus {
   background: white;
   border: 1px solid lightgray;
   position: absolute;
-  width: 140px;
+  min-width: 140px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
   z-index: 2;
 }
 

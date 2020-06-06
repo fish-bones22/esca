@@ -7,9 +7,12 @@
         'songTagInput': '',
         'descriptionInput': '',
         'navbarKey': '',
+        'navbarScale': '',
         'songKeyInput': '',
+        'songScaleInput': '',
         'songTimeSignInput': '',
-        'songSpeedInput': ''
+        'songSpeedInput': '',
+        'keyChange': function() {}
     }
 
     var songData = window.songData || {};
@@ -57,7 +60,12 @@
                 break;
             case 'key':
                 var selector = getOption(obj, 'songKeyInput');
-                $(selector).find('option[value="' + value[0] + '"][data-scale="' + value[1] + '"]').prop('selected', true);
+                $(selector).find('option[value="' + value[0] + '"]').prop('selected', true);
+                $(selector).trigger('change');
+                break;
+            case 'scale':
+                var selector = getOption(obj, 'songScaleInput');
+                $(selector).find('option[value="' + value[0] + '"]').prop('selected', true);
                 $(selector).trigger('change');
                 break;
             case 'timeSignature':
@@ -103,13 +111,47 @@
             case 'description':
                 return $(getOption(obj, 'descriptionInput')).val();
             case 'key':
-                return [$(getOption(obj, 'songKeyInput')).val(), $(getOption(obj, 'songKeyInput')).find('option:selected').attr('data-scale')];
+                return $(getOption(obj, 'songKeyInput')).val();
+            case 'scale':
+                return $(getOption(obj, 'songScaleInput')).val();
             case 'timeSignature':
                 return $(getOption(obj, 'songTimeSignInput')).val();
             case 'tempo':
                 return $(getOption(obj, 'songSpeedInput')).val();
             default: return '';
         }
+    }
+
+    function setKeySelect(select, target) {
+        var value = $(select).find('option:selected').val();
+        $(target).find('option[value="' + value + '"]').prop('selected', true);
+        $(select).blur();
+        $('.chord-selection-menu').chordBuilder('update');
+        $('.chord').chordMarker('update');
+        $('#songParts').songPart('update');
+    }
+
+    function validateInputs(obj) {
+        var allValid = true;
+        // Show error message if needed
+        $(obj).find('.input-container').each(function() {
+            // If no error text element, do not engage
+            var errText = $(this).find('.error-text');
+            if (errText.length <= 0) {
+                return;
+            }
+            var value = $(this).find('input, select').val();
+            // If value of input or select is not empty, hide error message if shown
+            if (value != '') {
+                if ($(this).hasClass('has-error')) $(this).removeClass('has-error')
+                return;
+            }
+            // Show error message
+            $(this).addClass('has-error')
+            allValid = false;
+        });
+
+        return allValid;
     }
 
     $.fn.songDetails = function(command, option, value) {
@@ -133,34 +175,18 @@
                 });
 
                 // Sync changes with Song Key
-                $(document).on('change', [settings.navbarKey, settings.songKeyInput].join(','), function(ev) {
+                $(document).on('change', [settings.navbarKey, settings.songKeyInput].join(','), function() {
                     var target = settings.navbarKey;
                     if ($(this).is(settings.navbarKey)) {
                         target = settings.songKeyInput;
                     }
-                    var key = $(this).find('option:selected').val();
-                    var scale = $(this).find('option:selected').attr('data-scale');
-                    $(target).find('option[value="' + key + '"][data-scale="' + scale + '"]').prop('selected', true);
-                    $(this).blur();
-                    $('.chord-selection-menu').chordBuilder('update');
-                    $('.chord').chordMarker('update');
-                });
-
-                // Show error message if needed
-                $('.input-container').on('inputContainer:submit', function() {
-                    // If no error text element, do not engage
-                    var errText = $(this).find('.error-text');
-                    if (errText.length <= 0) {
-                        return;
+                    setKeySelect(this, target);
+                }).on('change', [settings.navbarScale, settings.songScaleInput].join(','), function() {
+                    var target = settings.navbarScale;
+                    if ($(this).is(settings.navbarScale)) {
+                        target = settings.songScaleInput;
                     }
-                    var value = $(this).find('input, select').val();
-                    // If value of input or select is not empty, hide error message if shown
-                    if (value != '') {
-                        if (errText.is(':visible')) errText.hide();
-                        return;
-                    }
-                    // Show error message
-                    errText.show();
+                    setKeySelect(this, target);
                 });
 
                 $(settings.songTagInput).on('change', function() {
@@ -193,6 +219,8 @@
                     });
                 case 'get':
                     return getValue(this, option);
+                case 'validate':
+                    return validateInputs(this);
             }
         }
     }

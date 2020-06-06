@@ -18,10 +18,11 @@ class CreateSongpartsTable extends Migration
             $table->uuid('song_id');
             $table->string('name')->nullable();
             $table->integer('reference_key')->default(0);
+            $table->string('scale', 63);
             $table->integer('order');
-            $table->string('lyrics')->nullable();
-            $table->string('lyrics_display')->nullable();
-            $table->string('chords')->nullable();
+            $table->string('lyrics', 4095)->nullable();
+            $table->string('lyrics_display', 4095)->nullable();
+            $table->string('chords', 4095)->nullable();
             $table->timestamps();
 
             $table->foreign('song_id')->references('id')->on('songs')->onDelete('cascade');

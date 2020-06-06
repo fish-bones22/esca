@@ -7,17 +7,17 @@ use App\Http\Services\ScaleReferenceService;
 use App\Models\KeyReference;
 use Illuminate\View\Component;
 
-class KeySelector extends Component
+class ScaleSelector extends Component
 {
-    public $keyReferences;
+    public $scaleReferences;
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct(KeyReferenceService $service)
+    public function __construct(ScaleReferenceService $scaleReferences)
     {
-        $this->keyReferences = $service->getAll();
+        $this->scaleReferences = $scaleReferences->getAll();
     }
 
     /**
@@ -27,6 +27,6 @@ class KeySelector extends Component
      */
     public function render()
     {
-        return view('components.key-selector');
+        return view('components.scale-selector');
     }
 }

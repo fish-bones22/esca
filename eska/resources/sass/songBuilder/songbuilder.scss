@@ -10,3 +10,20 @@
 @import '_sequence.scss';
 @import '_songDetails.scss';
 @import '_songBuilderActions.scss';
+
+html, body {
+    overflow-y: hidden;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    left: 0;
+    margin: 0 auto;
+    position: fixed;
+    right: 0;
+    width: 48em;
+}
+.overflow-window {
+    overflow-y: auto;
+}

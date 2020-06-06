@@ -3,7 +3,8 @@
     background: white;
     border: 1px solid $dark;
     position: absolute;
-    width: 140px;
+    min-width: 140px;
+    width: fit-content;
     z-index: 2;
     ul {
         list-style: none;

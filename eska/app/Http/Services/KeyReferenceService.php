@@ -20,7 +20,6 @@ class KeyReferenceService {
             $keyReferences[] = [
                 'id' => $ref->id,
                 'root' => $ref->root,
-                'scale' => $ref->scale,
                 'alternative' => [
                     'root' => $ref->alternative_root,
                     'display'=> $ref->alternative_display

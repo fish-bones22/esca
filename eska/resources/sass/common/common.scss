@@ -6,9 +6,8 @@ html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
 }
-.container {
-    width: 48em;
-    margin:50px auto;
+textarea {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 @import '../_variables';
 @import '_text';

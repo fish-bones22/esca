@@ -1,6 +1,7 @@
 <div class="content-prototype" style="display:none">
     <div class="song-line">
         <div class="song-line-content">
+            <div class="song-line-modulation-info" style="display: none">Modulate to <span></span></div>
             <div class="chords"></div>
             <div class="lyrics">
                 <div class="lyrics-view"></div>

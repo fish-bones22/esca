@@ -15,7 +15,7 @@
                 <textarea id="sequenceDescription"></textarea>
             </div>
             <div class="input-container">
-                <label for="sequenceDefault"><input type="checkbox" id="sequenceDefault" /> Make the default sequence</label>
+                <label for="sequenceDefault" class="check-label"><input type="checkbox" id="sequenceDefault" /> Make the default sequence</label>
             </div>
         </div>
         <input type="hidden" id="sequenceId" />

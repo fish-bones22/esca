@@ -7,10 +7,10 @@
         { "name": "no", "displayName": "" }
     ],
     "notes": [
-        { "name":"C", "displayName": "C" },  
-        { "name": "C#", "displayName": "C♯", "altName": "D♭" }, 
-        { "name": "D", "displayName": "D" }, 
-        { "name": "D#", "displayName": "D♯", "altName": "E♭" }, 
+        { "name":"C", "displayName": "C" },
+        { "name": "C#", "displayName": "C♯", "altName": "D♭" },
+        { "name": "D", "displayName": "D" },
+        { "name": "D#", "displayName": "D♯", "altName": "E♭" },
         { "name": "E", "displayName": "E" },
         { "name": "F", "displayName": "F" },
         { "name": "F#", "displayName": "F♯", "altName": "G♭" },
@@ -21,20 +21,20 @@
         { "name": "B", "displayName": "B" }
     ],
     "scale": [{
-        "name": "Major",
+        "name": "major",
         "pattern": [
-            { "name": "1","noteIndex": 0 },    
-            { "name": "2","noteIndex": 2 },    
-            { "name": "3","noteIndex": 4 },    
-            { "name": "4","noteIndex": 5 },    
-            { "name": "5","noteIndex": 7 },   
-            { "name": "6","noteIndex": 9 },   
-            { "name": "7","noteIndex": 11 },   
-            { "name": "1s","noteIndex": 1 },   
-            { "name": "2s","noteIndex": 3 },   
-            { "name": "4s","noteIndex": 6 },   
-            { "name": "5s","noteIndex": 8 },  
-            { "name": "6s","noteIndex": 10 } 
+            { "name": "1","noteIndex": 0 },
+            { "name": "2","noteIndex": 2 },
+            { "name": "3","noteIndex": 4 },
+            { "name": "4","noteIndex": 5 },
+            { "name": "5","noteIndex": 7 },
+            { "name": "6","noteIndex": 9 },
+            { "name": "7","noteIndex": 11 },
+            { "name": "1s","noteIndex": 1 },
+            { "name": "2s","noteIndex": 3 },
+            { "name": "4s","noteIndex": 6 },
+            { "name": "5s","noteIndex": 8 },
+            { "name": "6s","noteIndex": 10 }
         ],
         "family": [
             { "name": "1", "variationIndex": 0 },

@@ -30,8 +30,9 @@ window.ChordProcessor = {
             //** Get root and bass note **//
 
             // Get scale
-            let scaleReference = musicReference.scale.find(o => o.name == rootScale);
+            let scaleReference = musicReference.scale.find(o => o.name == rootScale) || musicReference.scale[0];
             // Get position of root note
+            modulation = modulation >= 0 ? modulation : 12 + (modulation%12);
             let keyNoteIndex = musicReference.notes.indexOf(musicReference.notes.find(note => note.name == rootKey)) + modulation;
             let rootNoteIndex = (scaleReference.pattern.find(o => o.name == root).noteIndex + keyNoteIndex) % musicReference.notes.length
             let noteRef = musicReference.notes[rootNoteIndex];

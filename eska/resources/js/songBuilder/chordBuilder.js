@@ -10,7 +10,8 @@
         'mainScale': 'Major',
         'changeTargetOnChordChange':false,
         'songPartSelector': '',
-        'customSectionEmptyMessage': 'Empty'
+        'customSectionEmptyMessage': 'Empty',
+        'modulation': 0
     }
     var chordDisplay = '';
     var chordValue = '';
@@ -27,11 +28,24 @@
         return options[option];
     }
 
+    /**
+     * Set option value
+     * @param {Object} obj
+     * @param {String} option
+     * @param {any} value
+     */
+    function setOption(obj, option, value) {
+        var options = $(obj).data('chordBuilder-options');
+        options[option] = value;
+        $(obj).data('chordBuilder-options', options);
+    }
+
     function initializePanel(obj) {
 
         // Get root key and scale
         let root = getOption(obj, 'mainRoot');
         let scale = getOption(obj, 'mainScale');
+        let modulation = getOption(obj, 'modulation');
 
         root = typeof root == 'function' ? root() : root;
         scale = typeof scale == 'function' ? scale() : scale;
@@ -59,9 +73,10 @@
         section.empty();
         section2.empty();
 
-        let scaleReference = chordsReference.scale.find(o => o.name == scale);
+        let scaleReference = chordsReference.scale.find(o => o.name == scale) || chordsReference.scale[0];
         // Get position of root note
-        let rootNoteIndex = chordsReference.notes.indexOf(chordsReference.notes.find(note => note.name == root));
+        modulation = modulation >= 0 ? modulation : 12 + (modulation%12);
+        let rootNoteIndex = chordsReference.notes.indexOf(chordsReference.notes.find(note => note.name == root)) + modulation;
         for (var i = 0; i < scaleReference.pattern.length; i++) {
             // Get notes based root
             let noteIndex = (scaleReference.pattern[i].noteIndex + rootNoteIndex) % chordsReference.notes.length
@@ -225,6 +240,17 @@
      */
     function setTarget(obj, target, setImmediately = false) {
         $(obj).data('target', target);
+
+        if (target != null) {
+            var modulation = $(target).chordMarker('getModulationAmount');
+            if (modulation == 0) $(obj).find('.modulation-amount').html('');
+            else  $(obj).find('.modulation-amount').html('+' + modulation);
+
+            if (modulation != undefined && modulation != getOption(obj, 'modulation')) {
+                setOption(obj, 'modulation', modulation);
+                initializePanel(obj);
+            }
+        }
         changeValueOfTarget = setImmediately != undefined && setImmediately;
     }
 

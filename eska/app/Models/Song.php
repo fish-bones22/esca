@@ -18,7 +18,7 @@ class Song extends UuidKey
     }
 
     function songParts() {
-        return $this->hasMany('App\Models\SongPart');
+        return $this->hasMany('App\Models\SongPart')->orderBy('order');
     }
 
     function tags() {

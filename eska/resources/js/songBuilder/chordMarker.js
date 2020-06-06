@@ -3,13 +3,16 @@
     var defaults = {
         'dragSnap': 0,
         'leftOffset': 0,
-        'keySelector': '#key',
+        'scale': '',
         'mainKey': 'C',
         'mainScale': 'Major',
         'parent': undefined,
         'selectOnCreate': true,
         'remainSelected': false,
-        'keyReference': 0,
+        'songModulation': 0,
+        'songPartModulation': 0,
+        'songLineModulation': 0,
+        'modulation': 0,
         'value': null,
         onDragStop: function() {},
     };
@@ -42,11 +45,14 @@
             $(obj).html('&nbsp;');
             return;
         }
-        var keySelector = getOption(obj, 'keySelector');
-        var mainRoot = $(keySelector).val();
-        var mainScale = $(keySelector).find('option:selected').attr('data-scale');
 
-        var disp = ChordProcessor.processChord($(obj).attr('data-value'), mainRoot,  mainScale, getOption(obj, 'referenceKey'));
+        var mainRoot = getOption(obj, 'key');
+        var scale = getOption(obj, 'scale');
+        mainRoot = typeof mainRoot == 'function' ? mainRoot() : mainRoot;
+        scale = typeof scale == 'function' ? scale() : scale;
+
+        var modulationAmount = getModulationAmount(obj);
+        var disp = ChordProcessor.processChord($(obj).attr('data-value'), mainRoot, scale, modulationAmount);
         $(obj).html(disp);
     }
 
@@ -61,6 +67,33 @@
         if (!getOption(obj, 'remainSelected') && value != '') {
             unselectMarker(obj);
         }
+    }
+
+    /**
+     * Modulate the chord
+     * @param {object} obj
+     * @param {number} amount Amount of modulation
+     */
+    function modulate(obj, amount) {
+        setOption(obj, 'modulation', amount);
+    }
+
+    /**
+     * Get total modulation (song + song part + song line) of the chord
+     * @param {object} obj
+     */
+    function getModulationAmount(obj) {
+        var _songModulation = getOption(obj, 'songModulation');
+        var _songPartModulation = getOption(obj, 'songPartModulation');
+        var _songLineModulation = getOption(obj, 'songLineModulation');
+
+        var songModulation = typeof _songModulation == 'function' ? _songModulation() : _songModulation;
+        var songPartModulation = typeof _songPartModulation == 'function' ? _songPartModulation() : _songPartModulation;
+        var songLineModulation = typeof _songLineModulation == 'function' ? _songLineModulation() : _songLineModulation;
+
+        var modulation = getOption(obj, 'modulation');
+
+        return modulation*1 + songModulation*1 + songPartModulation*1 + songLineModulation*1;
     }
 
     /**
@@ -110,7 +143,6 @@
 
     $.fn.chordMarker = function(command, option, value) {
 
-
         if (command == undefined || typeof command == 'object') {
 
             return $(this).each(function() {
@@ -133,12 +165,11 @@
                         .attr('data-position', Math.round(settings.leftOffset/settings.dragSnap));
                     },
                     stop: function(ev, ui) {
-                        let diff = Math.round($(self).position().left);
-                        let remainder = diff % settings.dragSnap;
-                        let newPos = diff - remainder;
+                        let diff = $(self).position().left;
+                        let snapPos = Math.round(diff / settings.dragSnap);
                         $(self).removeAttr('style')
-                        .css('left', newPos)
-                        .attr('data-position', newPos / settings.dragSnap);
+                        .css('left', snapPos * settings.dragSnap)
+                        .attr('data-position', snapPos);
                         $(self).trigger('chordMarker:dragstop', [$(self)]);
                     }
                 });
@@ -165,12 +196,6 @@
                         unselectMarker(self);
                     }
                 });
-                // Key selector changed
-                $(settings.keySelector).on('change', function() {
-                    settings.mainRoot = $(this).val();
-                    settings.mainScale = $(this).find('option:selected').attr('data-scale');
-                    updateChord(self);
-                });
 
                 // Custom events
                 $(self).on('chordMarker:dragstop', settings.onDragStop);
@@ -179,10 +204,6 @@
                 $(settings.parent).append($(self));
 
                 // Run on init
-
-                // Set main key
-                settings.mainRoot = $(settings.keySelector).val();
-                settings.mainScale = $(settings.keySelector).find('option:selected').attr('data-scale');
 
                 if (settings.value == null) {
                     var chordValue = $(settings.chordBuilder).chordBuilder('getChord', self);
@@ -196,7 +217,6 @@
                     setValue(self, settings.value);
                     settings.value = null;
                 }
-
             });
         }
 
@@ -210,7 +230,6 @@
                     return $(this).each(function() {
                         setValue(this, option);
                     });
-
                 case 'select':
                     return $(this).each(function() {
                         selectMarker(this);
@@ -222,9 +241,21 @@
                 case 'unselectall':
                     unselectAllMarkers();
                     return this;
+                case 'modulate':
+                    if (typeof option != 'number') return this;
+                    return $(this).each(function() {
+                        modulate(this, option);
+                    });
                 case 'option':
                     if (typeof option != 'string') return null;
+                    if (typeof value == 'string') {
+                        return $(this).each(function() {
+                            setOption(this, option, value);
+                        });
+                    }
                     return getOption(this, option);
+                case 'getmodulationamount':
+                    return getModulationAmount(this);
             }
         }
 

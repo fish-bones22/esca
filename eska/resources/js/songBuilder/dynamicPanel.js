@@ -132,7 +132,7 @@ function insertPanel(obj, index, id = null) {
         panel.attr('data-id', id);
     }
 
-    $(obj).trigger('dynamicPanel:insert', [ panel ]);
+    $(obj).trigger('dynamicPanel:insert' + getOption(obj, 'key'), [ panel ]);
 
     return panel;
 }
@@ -230,7 +230,7 @@ $.fn.dynamicPanel = function(command, option, val) {
             }
             // Set settings
             let settings = $.extend({}, defaults, initOptions(command));
-            $(this).data('dynamicPanel-options', settings);
+            $(self).data('dynamicPanel-options', settings);
 
             $(self).addClass('dynamicPanel');
 
@@ -240,7 +240,7 @@ $.fn.dynamicPanel = function(command, option, val) {
             if (settings.draggable) {
                 $(self).sortable({
                     addClasses: false,
-                    cancel: ['input', 'a', 'select'].concat(cancelOpt).join(','),
+                    cancel: ['input', 'a', 'select', 'button:not(.move-handle)'].concat(cancelOpt).join(','),
                     cursor: 'grabbing',
                     stop: function(event, ui) {
                         // Resort panel after sorting
@@ -251,7 +251,7 @@ $.fn.dynamicPanel = function(command, option, val) {
                             }
                             index++;
                         });
-                        $(ui.item).removeAttr('style');
+                        //$(ui.item).removeAttr('style');
                     }
                 });
             }
@@ -259,7 +259,7 @@ $.fn.dynamicPanel = function(command, option, val) {
             /** Event listeners **/
 
             // Add panels button
-            $(document).on('click', settings.adderSelector + ',  ' + '[data-target="#' + $(self).attr('id') + '"]' ,function() {
+            $(document).on('click', '[data-target="#' + $(self).attr('id') + '"]' ,function() {
                 // Create panel then focus on the closest text input
                 insertPanel(self).find('input[type="text"]').focus();
             });
@@ -293,7 +293,7 @@ $.fn.dynamicPanel = function(command, option, val) {
 
             // onInsert
             if (settings.hasOwnProperty('onInsert') && settings.onInsert != undefined) {
-                $(self).on('dynamicPanel:insert', settings.onInsert);
+                $(self).on('dynamicPanel:insert' + settings.key, settings.onInsert);
             }
 
             // Create panels

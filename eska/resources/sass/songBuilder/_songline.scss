@@ -5,10 +5,14 @@
     .song-line-content {
         flex-grow: 1;
 
+        .song-line-modulation-info {
+            font-size: 12px;
+            margin: 5px 0 5px 15px;
+        }
+
         .chords {
             min-height: fit-content !important;
             .chord-cursor {
-                bottom: 50%;
                 cursor: pointer;
                 position: absolute;
                 user-select: none;
@@ -19,7 +23,6 @@
             .chord {
                 cursor: pointer;
                 border-radius: 2px;
-                bottom: 50%;
                 position: absolute;
                 user-select: none;
                 z-index: 0;

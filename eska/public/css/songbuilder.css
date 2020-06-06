@@ -29,8 +29,10 @@ nav .song-information .song-title input {
   border: none;
   color: white;
   font-size: 18px;
+  font-weight: 600;
   padding: 5px 10px;
-  width: 250px;
+  text-align: right;
+  width: 200px;
 }
 
 nav .song-information .song-title input:focus {
@@ -127,7 +129,7 @@ nav .song-information .song-key select option {
 
 .step-outline {
   display: flex;
-  margin: 80px 30px 30px 30px;
+  margin: 50px 30px 10px 30px;
 }
 
 .step-outline .step {
@@ -170,6 +172,11 @@ nav .song-information .song-key select option {
   flex-grow: 1;
 }
 
+.song-line .song-line-content .song-line-modulation-info {
+  font-size: 12px;
+  margin: 5px 0 5px 15px;
+}
+
 .song-line .song-line-content .chords {
   min-height: -webkit-fit-content !important;
   min-height: -moz-fit-content !important;
@@ -177,7 +184,6 @@ nav .song-information .song-key select option {
 }
 
 .song-line .song-line-content .chords .chord-cursor {
-  bottom: 50%;
   cursor: pointer;
   position: absolute;
   -webkit-user-select: none;
@@ -193,7 +199,6 @@ nav .song-information .song-key select option {
 .song-line .song-line-content .chords .chord {
   cursor: pointer;
   border-radius: 2px;
-  bottom: 50%;
   position: absolute;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -350,8 +355,8 @@ nav .song-information .song-key select option {
 }
 
 .song-builder-actions {
-  margin: auto;
-  padding: 50px 0;
+  flex-grow: 2;
+  margin: 10px 0;
 }
 
 .song-builder-actions button {
@@ -407,7 +412,7 @@ nav .song-information .song-key select option {
 
 .song-part-container .song-part-title {
   display: inline-block;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .song-part-container .song-part-title .song-part-name {
@@ -428,6 +433,15 @@ nav .song-information .song-key select option {
 
 .song-part-container .song-part-title .song-part-name span {
   color: lightgray;
+}
+
+.song-part-container .song-part-modulation-info {
+  font-size: 12px;
+  margin: 0 0 5px 10px;
+}
+
+.song-part-container .song-part-actions {
+  margin-bottom: 20px;
 }
 
 .song-part-container .btn-action {
@@ -470,7 +484,8 @@ nav .song-information .song-key select option {
   font-size: 13px;
 }
 
-.song-part-title-expanded-panel {
+.song-part-title-expanded-panel,
+.modulation-content-menu {
   background-color: white;
   border: 1px solid lightgray;
   padding: 10px 5px;
@@ -478,57 +493,84 @@ nav .song-information .song-key select option {
   z-index: 2;
 }
 
-.song-part-title-expanded-panel .panel-body {
+.song-part-title-expanded-panel .panel-title,
+.modulation-content-menu .panel-title {
+  margin-left: 5px;
+}
+
+.song-part-title-expanded-panel .panel-body,
+.modulation-content-menu .panel-body {
   display: flex;
   margin: 25px 5px 20px 25px;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-select {
+.song-part-title-expanded-panel .panel-body .song-part-name-select,
+.modulation-content-menu .panel-body .song-part-name-select {
   font-size: 16px;
   padding: 5px 10px;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-select option {
+.song-part-title-expanded-panel .panel-body .song-part-name-select option,
+.modulation-content-menu .panel-body .song-part-name-select option {
   font-size: 14px;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-number-input {
+.song-part-title-expanded-panel .panel-body #modulationScale,
+.modulation-content-menu .panel-body #modulationScale {
+  font-size: 16px;
+  margin-right: 20px;
+}
+
+.song-part-title-expanded-panel .panel-body #modulationScale option,
+.modulation-content-menu .panel-body #modulationScale option {
+  font-size: 14px;
+}
+
+.song-part-title-expanded-panel .panel-body .input-container,
+.modulation-content-menu .panel-body .input-container {
   border: 1px solid lightgray;
   display: inline;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-number-input input {
+.song-part-title-expanded-panel .panel-body .input-container input,
+.modulation-content-menu .panel-body .input-container input {
   border: none;
   font-size: 16px;
   padding: 5px 10px;
   width: 50px;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-number-input input:focus {
+.song-part-title-expanded-panel .panel-body .input-container input:focus,
+.modulation-content-menu .panel-body .input-container input:focus {
   outline: none;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-number-input:focus {
+.song-part-title-expanded-panel .panel-body .input-container:focus,
+.modulation-content-menu .panel-body .input-container:focus {
   border: 1px solid gray;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-number-input .clear {
+.song-part-title-expanded-panel .panel-body .input-container .clear,
+.modulation-content-menu .panel-body .input-container .clear {
   float: right;
 }
 
-.song-part-title-expanded-panel .panel-body .song-part-name-number-input .clear span {
+.song-part-title-expanded-panel .panel-body .input-container .clear span,
+.modulation-content-menu .panel-body .input-container .clear span {
   font-size: 14px;
-  padding-top: 5px;
+  padding: 6px 4px 0 0;
 }
 
-.song-part-title-expanded-panel .done {
+.song-part-title-expanded-panel .done,
+.modulation-content-menu .done {
   background-color: #2a9d8f;
   color: white;
   margin: 0 10px 0 5px;
   padding: 5px 20px;
 }
 
-.song-part-title-expanded-panel .done:hover {
+.song-part-title-expanded-panel .done:hover,
+.modulation-content-menu .done:hover {
   background-color: #23837b;
 }
 
@@ -537,6 +579,8 @@ nav .song-information .song-key select option {
   border: 1px solid lightgray;
   padding: 5px;
   position: fixed;
+  float: right;
+  top: 50px;
   z-index: 2;
 }
 
@@ -694,38 +738,57 @@ nav .song-information .song-key select option {
   outline: none;
 }
 
-.sequence-container #sequenceBox .sequence-item .repeat {
-  margin-left: 80px;
+.sequence-container #sequenceBox .sequence-item .repeat,
+.sequence-container #sequenceBox .sequence-item .modulation {
+  margin-left: 10px;
   display: flex;
 }
 
-.sequence-container #sequenceBox .sequence-item .repeat .repeat-input {
+.sequence-container #sequenceBox .sequence-item .repeat .repeat-input,
+.sequence-container #sequenceBox .sequence-item .repeat .modulation-input,
+.sequence-container #sequenceBox .sequence-item .modulation .repeat-input,
+.sequence-container #sequenceBox .sequence-item .modulation .modulation-input {
   border: 1px solid lightgray;
   display: flex;
-  margin: 0 0 0 15px;
 }
 
-.sequence-container #sequenceBox .sequence-item .repeat .repeat-input input {
+.sequence-container #sequenceBox .sequence-item .repeat .repeat-input input,
+.sequence-container #sequenceBox .sequence-item .repeat .modulation-input input,
+.sequence-container #sequenceBox .sequence-item .modulation .repeat-input input,
+.sequence-container #sequenceBox .sequence-item .modulation .modulation-input input {
   border: none;
   font-size: 16px;
   padding-left: 10px;
   width: 50px;
 }
 
-.sequence-container #sequenceBox .sequence-item .repeat .repeat-input input:focus {
+.sequence-container #sequenceBox .sequence-item .repeat .repeat-input input:focus,
+.sequence-container #sequenceBox .sequence-item .repeat .modulation-input input:focus,
+.sequence-container #sequenceBox .sequence-item .modulation .repeat-input input:focus,
+.sequence-container #sequenceBox .sequence-item .modulation .modulation-input input:focus {
   outline: none;
 }
 
-.sequence-container #sequenceBox .sequence-item .repeat .repeat-input .clear {
+.sequence-container #sequenceBox .sequence-item .repeat .repeat-input .clear,
+.sequence-container #sequenceBox .sequence-item .repeat .modulation-input .clear,
+.sequence-container #sequenceBox .sequence-item .modulation .repeat-input .clear,
+.sequence-container #sequenceBox .sequence-item .modulation .modulation-input .clear {
   padding: 4px 2px 0 2px;
 }
 
-.sequence-container #sequenceBox .sequence-item .repeat .repeat-input .clear span {
+.sequence-container #sequenceBox .sequence-item .repeat .repeat-input .clear span,
+.sequence-container #sequenceBox .sequence-item .repeat .modulation-input .clear span,
+.sequence-container #sequenceBox .sequence-item .modulation .repeat-input .clear span,
+.sequence-container #sequenceBox .sequence-item .modulation .modulation-input .clear span {
   font-size: 14px;
 }
 
 .sequence-container #sequenceBox .sequence-item .sequence-item-actions {
-  margin-left: auto;
+  flex-grow: 1;
+}
+
+.sequence-container #sequenceBox .sequence-item .sequence-item-actions button {
+  float: right;
 }
 
 .sequence-container #sequenceBox .sequence-item .sequence-item-actions span {
@@ -756,6 +819,10 @@ nav .song-information .song-key select option {
   margin: 15px 10px;
 }
 
+.song-details-container .body .input-container label {
+  white-space: nowrap;
+}
+
 .song-details-container .body .input-container select option {
   font-size: 14px;
 }
@@ -765,10 +832,20 @@ nav .song-information .song-key select option {
 }
 
 .song-details-container .body .input-container .error-text {
-  color: darkred;
+  color: #cc1212;
+  display: none;
   font-size: 14px;
   font-style: italic;
   margin-bottom: 10px;
+}
+
+.song-details-container .body .input-container .key-scale-select {
+  display: flex;
+  flex-direction: row;
+}
+
+.song-details-container .body .input-container.has-error .error-text {
+  display: block;
 }
 
 .song-details-container .body .song-musical-details {
@@ -776,8 +853,12 @@ nav .song-information .song-key select option {
   margin: 20px 0;
 }
 
-.song-details-container .body .song-musical-details .input-container {
-  width: 20em;
+.song-details-container .body .song-musical-details .input-container.song-time-sign {
+  flex-grow: 1;
+}
+
+.song-details-container .body .song-musical-details .input-container .song-speed-input {
+  width: 150px;
 }
 
 .song-details-container .body .song-tags .song-tags-box {
@@ -808,8 +889,8 @@ nav .song-information .song-key select option {
 }
 
 .song-builder-actions {
-  margin: auto;
-  padding: 50px 0;
+  flex-grow: 2;
+  margin: 10px 0;
 }
 
 .song-builder-actions button {
@@ -849,5 +930,25 @@ nav .song-information .song-key select option {
 .song-builder-actions #previous {
   float: left;
   padding: 0 20px 0 15px;
+}
+
+html,
+body {
+  overflow-y: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  left: 0;
+  margin: 0 auto;
+  position: fixed;
+  right: 0;
+  width: 48em;
+}
+
+.overflow-window {
+  overflow-y: auto;
 }
 

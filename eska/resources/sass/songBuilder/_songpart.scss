@@ -10,7 +10,7 @@
 
     .song-part-title {
         display: inline-block;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
 
         .song-part-name {
             border-radius: 3px;
@@ -28,6 +28,15 @@
                 color: $dark;
             }
         }
+    }
+
+    .song-part-modulation-info {
+        font-size: 12px;
+        margin: 0 0 5px 10px;
+    }
+
+    .song-part-actions {
+        margin-bottom: 20px;
     }
 
     .btn-action {
@@ -66,12 +75,15 @@
     }
 }
 
-.song-part-title-expanded-panel {
+.song-part-title-expanded-panel, .modulation-content-menu {
     background-color: white;
     border: 1px solid $dark;
     padding: 10px 5px;
     position: absolute;
     z-index: 2;
+    .panel-title {
+        margin-left: 5px;
+    }
     .panel-body {
         display: flex;
         margin: 25px 5px 20px 25px;
@@ -82,7 +94,14 @@
                 font-size: 14px;
             }
         }
-        .song-part-name-number-input {
+        #modulationScale {
+            font-size: 16px;
+            margin-right: 20px;
+            option {
+                font-size: 14px;
+            }
+        }
+        .input-container {
             border: 1px solid $dark;
             display: inline;
             input {
@@ -100,7 +119,7 @@
             .clear {
                 span {
                     font-size: 14px;
-                    padding-top: 5px;
+                    padding: 6px 4px 0 0;
                 }
                 float: right;
             }

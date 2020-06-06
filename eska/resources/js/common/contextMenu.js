@@ -15,11 +15,11 @@
         'nesting': false
     }
 
-    
+
     /**
      * Get option value
-     * @param {Object} object 
-     * @param {String} key 
+     * @param {Object} object
+     * @param {String} key
      */
     function getOption(object, key) {
         var options = $(object).data('contextMenu-options');
@@ -31,7 +31,7 @@
 
     /**
      * Hide context menu
-     * @param {Object} obj 
+     * @param {Object} obj
      */
     function hide(obj, target = null) {
         $(obj).trigger('contextMenu:hide', [obj, target]);
@@ -40,7 +40,7 @@
     }
     /**
      * Hide context menu
-     * @param {Object} obj 
+     * @param {Object} obj
      */
     function hideAll() {
         $('.contextMenu:visible').each(function() {
@@ -49,20 +49,33 @@
     }
     /**
      * Show context menu and set target
-     * @param {object} obj 
+     * @param {object} obj
      * @param {object} target Calling DOM of the context menu
      */
     function show(obj, target) {
         if (target != undefined) {
             // Compute where to place menu
-            var left = $(target).offset().left;
+            var left = $(target).offset().left - $(target)[0].offsetParent.offsetLeft;
+            var top = $(target).offset().top;
             var width = $(obj).width();
+            var height = $(obj).height();
             var viewPortWidth = $(document).width();
-            left = left + width > viewPortWidth ? viewPortWidth - width - 20 : left;
+            var viewPortHeight = $(document).height();
+            if (left > viewPortWidth / 2) {
+                var targetWidth = $(target).width();
+                left = left - width + targetWidth;
+            }
+            if (viewPortHeight < top + height*2.5) {
+                top = top - height;
+            }
+            else {
+                top = top + $(target).height();
+            }
+
             $(obj).trigger('contextMenu:hide', [obj, target]);
             $(obj).data('target', target);
             $(obj).css('left', left)
-            .css('top', $(target).offset().top + $(target).height());
+            .css('top', top);
         }
         if (!getOption(obj, 'nesting')) hideAll();
         $(obj).show();
@@ -88,13 +101,13 @@
                 var self = this;
                 // Combine menu items array from default and command
                 command.menuItems = defaults.menuItems.concat((command.hasOwnProperty('menuItems') ? command.menuItems : []));
-                // Extend settings from default 
+                // Extend settings from default
                 var settings = $.extend({}, defaults, command);
                 $(self).data('contextMenu-options', settings);
 
                 // Collapse context menu when clicked outside
-                $(document).on('click', function(event){ 
-                    if (!$(self).is(event.target) 
+                $(document).on('click', function(event){
+                    if (!$(self).is(event.target)
                     && $(event.target).closest($(self).data('target')).length <= 0
                     && $(event.target).closest(self).length <= 0
                     && !$(self).is(':hidden')) {
@@ -120,7 +133,7 @@
                 $(self).addClass('contextMenu');
             });
         }
-        
+
         switch(command.toLowerCase()) {
             case 'hide':
                 return $(this).each(function() {

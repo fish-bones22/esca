@@ -5,9 +5,15 @@ import { v4 as uuidv4 } from 'uuid';
     var defaults = {
         'contextMenu': '',
         'songPartTitleInput': '.song-part-title .song-part-name',
+        'songPartModulationInfo': '.song-part-modulation-info',
         'fontHeight': 5,
         'fontWidth': 5,
-        'sequences': []
+        'sequences': [],
+        'key': '',
+        'scale': '',
+        'mainScale': '',
+        'songModulation': 0,
+        'modulation': 0
     }
 
     /**
@@ -36,6 +42,61 @@ import { v4 as uuidv4 } from 'uuid';
     }
 
     /**
+     * Modulate the song part
+     * @param {object} obj
+     * @param {number} amount Amount of modulation
+     */
+    function modulate(obj, panel, amount) {
+        $(panel).attr('data-modulation', amount);
+        setModulationInfo(obj);
+    }
+
+    /**
+     * Change the song part to a new scale
+     * @param {object} obj
+     * @param {number} scale New scale
+     */
+    function changeScale(obj, panel, scale) {
+        $(panel).attr('data-scale', scale);
+        // If no chords yet, change scale of the line as well
+        $(panel).find('.chords').each(function() {
+            if ($(this).children('.chord').length <= 0) {
+                $(this).chordsLine('changeScale', scale);
+            }
+        });
+        setModulationInfo(obj, panel);
+    }
+
+    function setModulationInfo(obj, panel) {
+        // Get the song's modulation
+        var songModulation = getOption(obj, 'songModulation');
+        songModulation = typeof songModulation == 'function' ? songModulation() : songModulation;
+
+        // Get this song part's modulation
+        var modulation = $(panel).attr('data-modulation') || 0;
+        var scale  = $(panel).attr('data-scale');
+
+        // Get the main key and the main scale of the song
+        var mainKey = getOption(obj, 'key');
+        var mainScale =  getOption(obj, 'mainScale');
+        mainKey = typeof mainKey == 'function'  ? mainKey() : mainKey;
+        mainScale = typeof mainScale == 'function'  ? mainScale() : mainScale;
+
+        // Hide the modulation info if no key change or difference to scale in relation to the song's scale
+        if (modulation == 0 && scale == mainScale) {
+            $(panel).find(getOption(obj, 'songPartModulationInfo')).hide();
+        } else {
+            var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation + songModulation*1);
+            $(panel).find(getOption(obj, 'songPartModulationInfo')).show().children('span').html('Key of ' + display + (scale != 'major' ? ' ' + scale : ''));
+        }
+
+        // set modulation info of lines
+        $(obj).find('.chords').each(function() {
+            $(this).chordsLine('update');
+        })
+    }
+
+    /**
      * Fill song part container with values
      * @param {object} obj
      * @param {object} values collection of song parts
@@ -49,7 +110,8 @@ import { v4 as uuidv4 } from 'uuid';
             // Set ID
             panel.attr('data-id', songPart['id']);
             panel.attr('data-order', songPart['order']);
-            panel.attr('data-reference-key', songPart['referenceKey']);
+            panel.attr('data-scale', songPart['scale']);
+            panel.attr('data-modulation', songPart['referenceKey']);
             if (songPart.hasOwnProperty('sequences') && Array.isArray(songPart['sequences'])) {
                 var sequences = [];
                 songPart['sequences'].forEach(part => {
@@ -67,9 +129,9 @@ import { v4 as uuidv4 } from 'uuid';
             var lyrContent = songPart['lyrics']['content'];
             var chords = songPart['chords']['content'];
             // Parse lyrics and chords line
-            var lyrDispArr = lyrDisplay.split('{newline}');
-            var lyrContArr = lyrContent.split('{newline}');
-            var chordsArr = chords.split('{newline}');
+            var lyrDispArr = lyrDisplay != null ? lyrDisplay.split('{newline}') : [''];
+            var lyrContArr = lyrContent != null ? lyrContent.split('{newline}') : [''];
+            var chordsArr = chords != null ? chords.split('{newline}') : [];
             // Fill only if lyrics and chords have the same lines
             if (lyrDispArr.length == lyrContArr.length && lyrDispArr.length == chordsArr.length) {
                 // Remove existing song lines first
@@ -79,6 +141,7 @@ import { v4 as uuidv4 } from 'uuid';
                     fillSongLine(panel, lyrDispArr[i], lyrContArr[i], chordsArr[i]);
                 }
             }
+            setModulationInfo(obj, panel);
         });
     }
 
@@ -108,23 +171,25 @@ import { v4 as uuidv4 } from 'uuid';
             var id = $(this).attr('data-id');
             var name = $(this).find('.song-part-name').attr('data-name');
             var order = $(this).attr('data-order');
+            var modulation = $(this).attr('data-modulation');
+            var scale = $(this).attr('data-scale');
             // Get lyrics and chords
             var songPartChords = [];
             var songPartLyricsCont = [];
             var songPartLyricsDisp = [];
             $(this).find('.panel-item .song-line-content').each(function() {
                 $(this).find('.lyrics-view').songLine('processLine');
-                var chords = $(this).children('.chords').chordsLine('getValue');
-                var lyricsDisplay = $(this).find('.lyrics input[type="text"]').val();
-                var lyricsContent = $(this).find('.lyrics-view').songLine('getValue');
+                var chords = $(this).children('.chords').chordsLine('getValue') || '';
+                var lyricsDisplay = $(this).find('.lyrics input[type="text"]').val() || '';
+                var lyricsContent = $(this).find('.lyrics-view').songLine('getValue') || '';
 
                 songPartChords.push(chords.join('|'));
                 songPartLyricsCont.push(lyricsContent);
                 songPartLyricsDisp.push(lyricsDisplay);
             });
-
             songParts.push({
-                'referenceKey': 0,
+                'referenceKey': modulation,
+                'scale': scale,
                 'id': id,
                 'name': name,
                 'order': order,
@@ -175,6 +240,10 @@ import { v4 as uuidv4 } from 'uuid';
                             var index = $(this).closest('.song-part').attr('data-order')*1;
                             $(self).dynamicPanel('insert', index);
                         });
+
+                        // Set main scale as the song part's current scale
+                        changeScale(self, panel, typeof settings.mainScale == 'function' ? settings.mainScale() : settings.mainScale);
+                        modulate(self, panel, 0);
 
                         // Fold/Expand action of song part panel
                         $(panel).find('.fold, .expand').on('click', function() {
@@ -227,6 +296,10 @@ import { v4 as uuidv4 } from 'uuid';
                                         'contextMenu': '.character-context-menu',
                                         'spacerContextMenu': '.spacer-context-menu'
                                     });
+                                    // hide chords view initially when not on chords mode
+                                    if ($('#processing').val() != 'lyrics') {
+                                        songlinePanel.find('.lyrics input[type="text"]').hide();
+                                    }
                                 }
                                 // Set up chords line
                                 var chordsView = songlinePanel.find('.chords');
@@ -234,12 +307,19 @@ import { v4 as uuidv4 } from 'uuid';
                                     // Initialize chords line
                                     chordsView.chordsLine({
                                         'height': settings.fontHeight + 4,
-                                        'cursorWidth': settings.fontWidth
+                                        'cursorWidth': settings.fontWidth,
+                                        'key': settings.key,
+                                        'mainScale': settings.mainScale, // function to get the song's main scale
+                                        'songPartScale': function() { return panel.attr('data-scale') },
+                                        'songModulation': getOption(self, 'songModulation'),
+                                        'songPartModulation': function() { return panel.attr('data-modulation') != undefined ? panel.attr('data-modulation') : 0 }
                                     });
                                 }
                                 // hide chords view initially when not on chords mode
                                 if ($('#processing').val() != 'chords') {
                                     chordsView.hide();
+                                } else {
+                                    chordsView.show();
                                 }
                             }
                         });
@@ -264,9 +344,24 @@ import { v4 as uuidv4 } from 'uuid';
                         if (typeof option != 'object') return; // Not array
                         fillSongparts(this, option);
                     });
-
                 case 'getvalues':
                     return getSongParts(this);
+                case 'modulate':
+                    if (typeof value != 'number') return; // NaN
+                    return $(this).each(function() {
+                        modulate(this, option, value);
+                    });
+                case 'changescale':
+                    return $(this).each(function() {
+                        changeScale(this, option, value);
+                    });
+                case 'update':
+                    return $(this).each(function() {
+                        var self = this;
+                        $(this).find('.song-part').each(function() {
+                            setModulationInfo(self, this);
+                        })
+                    });
             }
         }
     }

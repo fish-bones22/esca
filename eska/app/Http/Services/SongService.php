@@ -54,6 +54,7 @@ class SongService {
                 'id' => $songPart->id,
                 'name' => $songPart->name,
                 'referenceKey' => $songPart->reference_key,
+                'scale' => $songPart->scale,
                 'order' => $songPart->order,
                 'lyrics' => [
                     'content' => $songPart->lyrics,
@@ -142,6 +143,9 @@ class SongService {
                 if ($mdlSongPart->reference_key != $songPart['referenceKey']) {
                     $mdlSongPart->reference_key = $songPart['referenceKey'];
                 }
+                if ($mdlSongPart->scale != $songPart['scale']) {
+                    $mdlSongPart->scale = $songPart['scale'];
+                }
                 if ($mdlSongPart->lyrics != $songPart['lyrics']['content']) {
                     $mdlSongPart->lyrics = $songPart['lyrics']['content'];
                 }
@@ -168,7 +172,7 @@ class SongService {
                 $mdlSequence = null;
 
                 if ($sequence['id'] != '')
-                    $mdlSequence = $song->sequences->find($sequence['id']);
+                    $mdlSequence = Sequence::find($sequence['id']);
 
                 if ($mdlSequence == null) {
                     $mdlSequence = new Sequence();

@@ -6,6 +6,7 @@
         <div class="song-part-title">
             <span class="song-part-name" data-name=""><span>Song part name (click to change)</span></span>
         </div>
+        <div class="song-part-modulation-info" style="display: none">Modulate to <span></span></div>
         <div class="stanza-container">
             <div class="stanza"></div>
             <div class="actions-container stanza-actions">

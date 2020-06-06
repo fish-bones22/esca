@@ -1,6 +1,10 @@
 label {
     color: $darker;
+    font-size: 13px;
     margin: 2px 10px;
+    &.check-label {
+        font-size: 16px;
+    }
 }
 // Form controls
 input, select, textarea {

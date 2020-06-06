@@ -4,17 +4,17 @@
             <div class="song-title input-container">
                 <label for="songTitle">Title</label>
                 <input type="text" class="song-title-input" id="songTitle" />
-                <span class="error-text" style="display: none;">Do not leave empty</span>
+                <span class="error-text">Do not leave empty</span>
             </div>
             <div class="song-artist input-container">
                 <label for="songArtist">Artist</label>
                 <input type="text" class="song-artist-input" id="songArtist" />
-                <span class="error-text" style="display: none;">Do not leave empty. Write 'anonymous' if unknown</span>
+                <span class="error-text">Do not leave empty. Write 'anonymous' if unknown</span>
             </div>
             <div class="song-tags input-container">
                 <label for="songtags">Tags</label>
                 <x-tag-selector classselector="song-tags-box" classinput="song-tags-input" id="songtags" />
-                <span class="error-text" style="display: none;">Select at least one</span>
+                <span class="error-text">Select at least one</span>
             </div>
             <div class="song-description input-container">
                 <label for="songDescription">Description</label>
@@ -24,8 +24,11 @@
         <div class="song-musical-details">
             <div class="song-key input-container">
                 <label for="songkey">Key</label>
-                <x-key-selector class="song-key-input" id="songkey" />
-                <span class="error-text" style="display: none;">Select one</span>
+                <div class="key-scale-select">
+                    <x-key-selector class="song-key-input" id="songkey" />
+                    <x-scale-selector class="song-key-input" id="songscale" />
+                </div>
+                <span class="error-text">Select one</span>
             </div>
             <div class="song-time-sign input-container">
                 <label for="songTimeSign">Time Signature</label>

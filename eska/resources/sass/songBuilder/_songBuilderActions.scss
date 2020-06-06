@@ -1,7 +1,7 @@
 //reference _variables.scss
 .song-builder-actions {
-    margin: auto;
-    padding: 50px 0;
+    flex-grow: 2;
+    margin: 10px 0;
     button {
         background-color: $primary;
         border: none;

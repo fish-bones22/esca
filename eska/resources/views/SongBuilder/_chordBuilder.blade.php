@@ -2,7 +2,7 @@
     <button class="btn-action close"><span class="material-icons">clear</span></button>
     <div class="content">
         <h3>Select chord</h3>
-        <div class="details">Key of <span class="key-view-root"></span>&nbsp;<span class="key-view-scale"></span></div>
+        <div class="details">Key of <span class="key-view-root"></span>&nbsp;<span class="key-view-scale"></span>&nbsp;<span class="modulation-amount"></span></div>
         <div class="preview"><span class="selected-chord"></span><button class="btn-action primary select-chord"><span class="material-icons">check</span></button></div>
         <div class="body">
             <label>Measure</label>

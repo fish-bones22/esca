@@ -131,6 +131,10 @@ import { v4 as uuidv4 } from 'uuid';
             if (songPart.repeat != undefined && songPart.repeat > 1) {
                 panel.find('.repeat-input input[type="number"]').val(songPart.repeat);
             }
+            // Set song part modulation
+            if (songPart.referenceKey != undefined && songPart.referenceKey != NaN  && songPart.referenceKey != 0) {
+                panel.find('.modulation-input input[type="number"]').val(songPart.referenceKey);
+            }
         });
     }
 
@@ -142,6 +146,13 @@ import { v4 as uuidv4 } from 'uuid';
     function setOtherSequenceSelection(obj, otherSequences) {
         // Get other sequence selection selector
         var otherSequenceSelection = getOption(obj, 'otherSequenceSelection');
+
+        $(otherSequenceSelection).empty();
+
+        if (otherSequences == undefined || otherSequences.length <= 0) {
+            $(otherSequenceSelection).append($('<option>').val('').html("No sequences yet"));
+            return;
+        }
         // Iterate on the collection and fill selection
         otherSequences.forEach(value => {
             $(otherSequenceSelection).append($('<option>').val(value.id).html(value.name));
@@ -181,9 +192,9 @@ import { v4 as uuidv4 } from 'uuid';
 
         var songParts = [];
         $(obj).children('.panel-item').each(function() {
-            var referenceKey = 0;
+            var referenceKey = $(this).find('.modulation-input input[type="number"]').val()*1 || 0;
             var songpart = $(this).find('select').val();
-            var repeat  = $(this).find('.repeat-input input[type="number"]').val() || 1;
+            var repeat  = $(this).find('.repeat-input input[type="number"]').val()*1 || 1;
             var order = $(this).attr('data-order');
             songParts.push({
                 'order': order,

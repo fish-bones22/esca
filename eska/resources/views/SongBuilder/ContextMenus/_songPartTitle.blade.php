@@ -14,7 +14,7 @@
             <option>Last Three</option>
             <option>Outro</option>
         </select>
-        <span class="song-part-name-number-input" >
+        <span class="song-part-name-number-input input-container" >
             <input type="number" min="1" />
             <button type="button" class="btn-action clear"><span class="material-icons">clear</span></button>
         </span>
