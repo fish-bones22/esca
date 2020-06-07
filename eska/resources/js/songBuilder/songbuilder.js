@@ -790,6 +790,10 @@ function collectValuesAndSave() {
         addDetails();
         return;
     }
+    if (!$(sequenceBox).sequenceBuilder('validate')) {
+        setSequence();
+        return;
+    }
     $(warningDialogBox).dialogBox('show', 'Do you want to save? Make sure everything is in place.', function() {
             $(loadingScreen).loadingScreen('show');
             var song = getValues();

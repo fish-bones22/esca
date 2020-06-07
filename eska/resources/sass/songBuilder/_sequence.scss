@@ -18,6 +18,18 @@
                 textarea {
                     resize: vertical;
                 }
+                .error-text {
+                    color: $red;
+                    display: none;
+                    font-size: 14px;
+                    font-style: italic;
+                    margin-bottom: 10px;
+                }
+                &.has-error {
+                    .error-text {
+                        display: block;
+                    }
+                }
             }
         }
     }

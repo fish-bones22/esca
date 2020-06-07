@@ -9,6 +9,7 @@
             <div class="input-container">
                 <label for="sequenceName">Name</label>
                 <input type="text" id="sequenceName" />
+                <span class="error-text">Do not leave empty</span>
             </div>
             <div class="input-container">
                 <label for="sequenceDescription">Description</label>

@@ -709,6 +709,18 @@ nav .song-information .song-key select option {
   resize: vertical;
 }
 
+.sequence-container .sequence-details .edit-details .input-container .error-text {
+  color: #cc1212;
+  display: none;
+  font-size: 14px;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.sequence-container .sequence-details .edit-details .input-container.has-error .error-text {
+  display: block;
+}
+
 .sequence-container .sequence-title {
   font-weight: 500;
   margin: 0 0 10px 0;

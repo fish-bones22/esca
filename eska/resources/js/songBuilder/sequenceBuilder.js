@@ -179,6 +179,10 @@ import { v4 as uuidv4 } from 'uuid';
         setSequenceSelect(obj);
     }
 
+    /**
+     * Get the sequence values
+     * @param {object} obj
+     */
     function getValues(obj) {
         var idInput = getOption(obj, 'sequenceIdInput');
         var nameInput = getOption(obj, 'sequenceNameInput');
@@ -212,6 +216,30 @@ import { v4 as uuidv4 } from 'uuid';
             'referenceKey': 0,
             'songParts': songParts
         }];
+    }
+
+
+    function validateInputs(obj) {
+        var allValid = true;
+        // Show error message if needed
+        $(obj).siblings('.sequence-details').find('.input-container').each(function() {
+            // If no error text element, do not engage
+            var errText = $(this).find('.error-text');
+            if (errText.length <= 0) {
+                return;
+            }
+            var value = $(this).find('input, select').val();
+            // If value of input or select is not empty, hide error message if shown
+            if (value != '') {
+                if ($(this).hasClass('has-error')) $(this).removeClass('has-error')
+                return;
+            }
+            // Show error message
+            $(this).addClass('has-error')
+            allValid = false;
+        });
+
+        return allValid;
     }
 
     $.fn.sequenceBuilder = function(command, option, value) {
@@ -279,6 +307,9 @@ import { v4 as uuidv4 } from 'uuid';
 
                 case 'getvalues':
                     return getValues(this);
+
+                case 'validate':
+                    return validateInputs(this);
             }
         }
     }
