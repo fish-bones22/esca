@@ -11,9 +11,12 @@
         'remainSelected': false,
         'songModulation': 0,
         'songPartModulation': 0,
+        'sequenceModulation': 0,
         'songLineModulation': 0,
         'modulation': 0,
         'value': null,
+        'spacing': 'css',
+        'editable': true,
         onDragStop: function() {},
     };
 
@@ -85,15 +88,17 @@
     function getModulationAmount(obj) {
         var _songModulation = getOption(obj, 'songModulation');
         var _songPartModulation = getOption(obj, 'songPartModulation');
+        var _sequenceModulation = getOption(obj, 'sequenceModulation');
         var _songLineModulation = getOption(obj, 'songLineModulation');
 
         var songModulation = typeof _songModulation == 'function' ? _songModulation() : _songModulation;
         var songPartModulation = typeof _songPartModulation == 'function' ? _songPartModulation() : _songPartModulation;
+        var sequenceModulation = typeof _sequenceModulation == 'function' ? _sequenceModulation() : _sequenceModulation;
         var songLineModulation = typeof _songLineModulation == 'function' ? _songLineModulation() : _songLineModulation;
 
         var modulation = getOption(obj, 'modulation');
 
-        return modulation*1 + songModulation*1 + songPartModulation*1 + songLineModulation*1;
+        return modulation*1 + songModulation*1 + songPartModulation*1 + sequenceModulation*1 + songLineModulation*1;
     }
 
     /**
@@ -103,12 +108,16 @@
      */
     function selectMarker(obj) {
         let chordBuilder = getOption(obj, 'chordBuilder');
+
+
         if ($(obj).hasClass('selected')) {
             unselectMarker(obj, chordBuilder);
+            if (chordBuilder == '') return;
             $(chordBuilder).chordBuilder('setTarget', null);
         } else {
             unselectAllMarkers();
             $(obj).addClass('selected');
+            if (chordBuilder == '') return;
             $(chordBuilder).chordBuilder('setTarget', obj);
         }
     }
@@ -127,6 +136,9 @@
         if (chordBuilder == undefined) {
             chordBuilder = getOption(obj, 'chordBuilder');
         }
+
+        if (chordBuilder == '') return;
+
         $(chordBuilder).chordBuilder('setTarget', null);
         setOption(obj, 'remainSelected', false);
     }
@@ -153,53 +165,61 @@
                 $(self).data('chordMarker-options', settings);
                 // Set up attributes
                 $(self).addClass('chord').html('&nbsp;');
-                // Set up draggable
-                $(self).draggable({
-                    axis: 'x',
-                    addClasses: false,
-                    containment: 'parent',
-                    grid:[settings.dragSnap, 0],
-                    create: function(ev, ui) {
-                        $(self).removeAttr('style')
-                        .css('left', settings.leftOffset)
-                        .attr('data-position', Math.round(settings.leftOffset/settings.dragSnap));
-                    },
-                    stop: function(ev, ui) {
-                        let diff = $(self).position().left;
-                        let snapPos = Math.round(diff / settings.dragSnap);
-                        $(self).removeAttr('style')
-                        .css('left', snapPos * settings.dragSnap)
-                        .attr('data-position', snapPos);
-                        $(self).trigger('chordMarker:dragstop', [$(self)]);
+
+                    // Set up draggable
+                    $(self).draggable({
+                        axis: 'x',
+                        addClasses: false,
+                        containment: 'parent',
+                        grid:[settings.dragSnap, 0],
+                        disabled: !settings.editable,
+                        create: function(ev, ui) {
+                            $(self).removeAttr('style')
+                            .css('left', settings.leftOffset)
+                            .css('position', 'absolute')
+                            .attr('data-position', Math.round(settings.leftOffset/settings.dragSnap));
+                        },
+                        stop: function(ev, ui) {
+                            let diff = $(self).position().left;
+                            let snapPos = Math.round(diff / settings.dragSnap);
+                            $(self).removeAttr('style')
+                            .css('left', snapPos * settings.dragSnap)
+                            .attr('data-position', snapPos);
+                            $(self).trigger('chordMarker:dragstop', [$(self)]);
+                        }
+                    });
+
+                if (settings.editable) {
+                    // Events
+                    $(self).on('click', function(ev) {
+                        selectMarker(self);
+                        settings.remainSelected = true;
+                    });
+                    // Set-up context menu
+                    $(self).on('contextmenu', function(ev) {
+                        ev.preventDefault();
+                        $(settings.contextMenu).contextMenu('toggle', this);
+                    });
+
+                    if (settings.chordBuilder != '') {
+                        // Set-up double click
+                        $(self).on('dblclick', function() {
+                            $(settings.chordBuilder).chordBuilder('show', this);
+                        });
+                        // Remove selection when clicked outside chord markers
+                        $(document).on('click', function(ev) {
+                            if ($(ev.target).closest('.chords').length <= 0
+                            && $(ev.target).closest(settings.contextMenu).length <= 0
+                            && $(ev.target).closest(settings.chordBuilder).length <= 0) {
+                                unselectMarker(self);
+                            }
+                        });
                     }
-                });
 
-                // Events
-                $(self).on('click', function(ev) {
-                    selectMarker(self);
-                    settings.remainSelected = true;
-                });
-                // Set-up context menu
-                $(self).on('contextmenu', function(ev) {
-                    ev.preventDefault();
-                    $(settings.contextMenu).contextMenu('toggle', this);
-                });
-                // Set-up double click
-                $(self).on('dblclick', function() {
-                    $(settings.chordBuilder).chordBuilder('show', this);
-                });
-                // Remove selection when clicked outside chord markers
-                $(document).on('click', function(ev) {
-                    if ($(ev.target).closest('.chords').length <= 0
-                    && $(ev.target).closest(settings.contextMenu).length <= 0
-                    && $(ev.target).closest(settings.chordBuilder).length <= 0) {
-                        unselectMarker(self);
-                    }
-                });
+                    // Custom events
+                    $(self).on('chordMarker:dragstop', settings.onDragStop);
 
-                // Custom events
-                $(self).on('chordMarker:dragstop', settings.onDragStop);
-
+                }
                 // Append marker to parent
                 $(settings.parent).append($(self));
 

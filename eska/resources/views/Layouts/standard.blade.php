@@ -11,6 +11,7 @@
 </head>
 <body>
 @yield('body')
+<script src="{{ asset('js/main.js') }}"></script>
 @yield('script')
 </body>
 </html>

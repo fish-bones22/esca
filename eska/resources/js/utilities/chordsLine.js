@@ -1,9 +1,11 @@
 (function($){
 
     var defaults = {
+        'spacing': 'css',
         'height': 10,
+        'cursorWidth': 10,
         'contextMenu': '.chord-context-menu',
-        'chordBuilder': '.chord-selection-menu',
+        'chordBuilder': '',
         'mainScale': '',
         'songModulation': 0,
         'songPartScale': '',
@@ -11,7 +13,11 @@
         'key': '',
         'songPartModulation': 0,
         'modulation': 0,
-        'modulationInfo': '.song-line-modulation-info'
+        'modulationInfo': '.song-line-modulation-info',
+        'value': '',
+        'fontSize': '',
+        'fontFamily': '',
+        'editable': false,
     };
 
     /**
@@ -72,6 +78,7 @@
      */
     function insertChordMarker(obj, width, position, scale, modulation = 0, value = null) {
         $('<span>').chordMarker({
+            'spacing': getOption(obj, 'spacing'),
             'chordBuilder': getOption(obj, 'chordBuilder'),
             'contextMenu': getOption(obj, 'contextMenu'),
             'dragSnap': width,
@@ -83,13 +90,15 @@
             'scale': scale,
             'parent': obj,
             'songModulation': getOption(obj, 'songModulation'),
-            'songPartModulation': getOption(obj, 'songPartModulation'),
             'songLineModulation': function() {return getOption(obj, 'modulation')},
+            'songPartModulation': getOption(obj, 'songPartModulation'),
+            'sequenceModulation': getOption(obj, 'sequenceModulation'),
             'modulation': modulation,
             'value': value,
             'onDragStop': function() {
                 sortChordMarkers(obj);
             },
+            'editable': getOption(obj, 'editable'),
         });
     }
 
@@ -145,6 +154,7 @@
         modulation = typeof modulation == 'function' ? modulation() : modulation;
         scale = typeof scale == 'function' ? scale() : scale;
         chords.push([modulation, scale].join('/'));
+        // Get chords in the line
         $(obj).find('.chord').each(function() {
             var modulation = $(this).chordMarker('option', 'modulation');
             var scale = $(this).chordMarker('option', 'scale');
@@ -189,13 +199,14 @@
         // Get the song part modulation
         var songPartModulation = getOption(obj, 'songPartModulation');
         songPartModulation = typeof songPartModulation == 'function' ? songPartModulation() : songPartModulation;
+
+        // Get the sequence modulation
+        var sequenceModulation = getOption(obj, 'sequenceModulation');
+        sequenceModulation = typeof sequenceModulation == 'function' ? sequenceModulation() : sequenceModulation || 0;
+
         // Get this line's modulation
-
-        var modulation = getOption(obj, 'modulation')*1;
-
-        // Get the scale of the song
-        var mainScale =  getOption(obj, 'mainScale');
-        mainScale = typeof mainScale == 'function'  ? mainScale() : mainScale;
+        var modulation = getOption(obj, 'modulation');
+        modulation = typeof modulation == 'function' ? modulation() : modulation || 0;
 
         // Get the scale of the song part
         var songPartScale =  getOption(obj, 'songPartScale');
@@ -214,7 +225,7 @@
             $(obj).siblings(getOption(obj, 'modulationInfo')).hide();
         } else {
             // Get the reference key given modulation and display
-            var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation + songModulation*1 + songPartModulation*1);
+            var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation + songModulation*1 + songPartModulation*1 + sequenceModulation*1);
             $(obj).siblings(getOption(obj, 'modulationInfo')).show().children('span').html('Key of ' + display + (scale != 'major' ? ' ' + scale : ''));
         }
     }
@@ -273,6 +284,17 @@
                 .addClass('chordsLine-processed');
 
                 changeScale(self, typeof settings.songPartScale == 'function' ? settings.songPartScale() : settings.songPartScale);
+
+                if (settings.value != '') {
+                    setValue(self, settings.value);
+                }
+
+                if (settings.fontFamily != '') {
+                    $(self).css('font-family', settings.fontFamily);
+                }
+                if (settings.fontSize != '') {
+                    $(self).css('font-size', settings.fontSize);
+                }
              });
         }
 

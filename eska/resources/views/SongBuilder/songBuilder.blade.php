@@ -44,7 +44,6 @@ ESKA
 @stop
 
 @section('script')
-<script src="{{ asset('js/main.js') }}"></script>
 <script src="{{ asset('js/songbuilder.js') }}"></script>
 <script>
     // Test

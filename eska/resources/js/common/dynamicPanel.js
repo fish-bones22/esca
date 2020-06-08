@@ -237,7 +237,7 @@ $.fn.dynamicPanel = function(command, option, val) {
             // Set draggable
             var dragOpt = settings.draggable;
             var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];
-            if (settings.draggable) {
+            if (settings.isDraggable) {
                 $(self).sortable({
                     addClasses: false,
                     cancel: ['input', 'a', 'select', 'button:not(.move-handle)'].concat(cancelOpt).join(','),

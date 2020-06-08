@@ -347,14 +347,362 @@ module.exports = v4;
 
 /***/ }),
 
-/***/ "./resources/js/songBuilder/_musicReference.json":
-/*!*******************************************************!*\
-  !*** ./resources/js/songBuilder/_musicReference.json ***!
-  \*******************************************************/
-/*! exports provided: measures, notes, scale, variations, default */
-/***/ (function(module) {
+/***/ "./resources/js/common/dynamicPanel.js":
+/*!*********************************************!*\
+  !*** ./resources/js/common/dynamicPanel.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
 
-module.exports = JSON.parse("{\"measures\":[{\"name\":\"whole\",\"displayName\":\"|\",\"default\":true},{\"name\":\"half\",\"displayName\":\"'\"},{\"name\":\"quarter\",\"displayName\":\"-\"},{\"name\":\"eightth\",\"displayName\":\"·\"},{\"name\":\"no\",\"displayName\":\"\"}],\"notes\":[{\"name\":\"C\",\"displayName\":\"C\"},{\"name\":\"C#\",\"displayName\":\"C♯\",\"altName\":\"D♭\"},{\"name\":\"D\",\"displayName\":\"D\"},{\"name\":\"D#\",\"displayName\":\"D♯\",\"altName\":\"E♭\"},{\"name\":\"E\",\"displayName\":\"E\"},{\"name\":\"F\",\"displayName\":\"F\"},{\"name\":\"F#\",\"displayName\":\"F♯\",\"altName\":\"G♭\"},{\"name\":\"G\",\"displayName\":\"G\"},{\"name\":\"G#\",\"displayName\":\"G♯\",\"altName\":\"A♭\"},{\"name\":\"A\",\"displayName\":\"A\"},{\"name\":\"A#\",\"displayName\":\"A♯\",\"altName\":\"B♭\"},{\"name\":\"B\",\"displayName\":\"B\"}],\"scale\":[{\"name\":\"major\",\"pattern\":[{\"name\":\"1\",\"noteIndex\":0},{\"name\":\"2\",\"noteIndex\":2},{\"name\":\"3\",\"noteIndex\":4},{\"name\":\"4\",\"noteIndex\":5},{\"name\":\"5\",\"noteIndex\":7},{\"name\":\"6\",\"noteIndex\":9},{\"name\":\"7\",\"noteIndex\":11},{\"name\":\"1s\",\"noteIndex\":1},{\"name\":\"2s\",\"noteIndex\":3},{\"name\":\"4s\",\"noteIndex\":6},{\"name\":\"5s\",\"noteIndex\":8},{\"name\":\"6s\",\"noteIndex\":10}],\"family\":[{\"name\":\"1\",\"variationIndex\":0},{\"name\":\"2\",\"variationIndex\":1},{\"name\":\"3\",\"variationIndex\":1},{\"name\":\"4\",\"variationIndex\":0},{\"name\":\"5\",\"variationIndex\":0},{\"name\":\"6\",\"variationIndex\":1},{\"name\":\"7\",\"variationIndex\":2}]}],\"variations\":[{\"name\":\"M\",\"display\":\"M\",\"html\":\"\",\"fullName\":\"Major\",\"precedence\":0,\"order\":0,\"default\":true},{\"name\":\"m\",\"display\":\"m\",\"html\":\"m\",\"fullName\":\"Minor\",\"precedence\":0,\"order\":0},{\"name\":\"dim\",\"display\":\"dim\",\"html\":\"<sup>dim</sup>\",\"fullName\":\"Diminished\",\"precedence\":0,\"order\":1},{\"name\":\"aug\",\"display\":\"aug\",\"html\":\"<sup>aug</sup>\",\"fullName\":\"Augmented\",\"precedence\":0,\"order\":1},{\"name\":\"dom7\",\"display\":\"7\",\"html\":\"<sup>7</sup>\",\"fullName\":\"Dominant seventh\",\"precedence\":1,\"order\":2},{\"name\":\"maj7\",\"display\":\"M7\",\"html\":\"<sup>M7</sup>\",\"fullName\":\"Major seventh\",\"precedence\":1,\"order\":2},{\"name\":\"5\",\"display\":\"5\",\"html\":\"<sup>5</sup>\",\"fullName\":\"Fifth/Power chord\",\"precedence\":1},{\"name\":\"flat5\",\"display\":\"♭5\",\"html\":\"<sup>♭5</sup>\",\"fullName\":\"Flat fifth\",\"precedence\":1},{\"name\":\"6\",\"display\":\"6\",\"html\":\"<sup>6</sup>\",\"fullName\":\"Sixth\",\"precedence\":1},{\"name\":\"9\",\"display\":\"9\",\"html\":\"<sup>9</sup>\",\"fullName\":\"Ninth\",\"precedence\":1},{\"name\":\"maj9\",\"display\":\"M9\",\"html\":\"<sup>M9</sup>\",\"fullName\":\"Major ninth\",\"precedence\":1},{\"name\":\"11\",\"display\":\"11\",\"html\":\"<sup>11</sup>\",\"fullName\":\"Eleventh\",\"precedence\":1},{\"name\":\"13\",\"display\":\"13\",\"html\":\"<sup>13</sup>\",\"fullName\":\"Thirteenth\",\"precedence\":1},{\"name\":\"sus2\",\"display\":\"sus2\",\"html\":\"<sup>sus2</sup>\",\"fullName\":\"Suspended second\",\"precedence\":2},{\"name\":\"sus4\",\"display\":\"sus4\",\"html\":\"<sup>sus4</sup>\",\"fullName\":\"Suspended fourth\",\"precedence\":2},{\"name\":\"add6\",\"display\":\"add6\",\"html\":\"<sup>add6</sup>\",\"fullName\":\"Add sixth\",\"precedence\":2},{\"name\":\"add9\",\"display\":\"add9\",\"html\":\"<sup>add9</sup>\",\"fullName\":\"Add ninth\",\"precedence\":2}]}");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {
+    key: "panel",
+    panelAction: ".panel-actions",
+    startCount: 1,
+    navigateByArrowKeys: true,
+    newPanelKeys: [13],
+    isDraggable: true,
+    draggable: {},
+    autoformatPaste: false,
+    getChildOfTemplate: true
+  };
+  var panelSelector = ".panel-item";
+  var panelClass = panelSelector.replace(/[.,#]*/g, '');
+  /**
+   * Initialize the options
+   * @param {Object} options
+   */
+
+  function initOptions(options) {
+    if (!options.hasOwnProperty('panelAction') || options['panelAction'] == '') {
+      options['panelAction'] = options.hasOwnProperty('key') ? "." + options.key + "-actions" : defaults.panelAction;
+    }
+
+    return options;
+  }
+  /**
+   * Get option value
+   * @param {Object} object
+   * @param {String} key
+   */
+
+
+  function getOption(object, key) {
+    var options = $(object).data('dynamicPanel-options');
+    if (options == undefined || !options.hasOwnProperty(key)) return null;
+    return options[key];
+  }
+  /**
+   * Set option value
+   * @param {Object} object
+   * @param {String} key
+   * @param {String} value
+   */
+
+
+  function setOption(object, key, value) {
+    var options = $(object).data('dynamicPanel-options');
+    options[key] = value;
+    $(object).data('dynamicPanel-options', options);
+  }
+  /**
+   * Insert a panel from a position
+   * @param {object} obj Target DOM
+   * @param {int} index Position where to insert the panel
+   */
+
+
+  function insertPanel(obj, index) {
+    var id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    // Get current count of panels
+    var panelCount = getOption(obj, 'panelCount');
+
+    if (index == undefined) {
+      index = panelCount > 0 ? panelCount : 0;
+    }
+
+    if (index > panelCount) {
+      index = panelCount;
+    } // Get next sibling panel
+
+
+    var nextPanel = $(obj).children(panelSelector + '[data-order="' + (index + 1) + '"]').first();
+    var firstSibling = nextPanel; // Adjust order of succeeding panels first
+
+    while (nextPanel.length > 0) {
+      var currOrder = nextPanel.attr('data-order') * 1;
+      nextPanel.attr('data-order', currOrder + 1);
+      nextPanel = nextPanel.next(panelSelector);
+    } // Get panel template selector
+
+
+    var panelTemplateSelector = getOption(obj, 'panelTemplate');
+    var panel;
+
+    if (getOption(obj, 'getChildOfTemplate')) {
+      panel = $($(panelTemplateSelector).html());
+    } else {
+      panel = $(panelTemplateSelector).clone();
+    } // Set up attributes
+
+
+    panel.attr('data-order', index + 1).addClass(panelClass); // Get delete selector from options
+    // then set event listener for delete
+
+    var removerSelector = getOption(obj, 'removerSelector');
+    panel.find(removerSelector).bind('click', function () {
+      var index = $(this).closest(panelSelector).attr('data-order') * 1 - 1;
+      removePanel(obj, index);
+    }); // Event listener for keys
+
+    panel.find('input[type="text"]').keyup(function (event) {
+      focusPanelByKey(obj, panel, event.which);
+
+      if (getOption(obj, 'navigateByArrowKeys') && event.which == 38 || event.which == 40) {
+        navigatePanelByKey(panel, event.which == 38 ? 'up' : 'down');
+      }
+    }); // Draggable
+
+    var draggable = getOption(obj, 'isDraggable');
+
+    if (draggable) {
+      panel.draggable({
+        addClasses: false,
+        connectToSortable: '#' + $(obj).attr('id'),
+        handle: panel.find('.move-handle'),
+        revert: true,
+        revertDuration: 0
+      });
+    } // Add to panel container
+
+
+    if (firstSibling.length <= 0) {
+      // Get container selector from options
+      var container = getOption(obj, 'container');
+
+      if (container == undefined) {
+        $(obj).append(panel);
+      } else {
+        $(obj).find(container).append(panel);
+      }
+    } else {
+      firstSibling.before(panel);
+    } // Set panel count
+
+
+    setOption(obj, 'panelCount', ++panelCount); // Set id if given
+
+    if (id != null && typeof id == 'string') {
+      panel.attr('data-id', id);
+    }
+
+    $(obj).trigger('dynamicPanel:insert' + getOption(obj, 'key'), [panel]);
+    return panel;
+  }
+
+  function focusPanelByKey(obj, panel, key) {
+    // Get inlcuded keys to activate
+    var newPanelKeys = getOption(obj, 'newPanelKeys');
+    if (newPanelKeys == undefined || _typeof(newPanelKeys) != 'object' || newPanelKeys.length <= 0) return false; // Key not on defined keys
+
+    if (!newPanelKeys.includes(key)) return false; // Get closest input from the next panel
+
+    panel = panel.next(panelSelector); // If no next panel, create new
+
+    if (panel.length <= 0) {
+      panel = insertPanel(obj);
+    } // Focus to this panel
+
+
+    panel.find('input[type="text"]').focus();
+  }
+
+  function navigatePanelByKey(panel, direction) {
+    switch (direction.toLowerCase()) {
+      case 'up':
+        panel = panel.prev(panelSelector);
+        break;
+
+      case 'down':
+        panel = panel.next(panelSelector);
+        break;
+
+      default:
+        return false;
+    }
+
+    if (panel.length <= 0) return false; // Focus to this panel
+
+    panel.find('input[type="text"]').focus();
+  }
+  /**
+   * Remove target panel and reorder succeeding sibling panels
+   * @param {object} obj Target object
+   * @param {int} index panel position to remove
+   */
+
+
+  function removePanel(obj, index) {
+    // Set panel count
+    var panelCount = getOption(obj, 'panelCount');
+
+    if (panelCount <= 0) {
+      console.error("dynamicPanel.deletePanel() => No panels to delete");
+    }
+
+    if (index == undefined || index > panelCount) {
+      index = panelCount - 1;
+    }
+
+    var panel = $(obj).children(panelSelector + '[data-order="' + (index + 1) + '"]').first(); // Get next sibling item
+
+    var next = panel.next(panelSelector);
+    panel.remove();
+    panel = next;
+
+    while (panel.length > 0) {
+      // Get current order of the next sibling panel
+      currentOrder = panel.attr('data-order') * 1 - 1; // Set order of the item
+
+      panel.attr('data-order', currentOrder); // Get next sibling item
+
+      panel = panel.next(panelSelector);
+    }
+
+    setOption(obj, 'panelCount', --panelCount);
+  }
+
+  function removeAll(obj) {
+    $(obj).children('.panel-item').each(function () {
+      removePanel(obj, $(this).attr('data-order') * 1 - 1);
+    });
+  }
+
+  $.fn.dynamicPanel = function (command, option, val) {
+    /** INIT */
+    if (_typeof(command) === 'object') {
+      return this.each(function () {
+        var self = this; // Get data attributes and add them to settings
+        // data-remover
+
+        if ($(self).attr('data-remover') != undefined) {
+          command['removerSelector'] = $(self).attr('data-remover');
+        } // data-adder
+
+
+        if ($(self).attr('data-adder') != undefined) {
+          command['adderSelector'] = $(self).attr('data-adder');
+        } // data-template
+
+
+        if ($(self).attr('data-template') != undefined) {
+          command['panelTemplate'] = $(self).attr('data-template');
+        } // Set settings
+
+
+        var settings = $.extend({}, defaults, initOptions(command));
+        $(self).data('dynamicPanel-options', settings);
+        $(self).addClass('dynamicPanel'); // Set draggable
+
+        var dragOpt = settings.draggable;
+        var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];
+
+        if (settings.isDraggable) {
+          $(self).sortable({
+            addClasses: false,
+            cancel: ['input', 'a', 'select', 'button:not(.move-handle)'].concat(cancelOpt).join(','),
+            cursor: 'grabbing',
+            stop: function stop(event, ui) {
+              // Resort panel after sorting
+              var index = 1;
+              $(self).children(panelSelector).each(function () {
+                if (index !== $(this).attr('data-order') * 1) {
+                  $(this).attr('data-order', index);
+                }
+
+                index++;
+              }); //$(ui.item).removeAttr('style');
+            }
+          });
+        }
+        /** Event listeners **/
+        // Add panels button
+
+
+        $(document).on('click', '[data-target="#' + $(self).attr('id') + '"]', function () {
+          // Create panel then focus on the closest text input
+          insertPanel(self).find('input[type="text"]').focus();
+        }); // paste event
+
+        if (settings.autoformatPaste) {
+          $(document).on('paste', '#' + $(self).attr('id') + '>' + panelSelector + ' input[type="text"]', function (event) {
+            // Get clipboard data
+            var clipboardData = event.originalEvent.clipboardData.getData('text');
+            if (clipboardData == undefined) return true; // Split clipboard data by newline
+
+            var lines = clipboardData.split('\n');
+            if (lines == undefined || lines.length <= 0) return true;
+            event.preventDefault(); // Process clipboard data, creating new panel per line of text
+
+            var panelInput = $(this);
+            panelInput.val(lines[0].trim()).trigger('change');
+
+            for (var i = 1; i < lines.length; i++) {
+              panelInput = panelInput.closest(panelSelector).next(panelSelector).find('input[type="text"]');
+
+              if (panelInput.length <= 0) {
+                panelInput = insertPanel(self).find('input[type="text"]');
+              }
+
+              panelInput.val(lines[i].trim());
+              panelInput.trigger('change');
+            }
+          });
+        }
+        /** Custom events */
+        // onInsert
+
+
+        if (settings.hasOwnProperty('onInsert') && settings.onInsert != undefined) {
+          $(self).on('dynamicPanel:insert' + settings.key, settings.onInsert);
+        } // Create panels
+
+
+        for (var i = 0; i < settings.startCount; i++) {
+          insertPanel(self);
+        }
+      });
+    }
+    /** ACTIONS */
+
+
+    if (typeof command === 'string') {
+      switch (command.toLowerCase()) {
+        case 'option':
+          return getOption(this, option);
+
+        case 'insert':
+          var panel;
+          this.each(function () {
+            panel = insertPanel(this, option, val);
+          });
+          return panel;
+
+        case 'remove':
+          return this.each(function () {
+            removePanel(this, option);
+          });
+
+        case 'removeall':
+          return this.each(function () {
+            removeAll(this);
+          });
+      }
+    }
+  };
+})(jQuery);
 
 /***/ }),
 
@@ -739,1040 +1087,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'update':
           return $(this).each(function () {
             initializePanel(this);
-          });
-      }
-    }
-  };
-})(jQuery);
-
-/***/ }),
-
-/***/ "./resources/js/songBuilder/chordMarker.js":
-/*!*************************************************!*\
-  !*** ./resources/js/songBuilder/chordMarker.js ***!
-  \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-(function ($) {
-  var defaults = {
-    'dragSnap': 0,
-    'leftOffset': 0,
-    'scale': '',
-    'mainKey': 'C',
-    'mainScale': 'Major',
-    'parent': undefined,
-    'selectOnCreate': true,
-    'remainSelected': false,
-    'songModulation': 0,
-    'songPartModulation': 0,
-    'songLineModulation': 0,
-    'modulation': 0,
-    'value': null,
-    onDragStop: function onDragStop() {}
-  };
-  var ChordProcessor = window.ChordProcessor;
-
-  function getOption(obj, name) {
-    var option = $(obj).data('chordMarker-options');
-
-    if (option == undefined || !option.hasOwnProperty(name)) {
-      return undefined;
-    }
-
-    return option[name];
-  }
-
-  function setOption(obj, name, value) {
-    var option = $(obj).data('chordMarker-options');
-
-    if (option == undefined || !option.hasOwnProperty(name)) {
-      return;
-    }
-
-    option[name] = value;
-    $(obj).data('chordMarker-options', option);
-  }
-  /**
-   * Update each chord
-   * @param {object} obj
-   */
-
-
-  function updateChord(obj) {
-    if ($(obj).attr('data-value') == '') {
-      $(obj).html('&nbsp;');
-      return;
-    }
-
-    var mainRoot = getOption(obj, 'key');
-    var scale = getOption(obj, 'scale');
-    mainRoot = typeof mainRoot == 'function' ? mainRoot() : mainRoot;
-    scale = typeof scale == 'function' ? scale() : scale;
-    var modulationAmount = getModulationAmount(obj);
-    var disp = ChordProcessor.processChord($(obj).attr('data-value'), mainRoot, scale, modulationAmount);
-    $(obj).html(disp);
-  }
-  /**
-   * Set value of chord
-   * @param {object} obj
-   * @param {string} value Value of chord
-   */
-
-
-  function setValue(obj, value) {
-    $(obj).attr('data-value', value);
-    updateChord(obj);
-
-    if (!getOption(obj, 'remainSelected') && value != '') {
-      unselectMarker(obj);
-    }
-  }
-  /**
-   * Modulate the chord
-   * @param {object} obj
-   * @param {number} amount Amount of modulation
-   */
-
-
-  function modulate(obj, amount) {
-    setOption(obj, 'modulation', amount);
-  }
-  /**
-   * Get total modulation (song + song part + song line) of the chord
-   * @param {object} obj
-   */
-
-
-  function getModulationAmount(obj) {
-    var _songModulation = getOption(obj, 'songModulation');
-
-    var _songPartModulation = getOption(obj, 'songPartModulation');
-
-    var _songLineModulation = getOption(obj, 'songLineModulation');
-
-    var songModulation = typeof _songModulation == 'function' ? _songModulation() : _songModulation;
-    var songPartModulation = typeof _songPartModulation == 'function' ? _songPartModulation() : _songPartModulation;
-    var songLineModulation = typeof _songLineModulation == 'function' ? _songLineModulation() : _songLineModulation;
-    var modulation = getOption(obj, 'modulation');
-    return modulation * 1 + songModulation * 1 + songPartModulation * 1 + songLineModulation * 1;
-  }
-  /**
-   * Toggle this chord marker as selected
-   * @param {object} obj
-   * @param {object} marker Target chord marker
-   */
-
-
-  function selectMarker(obj) {
-    var chordBuilder = getOption(obj, 'chordBuilder');
-
-    if ($(obj).hasClass('selected')) {
-      unselectMarker(obj, chordBuilder);
-      $(chordBuilder).chordBuilder('setTarget', null);
-    } else {
-      unselectAllMarkers();
-      $(obj).addClass('selected');
-      $(chordBuilder).chordBuilder('setTarget', obj);
-    }
-  }
-  /**
-   * Unselect this chord marker
-   * @param {object} obj
-   */
-
-
-  function unselectMarker(obj) {
-    var chordBuilder = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-    if ($(obj).length <= 0) return;
-    $(obj).removeClass('selected'); // Remove if empty on unselect
-
-    if ($(obj).attr('data-value') == '') {
-      $(obj).remove();
-    }
-
-    if (chordBuilder == undefined) {
-      chordBuilder = getOption(obj, 'chordBuilder');
-    }
-
-    $(chordBuilder).chordBuilder('setTarget', null);
-    setOption(obj, 'remainSelected', false);
-  }
-  /**
-   * Unselect all selected chords markers
-   */
-
-
-  function unselectAllMarkers() {
-    $('.chord.selected').each(function () {
-      unselectMarker(this);
-      remainSelected = true;
-    });
-  }
-
-  $.fn.chordMarker = function (command, option, value) {
-    if (command == undefined || _typeof(command) == 'object') {
-      return $(this).each(function () {
-        var settings = $.extend({}, defaults, command);
-        var self = this; // Save settings
-
-        $(self).data('chordMarker-options', settings); // Set up attributes
-
-        $(self).addClass('chord').html('&nbsp;'); // Set up draggable
-
-        $(self).draggable({
-          axis: 'x',
-          addClasses: false,
-          containment: 'parent',
-          grid: [settings.dragSnap, 0],
-          create: function create(ev, ui) {
-            $(self).removeAttr('style').css('left', settings.leftOffset).attr('data-position', Math.round(settings.leftOffset / settings.dragSnap));
-          },
-          stop: function stop(ev, ui) {
-            var diff = $(self).position().left;
-            var snapPos = Math.round(diff / settings.dragSnap);
-            $(self).removeAttr('style').css('left', snapPos * settings.dragSnap).attr('data-position', snapPos);
-            $(self).trigger('chordMarker:dragstop', [$(self)]);
-          }
-        }); // Events
-
-        $(self).on('click', function (ev) {
-          selectMarker(self);
-          settings.remainSelected = true;
-        }); // Set-up context menu
-
-        $(self).on('contextmenu', function (ev) {
-          ev.preventDefault();
-          $(settings.contextMenu).contextMenu('toggle', this);
-        }); // Set-up double click
-
-        $(self).on('dblclick', function () {
-          $(settings.chordBuilder).chordBuilder('show', this);
-        }); // Remove selection when clicked outside chord markers
-
-        $(document).on('click', function (ev) {
-          if ($(ev.target).closest('.chords').length <= 0 && $(ev.target).closest(settings.contextMenu).length <= 0 && $(ev.target).closest(settings.chordBuilder).length <= 0) {
-            unselectMarker(self);
-          }
-        }); // Custom events
-
-        $(self).on('chordMarker:dragstop', settings.onDragStop); // Append marker to parent
-
-        $(settings.parent).append($(self)); // Run on init
-
-        if (settings.value == null) {
-          var chordValue = $(settings.chordBuilder).chordBuilder('getChord', self);
-
-          if (settings.selectOnCreate) {
-            unselectAllMarkers();
-            selectMarker(self);
-          }
-
-          setValue(self, chordValue.value);
-        } else {
-          setValue(self, settings.value);
-          settings.value = null;
-        }
-      });
-    }
-
-    if (typeof command == 'string') {
-      switch (command.toLowerCase()) {
-        case 'update':
-          return $(this).each(function () {
-            updateChord(this);
-          });
-
-        case 'chordvalue':
-          return $(this).each(function () {
-            setValue(this, option);
-          });
-
-        case 'select':
-          return $(this).each(function () {
-            selectMarker(this);
-          });
-
-        case 'unselect':
-          return $(this).each(function () {
-            unselectMarker(this);
-          });
-
-        case 'unselectall':
-          unselectAllMarkers();
-          return this;
-
-        case 'modulate':
-          if (typeof option != 'number') return this;
-          return $(this).each(function () {
-            modulate(this, option);
-          });
-
-        case 'option':
-          if (typeof option != 'string') return null;
-
-          if (typeof value == 'string') {
-            return $(this).each(function () {
-              setOption(this, option, value);
-            });
-          }
-
-          return getOption(this, option);
-
-        case 'getmodulationamount':
-          return getModulationAmount(this);
-      }
-    }
-  };
-})(jQuery);
-
-/***/ }),
-
-/***/ "./resources/js/songBuilder/chordProcessor.js":
-/*!****************************************************!*\
-  !*** ./resources/js/songBuilder/chordProcessor.js ***!
-  \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-window.ChordProcessor = {
-  musicReference: window.musicReference || {},
-  processChord: function processChord(value, key, scale) {
-    var modulation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-
-    if (typeof value == 'string' && typeof scale == 'string' && typeof key == 'string') {
-      var musicReference = ChordProcessor.musicReference;
-      var rootKey = key;
-      var rootScale = scale;
-      var parts = value.split('/');
-      var measure = parts[0];
-      var root = parts[1];
-      var variation = parts[2];
-      var variation2 = parts[3];
-      var bass = parts[4];
-      if (measure == '' || root == '' || variation == '') return ''; // Get measure
-
-      var measureDisplay = musicReference.measures.find(function (o) {
-        return o.name == measure;
-      }).displayName; // IF custom
-
-      if (root == 'custom') {
-        return [measureDisplay, variation].join('');
-      } //** Get root and bass note **//
-      // Get scale
-
-
-      var scaleReference = musicReference.scale.find(function (o) {
-        return o.name == rootScale;
-      }) || musicReference.scale[0]; // Get position of root note
-
-      modulation = modulation >= 0 ? modulation : 12 + modulation % 12;
-      var keyNoteIndex = musicReference.notes.indexOf(musicReference.notes.find(function (note) {
-        return note.name == rootKey;
-      })) + modulation;
-      var rootNoteIndex = (scaleReference.pattern.find(function (o) {
-        return o.name == root;
-      }).noteIndex + keyNoteIndex) % musicReference.notes.length;
-      var noteRef = musicReference.notes[rootNoteIndex];
-      var rootDisplay = noteRef.displayName;
-      var bassDisplay = '';
-
-      if (bass != '') {
-        var bassNoteIndex = (scaleReference.pattern.find(function (o) {
-          return o.name == bass;
-        }).noteIndex + keyNoteIndex) % musicReference.notes.length;
-        var bassNoteRef = musicReference.notes[bassNoteIndex];
-        bassDisplay = "<sub>/" + bassNoteRef.displayName + '</sub>';
-      } //** Get Variations */
-
-
-      var variationDisplay = variation != '' ? musicReference.variations.find(function (o) {
-        return o.name == variation;
-      }).html : '';
-      var variation2Display = variation2 != '' ? musicReference.variations.find(function (o) {
-        return o.name == variation2;
-      }).html : '';
-      return [measureDisplay, rootDisplay, variationDisplay, variation2Display, bassDisplay].join('');
-    }
-  }
-};
-
-/***/ }),
-
-/***/ "./resources/js/songBuilder/chordsLine.js":
-/*!************************************************!*\
-  !*** ./resources/js/songBuilder/chordsLine.js ***!
-  \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-(function ($) {
-  var defaults = {
-    'height': 10,
-    'contextMenu': '.chord-context-menu',
-    'chordBuilder': '.chord-selection-menu',
-    'mainScale': '',
-    'songModulation': 0,
-    'songPartScale': '',
-    'scale': '',
-    'key': '',
-    'songPartModulation': 0,
-    'modulation': 0,
-    'modulationInfo': '.song-line-modulation-info'
-  };
-  /**
-   * Get option from DOM data
-   * @param {object} obj
-   * @param {string} name option name/key
-   */
-
-  function getOption(obj, name) {
-    var option = $(obj).data('chordsLine-options');
-
-    if (option == undefined || !option.hasOwnProperty(name)) {
-      return undefined;
-    }
-
-    return option[name];
-  }
-  /**
-   * Set option value
-   * @param {Object} obj
-   * @param {String} option
-   * @param {any} value
-   */
-
-
-  function setOption(obj, option, value) {
-    var options = $(obj).data('chordsLine-options');
-    options[option] = value;
-    $(obj).data('chordsLine-options', options);
-  }
-  /**
-   * Sort chord markers within the parent chord line
-   * @param {Jquery Object} chordMarker
-   */
-
-
-  function sortChordMarkers(chordMarker) {
-    var parent;
-    var markers;
-
-    if ($(chordMarker).hasClass('chord')) {
-      parent = $(chordMarker).parent();
-      markers = parent.children('.chord');
-    } else if ($(chordMarker).hasClass('chords')) {
-      markers = $(chordMarker).children('.chord');
-      parent = chordMarker;
-    } // Sort chords line
-
-
-    markers.sort(function (elem1, elem2) {
-      return $(elem1).offset().left > $(elem2).offset().left ? 1 : -1;
-    }).appendTo(parent);
-  }
-  /**
-   * Instantiate a new chord marker inside obj
-   * @param {object} obj
-   * @param {number} width the snap width of the marker
-   * @param {number} position the left offset of the marker from the left edge of the document
-   * @param {string} scale scale reference of the chord
-   * @param {number} modulation modulation of the chord
-   * @param {string} value chord value with parts delimited by /
-   */
-
-
-  function insertChordMarker(obj, width, position, scale) {
-    var modulation = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-    var value = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
-    $('<span>').chordMarker({
-      'chordBuilder': getOption(obj, 'chordBuilder'),
-      'contextMenu': getOption(obj, 'contextMenu'),
-      'dragSnap': width,
-      'leftOffset': position,
-      'key': getOption(obj, 'key'),
-      'mainScale': getOption(obj, 'mainScale'),
-      'songPartScale': getOption(obj, 'songPartScale'),
-      'songLineScale': function songLineScale() {
-        getOption(obj, 'scale');
-      },
-      'scale': scale,
-      'parent': obj,
-      'songModulation': getOption(obj, 'songModulation'),
-      'songPartModulation': getOption(obj, 'songPartModulation'),
-      'songLineModulation': function songLineModulation() {
-        return getOption(obj, 'modulation');
-      },
-      'modulation': modulation,
-      'value': value,
-      'onDragStop': function onDragStop() {
-        sortChordMarkers(obj);
-      }
-    });
-  }
-  /**
-   *
-   * @param {object} obj
-   * @param {string} values Chords values. String delimited by |
-   */
-
-
-  function setValue(obj, values) {
-    $(obj).children('.chord').remove();
-    var chords = values.split('|');
-
-    if (chords.length < 1) {
-      console.error('Error at chordsLine.setValue() => Invalid chords data');
-      return;
-    } // Set chord line details
-
-
-    var details = chords.splice(0, 1)[0].split('/');
-
-    if (details.length < 2) {
-      console.error('Error at chordsLine.setValue() => Invalid chords metadata');
-      return;
-    }
-
-    var modulation = details[0] * 1;
-    var scale = details[1];
-    modulate(obj, modulation);
-    changeScale(obj, scale);
-    chords.forEach(function (chord) {
-      // Get chord parts
-      var chordPart = chord.split('/');
-      if (chordPart.length != 8) return;
-      var keyReference = chordPart[0] * 1;
-      var scale = chordPart[1];
-      var position = chordPart[2] * 1;
-      var measure = chordPart[3];
-      var root = chordPart[4];
-      var variation = chordPart[5];
-      var variation2 = chordPart[6];
-      var bass = chordPart[7];
-      insertChordMarker(obj, getOption(obj, 'cursorWidth'), position * getOption(obj, 'cursorWidth'), scale, keyReference, [measure, root, variation, variation2, bass].join('/'));
-    });
-  }
-  /**
-   * Get the value of chords in this chord line in array form
-   * @param {object} obj
-   */
-
-
-  function getValue(obj) {
-    var chords = []; // Get details
-
-    var modulation = getOption(obj, 'modulation');
-    var scale = getOption(obj, 'scale');
-    modulation = typeof modulation == 'function' ? modulation() : modulation;
-    scale = typeof scale == 'function' ? scale() : scale;
-    chords.push([modulation, scale].join('/'));
-    $(obj).find('.chord').each(function () {
-      var modulation = $(this).chordMarker('option', 'modulation');
-      var scale = $(this).chordMarker('option', 'scale');
-      modulation = typeof modulation == 'function' ? modulation() : modulation;
-      scale = typeof scale == 'function' ? scale() : scale;
-      var position = $(this).attr('data-position');
-      var value = $(this).attr('data-value');
-      chords.push([modulation, scale, position, value].join('/'));
-    });
-    return chords;
-  }
-  /**
-   * Modulate the song line
-   * @param {object} obj
-   * @param {number} amount Amount of modulation
-   */
-
-
-  function modulate(obj, amount) {
-    $(obj).closest('.song-line').attr('data-modulation', amount);
-    setOption(obj, 'modulation', amount);
-    setModulationInfo(obj);
-  }
-  /**
-   * Change the scale of the song line
-   * @param {object} obj
-   * @param {string} scale Name of the new scale
-   */
-
-
-  function changeScale(obj, scale) {
-    $(obj).closest('.song-line').attr('data-scale', scale);
-    setOption(obj, 'scale', scale);
-    setModulationInfo(obj);
-  }
-
-  function setModulationInfo(obj) {
-    // Get the song's modulation
-    var songModulation = getOption(obj, 'songModulation');
-    songModulation = typeof songModulation == 'function' ? songModulation() : songModulation; // Get the song part modulation
-
-    var songPartModulation = getOption(obj, 'songPartModulation');
-    songPartModulation = typeof songPartModulation == 'function' ? songPartModulation() : songPartModulation; // Get this line's modulation
-
-    var modulation = getOption(obj, 'modulation') * 1; // Get the scale of the song
-
-    var mainScale = getOption(obj, 'mainScale');
-    mainScale = typeof mainScale == 'function' ? mainScale() : mainScale; // Get the scale of the song part
-
-    var songPartScale = getOption(obj, 'songPartScale');
-    songPartScale = typeof songPartScale == 'function' ? songPartScale() : songPartScale; // Get this line's current scale
-
-    var scale = getOption(obj, 'scale');
-    scale = typeof scale == 'function' ? scale() : scale; // Get the song's main key
-
-    var mainKey = getOption(obj, 'key');
-    mainKey = typeof mainKey == 'function' ? mainKey() : mainKey; // Hide the modulation info if no changes to key and scale in relation with it's parent song part
-
-    if (modulation == 0 && scale == songPartScale) {
-      $(obj).siblings(getOption(obj, 'modulationInfo')).hide();
-    } else {
-      // Get the reference key given modulation and display
-      var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation + songModulation * 1 + songPartModulation * 1);
-      $(obj).siblings(getOption(obj, 'modulationInfo')).show().children('span').html('Key of ' + display + (scale != 'major' ? ' ' + scale : ''));
-    }
-  }
-
-  $.fn.chordsLine = function (command, option, value) {
-    if (_typeof(command) === 'object' || command == undefined) {
-      return $(this).each(function () {
-        var self = this; // Skip if this element is already processed
-
-        if ($(self).hasClass('chordsLine-processed')) return true; // Set up settings
-
-        var settings = $.extend({}, defaults, command); // Save settings to DOM
-
-        $(self).data('chordsLine-options', settings); // Initialize chord cursor
-
-        if ($(self).children('.chord-cursor').length > 0) {
-          return false;
-        }
-
-        var cursor = $('<span>').addClass('chord-cursor').html('&nbsp;'); // Click event for cursor
-
-        cursor.on('click', function () {
-          // Get position of cursor
-          var position = cursor.position().left;
-          var parent = cursor.parent();
-          insertChordMarker(self, settings.cursorWidth, position, typeof settings.scale == 'function' ? settings.scale() : settings.scale); // Sort chords line
-
-          sortChordMarkers(parent[0]);
-        }); // Add chord cursor to chords line
-
-        $(self).append(cursor); // Mouseover event for chords line to make chord cursor follow the mouse cursor
-
-        $(self).on('mouseover', function () {
-          // When mouse is hovered to chord view, track mouse position
-          $(self).on('mousemove', function (event) {
-            if (!$(self).is(event.target)) return true; // Get new position based on mouse cursor position and offsets.
-
-            var diff = event.offsetX; // Get remainder and remove from difference for snapping
-
-            var remainder = diff % settings.cursorWidth;
-            cursor.css('left', diff - remainder + 'px');
-          }); // Unbind mousemove event
-        }).on('mouseout', function () {
-          $(self).off('mousemove');
-        }); // Set chords line attributes
-
-        $(self).css('height', settings.height).addClass('chordsLine-processed');
-        changeScale(self, typeof settings.songPartScale == 'function' ? settings.songPartScale() : settings.songPartScale);
-      });
-    }
-
-    if (typeof command == 'string') {
-      switch (command.toLocaleLowerCase()) {
-        case 'setvalue':
-          if (typeof option != 'string') return this;
-          return $(this).each(function () {
-            setValue(this, option);
-          });
-
-        case 'getvalue':
-          return getValue(this);
-
-        case 'setscale':
-          return getValue(this);
-
-        case 'modulate':
-          if (typeof option != 'number') return; // NaN
-
-          return $(this).each(function () {
-            modulate(this, option);
-          });
-
-        case 'changescale':
-          return $(this).each(function () {
-            changeScale(this, option);
-          });
-
-        case 'update':
-          return $(this).each(function () {
-            setModulationInfo(this);
-          });
-      }
-    }
-  };
-})(jQuery);
-
-/***/ }),
-
-/***/ "./resources/js/songBuilder/dynamicPanel.js":
-/*!**************************************************!*\
-  !*** ./resources/js/songBuilder/dynamicPanel.js ***!
-  \**************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-(function ($) {
-  var defaults = {
-    key: "panel",
-    panelAction: ".panel-actions",
-    startCount: 1,
-    navigateByArrowKeys: true,
-    newPanelKeys: [13],
-    isDraggable: true,
-    draggable: {},
-    autoformatPaste: false,
-    getChildOfTemplate: true
-  };
-  var panelSelector = ".panel-item";
-  var panelClass = panelSelector.replace(/[.,#]*/g, '');
-  /**
-   * Initialize the options
-   * @param {Object} options
-   */
-
-  function initOptions(options) {
-    if (!options.hasOwnProperty('panelAction') || options['panelAction'] == '') {
-      options['panelAction'] = options.hasOwnProperty('key') ? "." + options.key + "-actions" : defaults.panelAction;
-    }
-
-    return options;
-  }
-  /**
-   * Get option value
-   * @param {Object} object
-   * @param {String} key
-   */
-
-
-  function getOption(object, key) {
-    var options = $(object).data('dynamicPanel-options');
-    if (options == undefined || !options.hasOwnProperty(key)) return null;
-    return options[key];
-  }
-  /**
-   * Set option value
-   * @param {Object} object
-   * @param {String} key
-   * @param {String} value
-   */
-
-
-  function setOption(object, key, value) {
-    var options = $(object).data('dynamicPanel-options');
-    options[key] = value;
-    $(object).data('dynamicPanel-options', options);
-  }
-  /**
-   * Insert a panel from a position
-   * @param {object} obj Target DOM
-   * @param {int} index Position where to insert the panel
-   */
-
-
-  function insertPanel(obj, index) {
-    var id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    // Get current count of panels
-    var panelCount = getOption(obj, 'panelCount');
-
-    if (index == undefined) {
-      index = panelCount > 0 ? panelCount : 0;
-    }
-
-    if (index > panelCount) {
-      index = panelCount;
-    } // Get next sibling panel
-
-
-    var nextPanel = $(obj).children(panelSelector + '[data-order="' + (index + 1) + '"]').first();
-    var firstSibling = nextPanel; // Adjust order of succeeding panels first
-
-    while (nextPanel.length > 0) {
-      var currOrder = nextPanel.attr('data-order') * 1;
-      nextPanel.attr('data-order', currOrder + 1);
-      nextPanel = nextPanel.next(panelSelector);
-    } // Get panel template selector
-
-
-    var panelTemplateSelector = getOption(obj, 'panelTemplate');
-    var panel;
-
-    if (getOption(obj, 'getChildOfTemplate')) {
-      panel = $($(panelTemplateSelector).html());
-    } else {
-      panel = $(panelTemplateSelector).clone();
-    } // Set up attributes
-
-
-    panel.attr('data-order', index + 1).addClass(panelClass); // Get delete selector from options
-    // then set event listener for delete
-
-    var removerSelector = getOption(obj, 'removerSelector');
-    panel.find(removerSelector).bind('click', function () {
-      var index = $(this).closest(panelSelector).attr('data-order') * 1 - 1;
-      removePanel(obj, index);
-    }); // Event listener for keys
-
-    panel.find('input[type="text"]').keyup(function (event) {
-      focusPanelByKey(obj, panel, event.which);
-
-      if (getOption(obj, 'navigateByArrowKeys') && event.which == 38 || event.which == 40) {
-        navigatePanelByKey(panel, event.which == 38 ? 'up' : 'down');
-      }
-    }); // Draggable
-
-    var draggable = getOption(obj, 'isDraggable');
-
-    if (draggable) {
-      panel.draggable({
-        addClasses: false,
-        connectToSortable: '#' + $(obj).attr('id'),
-        handle: panel.find('.move-handle'),
-        revert: true,
-        revertDuration: 0
-      });
-    } // Add to panel container
-
-
-    if (firstSibling.length <= 0) {
-      // Get container selector from options
-      var container = getOption(obj, 'container');
-
-      if (container == undefined) {
-        $(obj).append(panel);
-      } else {
-        $(obj).find(container).append(panel);
-      }
-    } else {
-      firstSibling.before(panel);
-    } // Set panel count
-
-
-    setOption(obj, 'panelCount', ++panelCount); // Set id if given
-
-    if (id != null && typeof id == 'string') {
-      panel.attr('data-id', id);
-    }
-
-    $(obj).trigger('dynamicPanel:insert' + getOption(obj, 'key'), [panel]);
-    return panel;
-  }
-
-  function focusPanelByKey(obj, panel, key) {
-    // Get inlcuded keys to activate
-    var newPanelKeys = getOption(obj, 'newPanelKeys');
-    if (newPanelKeys == undefined || _typeof(newPanelKeys) != 'object' || newPanelKeys.length <= 0) return false; // Key not on defined keys
-
-    if (!newPanelKeys.includes(key)) return false; // Get closest input from the next panel
-
-    panel = panel.next(panelSelector); // If no next panel, create new
-
-    if (panel.length <= 0) {
-      panel = insertPanel(obj);
-    } // Focus to this panel
-
-
-    panel.find('input[type="text"]').focus();
-  }
-
-  function navigatePanelByKey(panel, direction) {
-    switch (direction.toLowerCase()) {
-      case 'up':
-        panel = panel.prev(panelSelector);
-        break;
-
-      case 'down':
-        panel = panel.next(panelSelector);
-        break;
-
-      default:
-        return false;
-    }
-
-    if (panel.length <= 0) return false; // Focus to this panel
-
-    panel.find('input[type="text"]').focus();
-  }
-  /**
-   * Remove target panel and reorder succeeding sibling panels
-   * @param {object} obj Target object
-   * @param {int} index panel position to remove
-   */
-
-
-  function removePanel(obj, index) {
-    // Set panel count
-    var panelCount = getOption(obj, 'panelCount');
-
-    if (panelCount <= 0) {
-      console.error("dynamicPanel.deletePanel() => No panels to delete");
-    }
-
-    if (index == undefined || index > panelCount) {
-      index = panelCount - 1;
-    }
-
-    var panel = $(obj).children(panelSelector + '[data-order="' + (index + 1) + '"]').first(); // Get next sibling item
-
-    var next = panel.next(panelSelector);
-    panel.remove();
-    panel = next;
-
-    while (panel.length > 0) {
-      // Get current order of the next sibling panel
-      currentOrder = panel.attr('data-order') * 1 - 1; // Set order of the item
-
-      panel.attr('data-order', currentOrder); // Get next sibling item
-
-      panel = panel.next(panelSelector);
-    }
-
-    setOption(obj, 'panelCount', --panelCount);
-  }
-
-  function removeAll(obj) {
-    $(obj).children('.panel-item').each(function () {
-      removePanel(obj, $(this).attr('data-order') * 1 - 1);
-    });
-  }
-
-  $.fn.dynamicPanel = function (command, option, val) {
-    /** INIT */
-    if (_typeof(command) === 'object') {
-      return this.each(function () {
-        var self = this; // Get data attributes and add them to settings
-        // data-remover
-
-        if ($(self).attr('data-remover') != undefined) {
-          command['removerSelector'] = $(self).attr('data-remover');
-        } // data-adder
-
-
-        if ($(self).attr('data-adder') != undefined) {
-          command['adderSelector'] = $(self).attr('data-adder');
-        } // data-template
-
-
-        if ($(self).attr('data-template') != undefined) {
-          command['panelTemplate'] = $(self).attr('data-template');
-        } // Set settings
-
-
-        var settings = $.extend({}, defaults, initOptions(command));
-        $(self).data('dynamicPanel-options', settings);
-        $(self).addClass('dynamicPanel'); // Set draggable
-
-        var dragOpt = settings.draggable;
-        var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];
-
-        if (settings.draggable) {
-          $(self).sortable({
-            addClasses: false,
-            cancel: ['input', 'a', 'select', 'button:not(.move-handle)'].concat(cancelOpt).join(','),
-            cursor: 'grabbing',
-            stop: function stop(event, ui) {
-              // Resort panel after sorting
-              var index = 1;
-              $(self).children(panelSelector).each(function () {
-                if (index !== $(this).attr('data-order') * 1) {
-                  $(this).attr('data-order', index);
-                }
-
-                index++;
-              }); //$(ui.item).removeAttr('style');
-            }
-          });
-        }
-        /** Event listeners **/
-        // Add panels button
-
-
-        $(document).on('click', '[data-target="#' + $(self).attr('id') + '"]', function () {
-          // Create panel then focus on the closest text input
-          insertPanel(self).find('input[type="text"]').focus();
-        }); // paste event
-
-        if (settings.autoformatPaste) {
-          $(document).on('paste', '#' + $(self).attr('id') + '>' + panelSelector + ' input[type="text"]', function (event) {
-            // Get clipboard data
-            var clipboardData = event.originalEvent.clipboardData.getData('text');
-            if (clipboardData == undefined) return true; // Split clipboard data by newline
-
-            var lines = clipboardData.split('\n');
-            if (lines == undefined || lines.length <= 0) return true;
-            event.preventDefault(); // Process clipboard data, creating new panel per line of text
-
-            var panelInput = $(this);
-            panelInput.val(lines[0].trim()).trigger('change');
-
-            for (var i = 1; i < lines.length; i++) {
-              panelInput = panelInput.closest(panelSelector).next(panelSelector).find('input[type="text"]');
-
-              if (panelInput.length <= 0) {
-                panelInput = insertPanel(self).find('input[type="text"]');
-              }
-
-              panelInput.val(lines[i].trim());
-              panelInput.trigger('change');
-            }
-          });
-        }
-        /** Custom events */
-        // onInsert
-
-
-        if (settings.hasOwnProperty('onInsert') && settings.onInsert != undefined) {
-          $(self).on('dynamicPanel:insert' + settings.key, settings.onInsert);
-        } // Create panels
-
-
-        for (var i = 0; i < settings.startCount; i++) {
-          insertPanel(self);
-        }
-      });
-    }
-    /** ACTIONS */
-
-
-    if (typeof command === 'string') {
-      switch (command.toLowerCase()) {
-        case 'option':
-          return getOption(this, option);
-
-        case 'insert':
-          var panel;
-          this.each(function () {
-            panel = insertPanel(this, option, val);
-          });
-          return panel;
-
-        case 'remove':
-          return this.each(function () {
-            removePanel(this, option);
-          });
-
-        case 'removeall':
-          return this.each(function () {
-            removeAll(this);
           });
       }
     }
@@ -2458,166 +1772,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 /***/ }),
 
-/***/ "./resources/js/songBuilder/songLine.js":
-/*!**********************************************!*\
-  !*** ./resources/js/songBuilder/songLine.js ***!
-  \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-(function ($) {
-  var defaults = {
-    'dataSource': undefined,
-    'contextMenu': '',
-    'spacerContextMenu': ''
-  };
-  /**
-   * Get option value
-   * @param {Object} object
-   * @param {String} key
-   */
-
-  function getOption(object, key) {
-    var options = $(object).data('songLine-options');
-    if (options == undefined || !options.hasOwnProperty(key)) return null;
-    return options[key];
-  }
-  /**
-   * Add spacer next to this character
-   * @param {object} obj
-   * @param {number} width Width of the spacer
-   */
-
-
-  function addSpacer(obj, target, width) {
-    var i = width;
-    var arr = [];
-
-    while (--i) {
-      arr[i] = '&nbsp;';
-    }
-
-    var sibPrevCount = $(target).prevAll('.character').length + 1;
-    var spacer = $('<span>').addClass('spacer').attr('data-width', width).attr('data-position', sibPrevCount).html(arr.join('') + '-' + arr.join(''));
-    spacer.on('contextmenu', function (ev) {
-      ev.preventDefault();
-      $(getOption(obj, 'spacerContextMenu')).contextMenu('show', this);
-    });
-    $(target).after(spacer);
-  }
-  /**
-   * Remove temporary spacers
-   */
-
-
-  function cleanLine() {
-    $('.lyrics .temp-spacer').remove();
-  }
-  /**
-   * Get lyrics line value
-   */
-
-
-  function getValue(obj) {
-    var lyrics = [];
-    $(obj).children('span').each(function () {
-      if ($(this).hasClass('character')) lyrics.push($(this).text());else if ($(this).hasClass('spacer')) {
-        lyrics.push('{spacer-' + $(this).attr('data-width') + '}');
-      }
-    });
-    return lyrics.join('');
-  }
-  /**
-   *
-   * @param {object} obj
-   */
-
-
-  function processLine(obj) {
-    var settings = $(obj).data('songLine-options'); // Get data
-
-    if ($(settings.dataSource).hasClass('changed')) {
-      var preDefSpacers = []; // Get predefined spacers
-
-      if ($(obj).html().indexOf('{spacer-') >= 0) {
-        var content = $(obj).html();
-        var spacers = content.match(/\{spacer-[0-9]+\}/g);
-        spacers.forEach(function (spacer) {
-          // Get position and width of the spacer
-          var position = content.indexOf(spacer);
-          var width = spacer.match(/\d+/g)[0];
-          preDefSpacers.push({
-            'position': position,
-            'width': width
-          }); // Remove the spacer from the content
-
-          content = content.replace(/\{spacer-[0-9]+\}/, '');
-        });
-      }
-
-      var data = $(settings.dataSource).val();
-      var charArr = data.split('');
-      var formattedData = '';
-      charArr.forEach(function (_char) {
-        formattedData += '<span class="character">' + _char + '</span>';
-      });
-      $(obj).html(formattedData); // Set predefined spacers
-
-      preDefSpacers.reverse().forEach(function (spacer) {
-        addSpacer(obj, $(obj).children('.character')[spacer.position - 1], spacer.width);
-      }); // Set event listener
-
-      $(obj).find('.character').on('mouseover', function () {
-        $(this).css('border-right', '2.5px solid lightgray');
-      }).on('mouseleave', function () {
-        $(this).css('border-right', 'none');
-      }).on('contextmenu', function (ev) {
-        ev.preventDefault();
-        $(this).css('border-right', 'none');
-        $(settings.contextMenu).contextMenu('show', this);
-      });
-      $(settings.dataSource).removeClass('changed');
-    }
-  }
-
-  $.fn.songLine = function (command, option, value) {
-    if (command == undefined || _typeof(command) == 'object') {
-      return $(this).each(function () {
-        var self = this;
-        var settings = $.extend({}, defaults, command);
-        $(self).data('songLine-options', settings);
-        processLine(self);
-      });
-    }
-
-    if (typeof command == 'string') {
-      switch (command.toLowerCase()) {
-        case 'addspacer':
-          return $(this).each(function () {
-            addSpacer(this, option, value);
-          });
-
-        case 'clean':
-          return $(this).each(function () {
-            cleanLine();
-          });
-
-        case 'getvalue':
-          return getValue(this);
-
-        case 'processline':
-          return $(this).each(function () {
-            processLine(this);
-          });
-      }
-    }
-  };
-})(jQuery);
-
-/***/ }),
-
 /***/ "./resources/js/songBuilder/songPart.js":
 /*!**********************************************!*\
   !*** ./resources/js/songBuilder/songPart.js ***!
@@ -2635,6 +1789,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 (function ($) {
   var defaults = {
+    'chordBuilder': '',
     'contextMenu': '',
     'songPartTitleInput': '.song-part-title .song-part-name',
     'songPartModulationInfo': '.song-part-modulation-info',
@@ -2716,7 +1871,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (modulation == 0 && scale == mainScale) {
       $(panel).find(getOption(obj, 'songPartModulationInfo')).hide();
     } else {
-      var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation + songModulation * 1);
+      var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation * 1 + songModulation * 1);
       $(panel).find(getOption(obj, 'songPartModulationInfo')).show().children('span').html('Key of ' + display + (scale != 'major' ? ' ' + scale : ''));
     } // set modulation info of lines
 
@@ -2796,7 +1951,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     linePanel.find('.lyrics input[type="text"]').val(lyricsDisplay);
     linePanel.find('.lyrics input[type="text"]').addClass('changed'); // Set content to lyrics view
 
-    linePanel.find('.lyrics .lyrics-view').html(lyricsContent); // Set content to chords view
+    linePanel.find('.lyrics .lyrics-view').lyricsLine('setValue', lyricsContent); // Set content to chords view
 
     linePanel.find('.chords').chordsLine('setValue', chordsContent);
   }
@@ -2815,10 +1970,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var songPartLyricsCont = [];
       var songPartLyricsDisp = [];
       $(this).find('.panel-item .song-line-content').each(function () {
-        $(this).find('.lyrics-view').songLine('processLine');
+        $(this).find('.lyrics-view').lyricsLine('processLine');
         var chords = $(this).children('.chords').chordsLine('getValue') || '';
         var lyricsDisplay = $(this).find('.lyrics input[type="text"]').val() || '';
-        var lyricsContent = $(this).find('.lyrics-view').songLine('getValue') || '';
+        var lyricsContent = $(this).find('.lyrics-view').lyricsLine('getValue') || '';
         songPartChords.push(chords.join('|'));
         songPartLyricsCont.push(lyricsContent);
         songPartLyricsDisp.push(lyricsDisplay);
@@ -2921,7 +2076,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 var lyricsView = songlinePanel.find('.lyrics-view');
 
                 if (lyricsView.length > 0) {
-                  lyricsView.songLine({
+                  lyricsView.lyricsLine({
                     'dataSource': songlinePanel.find('.lyrics input[type="text"]'),
                     'contextMenu': '.character-context-menu',
                     'spacerContextMenu': '.spacer-context-menu'
@@ -2938,6 +2093,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 if (chordsView.length > 0) {
                   // Initialize chords line
                   chordsView.chordsLine({
+                    'chordBuilder': settings.chordBuilder,
                     'height': settings.fontHeight + 4,
                     'cursorWidth': settings.fontWidth,
                     'key': settings.key,
@@ -3025,28 +2181,26 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! uuid */ "./node_modules/uuid/index.js");
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(uuid__WEBPACK_IMPORTED_MODULE_0__);
-window.musicReference = __webpack_require__(/*! ./_musicReference.json */ "./resources/js/songBuilder/_musicReference.json");
+window.musicReference = __webpack_require__(/*! ../utilities/_musicReference.json */ "./resources/js/utilities/_musicReference.json");
 window.songData = {};
 
-__webpack_require__(/*! ./songPart */ "./resources/js/songBuilder/songPart.js");
+__webpack_require__(/*! ../common/dynamicPanel */ "./resources/js/common/dynamicPanel.js");
 
-__webpack_require__(/*! ./outline */ "./resources/js/songBuilder/outline.js");
+__webpack_require__(/*! ../utilities/chordProcessor */ "./resources/js/utilities/chordProcessor.js");
 
-__webpack_require__(/*! ./songDetails */ "./resources/js/songBuilder/songDetails.js");
+__webpack_require__(/*! ../utilities/chordMarker */ "./resources/js/utilities/chordMarker.js");
 
-__webpack_require__(/*! ./chordProcessor */ "./resources/js/songBuilder/chordProcessor.js");
+__webpack_require__(/*! ../utilities/lyricsLine */ "./resources/js/utilities/lyricsLine.js");
+
+__webpack_require__(/*! ../utilities/chordsLine */ "./resources/js/utilities/chordsLine.js");
 
 __webpack_require__(/*! ./chordBuilder */ "./resources/js/songBuilder/chordBuilder.js");
 
-__webpack_require__(/*! ./chordMarker */ "./resources/js/songBuilder/chordMarker.js");
-
-__webpack_require__(/*! ./dynamicPanel */ "./resources/js/songBuilder/dynamicPanel.js");
-
-__webpack_require__(/*! ./chordsLine */ "./resources/js/songBuilder/chordsLine.js");
-
-__webpack_require__(/*! ./songLine */ "./resources/js/songBuilder/songLine.js");
-
 __webpack_require__(/*! ./sequenceBuilder */ "./resources/js/songBuilder/sequenceBuilder.js");
+
+__webpack_require__(/*! ./songDetails */ "./resources/js/songBuilder/songDetails.js");
+
+__webpack_require__(/*! ./songPart */ "./resources/js/songBuilder/songPart.js");
 
 __webpack_require__(/*! ./outline */ "./resources/js/songBuilder/outline.js");
 
@@ -3167,8 +2321,8 @@ $(function () {
       'name': 'delete',
       'selector': '.delete-chord',
       'action': function action(ev, obj, target) {
-        $(target).remove();
         $(obj).contextMenu('hide');
+        $(target).remove();
       }
     }, {
       'name': 'modulate',
@@ -3353,8 +2507,8 @@ $(function () {
         var input = $(menu).find('.spacer-width input[type="number"]');
         var width = input.val();
         input.val(input.attr('data-default'));
-        $(target).parent().songLine('addSpacer', target, width);
-        $(target).parent().songLine('clean');
+        $(target).parent().lyricsLine('addSpacer', target, width);
+        $(target).parent().lyricsLine('clean');
         $(menu).contextMenu('hide');
       }
     }],
@@ -3405,6 +2559,7 @@ $(function () {
     }
   });
   $(songPartsContainer).songPart({
+    'chordBuilder': chordSelection,
     'contextMenu': songPartContextMenu,
     'fontSize': monospaceFontSize,
     'fontFamily': monospaceFontFamily,
@@ -3677,7 +2832,7 @@ function addChords(ev) {
     $(this).hide();
     var lyricsView = $(this).siblings('.lyrics-view');
     if (lyricsView.length <= 0) return;
-    lyricsView.songLine('processLine');
+    lyricsView.lyricsLine('processLine');
     lyricsView.show();
   });
   $(previousButton).show();
@@ -3808,6 +2963,937 @@ function getFallbackSequences(songPart) {
 window.getSong = function (id) {
   get(id);
 };
+
+/***/ }),
+
+/***/ "./resources/js/utilities/_musicReference.json":
+/*!*****************************************************!*\
+  !*** ./resources/js/utilities/_musicReference.json ***!
+  \*****************************************************/
+/*! exports provided: measures, notes, scale, variations, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"measures\":[{\"name\":\"whole\",\"displayName\":\"|\",\"default\":true},{\"name\":\"half\",\"displayName\":\"'\"},{\"name\":\"quarter\",\"displayName\":\"-\"},{\"name\":\"eightth\",\"displayName\":\"·\"},{\"name\":\"no\",\"displayName\":\"\"}],\"notes\":[{\"name\":\"C\",\"displayName\":\"C\"},{\"name\":\"C#\",\"displayName\":\"C♯\",\"altName\":\"D♭\"},{\"name\":\"D\",\"displayName\":\"D\"},{\"name\":\"D#\",\"displayName\":\"D♯\",\"altName\":\"E♭\"},{\"name\":\"E\",\"displayName\":\"E\"},{\"name\":\"F\",\"displayName\":\"F\"},{\"name\":\"F#\",\"displayName\":\"F♯\",\"altName\":\"G♭\"},{\"name\":\"G\",\"displayName\":\"G\"},{\"name\":\"G#\",\"displayName\":\"G♯\",\"altName\":\"A♭\"},{\"name\":\"A\",\"displayName\":\"A\"},{\"name\":\"A#\",\"displayName\":\"A♯\",\"altName\":\"B♭\"},{\"name\":\"B\",\"displayName\":\"B\"}],\"scale\":[{\"name\":\"major\",\"pattern\":[{\"name\":\"1\",\"noteIndex\":0},{\"name\":\"2\",\"noteIndex\":2},{\"name\":\"3\",\"noteIndex\":4},{\"name\":\"4\",\"noteIndex\":5},{\"name\":\"5\",\"noteIndex\":7},{\"name\":\"6\",\"noteIndex\":9},{\"name\":\"7\",\"noteIndex\":11},{\"name\":\"1s\",\"noteIndex\":1},{\"name\":\"2s\",\"noteIndex\":3},{\"name\":\"4s\",\"noteIndex\":6},{\"name\":\"5s\",\"noteIndex\":8},{\"name\":\"6s\",\"noteIndex\":10}],\"family\":[{\"name\":\"1\",\"variationIndex\":0},{\"name\":\"2\",\"variationIndex\":1},{\"name\":\"3\",\"variationIndex\":1},{\"name\":\"4\",\"variationIndex\":0},{\"name\":\"5\",\"variationIndex\":0},{\"name\":\"6\",\"variationIndex\":1},{\"name\":\"7\",\"variationIndex\":2}]}],\"variations\":[{\"name\":\"M\",\"display\":\"M\",\"html\":\"\",\"fullName\":\"Major\",\"precedence\":0,\"order\":0,\"default\":true},{\"name\":\"m\",\"display\":\"m\",\"html\":\"m\",\"fullName\":\"Minor\",\"precedence\":0,\"order\":0},{\"name\":\"dim\",\"display\":\"dim\",\"html\":\"<sup>dim</sup>\",\"fullName\":\"Diminished\",\"precedence\":0,\"order\":1},{\"name\":\"aug\",\"display\":\"aug\",\"html\":\"<sup>aug</sup>\",\"fullName\":\"Augmented\",\"precedence\":0,\"order\":1},{\"name\":\"dom7\",\"display\":\"7\",\"html\":\"<sup>7</sup>\",\"fullName\":\"Dominant seventh\",\"precedence\":1,\"order\":2},{\"name\":\"maj7\",\"display\":\"M7\",\"html\":\"<sup>M7</sup>\",\"fullName\":\"Major seventh\",\"precedence\":1,\"order\":2},{\"name\":\"5\",\"display\":\"5\",\"html\":\"<sup>5</sup>\",\"fullName\":\"Fifth/Power chord\",\"precedence\":1},{\"name\":\"flat5\",\"display\":\"♭5\",\"html\":\"<sup>♭5</sup>\",\"fullName\":\"Flat fifth\",\"precedence\":1},{\"name\":\"6\",\"display\":\"6\",\"html\":\"<sup>6</sup>\",\"fullName\":\"Sixth\",\"precedence\":1},{\"name\":\"9\",\"display\":\"9\",\"html\":\"<sup>9</sup>\",\"fullName\":\"Ninth\",\"precedence\":1},{\"name\":\"maj9\",\"display\":\"M9\",\"html\":\"<sup>M9</sup>\",\"fullName\":\"Major ninth\",\"precedence\":1},{\"name\":\"11\",\"display\":\"11\",\"html\":\"<sup>11</sup>\",\"fullName\":\"Eleventh\",\"precedence\":1},{\"name\":\"13\",\"display\":\"13\",\"html\":\"<sup>13</sup>\",\"fullName\":\"Thirteenth\",\"precedence\":1},{\"name\":\"sus2\",\"display\":\"sus2\",\"html\":\"<sup>sus2</sup>\",\"fullName\":\"Suspended second\",\"precedence\":2},{\"name\":\"sus4\",\"display\":\"sus4\",\"html\":\"<sup>sus4</sup>\",\"fullName\":\"Suspended fourth\",\"precedence\":2},{\"name\":\"add6\",\"display\":\"add6\",\"html\":\"<sup>add6</sup>\",\"fullName\":\"Add sixth\",\"precedence\":2},{\"name\":\"add9\",\"display\":\"add9\",\"html\":\"<sup>add9</sup>\",\"fullName\":\"Add ninth\",\"precedence\":2}]}");
+
+/***/ }),
+
+/***/ "./resources/js/utilities/chordMarker.js":
+/*!***********************************************!*\
+  !*** ./resources/js/utilities/chordMarker.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {
+    'dragSnap': 0,
+    'leftOffset': 0,
+    'scale': '',
+    'mainKey': 'C',
+    'mainScale': 'Major',
+    'parent': undefined,
+    'selectOnCreate': true,
+    'remainSelected': false,
+    'songModulation': 0,
+    'songPartModulation': 0,
+    'sequenceModulation': 0,
+    'songLineModulation': 0,
+    'modulation': 0,
+    'value': null,
+    'spacing': 'css',
+    'editable': true,
+    onDragStop: function onDragStop() {}
+  };
+  var ChordProcessor = window.ChordProcessor;
+
+  function getOption(obj, name) {
+    var option = $(obj).data('chordMarker-options');
+
+    if (option == undefined || !option.hasOwnProperty(name)) {
+      return undefined;
+    }
+
+    return option[name];
+  }
+
+  function setOption(obj, name, value) {
+    var option = $(obj).data('chordMarker-options');
+
+    if (option == undefined || !option.hasOwnProperty(name)) {
+      return;
+    }
+
+    option[name] = value;
+    $(obj).data('chordMarker-options', option);
+  }
+  /**
+   * Update each chord
+   * @param {object} obj
+   */
+
+
+  function updateChord(obj) {
+    if ($(obj).attr('data-value') == '') {
+      $(obj).html('&nbsp;');
+      return;
+    }
+
+    var mainRoot = getOption(obj, 'key');
+    var scale = getOption(obj, 'scale');
+    mainRoot = typeof mainRoot == 'function' ? mainRoot() : mainRoot;
+    scale = typeof scale == 'function' ? scale() : scale;
+    var modulationAmount = getModulationAmount(obj);
+    var disp = ChordProcessor.processChord($(obj).attr('data-value'), mainRoot, scale, modulationAmount);
+    $(obj).html(disp);
+  }
+  /**
+   * Set value of chord
+   * @param {object} obj
+   * @param {string} value Value of chord
+   */
+
+
+  function setValue(obj, value) {
+    $(obj).attr('data-value', value);
+    updateChord(obj);
+
+    if (!getOption(obj, 'remainSelected') && value != '') {
+      unselectMarker(obj);
+    }
+  }
+  /**
+   * Modulate the chord
+   * @param {object} obj
+   * @param {number} amount Amount of modulation
+   */
+
+
+  function modulate(obj, amount) {
+    setOption(obj, 'modulation', amount);
+  }
+  /**
+   * Get total modulation (song + song part + song line) of the chord
+   * @param {object} obj
+   */
+
+
+  function getModulationAmount(obj) {
+    var _songModulation = getOption(obj, 'songModulation');
+
+    var _songPartModulation = getOption(obj, 'songPartModulation');
+
+    var _sequenceModulation = getOption(obj, 'sequenceModulation');
+
+    var _songLineModulation = getOption(obj, 'songLineModulation');
+
+    var songModulation = typeof _songModulation == 'function' ? _songModulation() : _songModulation;
+    var songPartModulation = typeof _songPartModulation == 'function' ? _songPartModulation() : _songPartModulation;
+    var sequenceModulation = typeof _sequenceModulation == 'function' ? _sequenceModulation() : _sequenceModulation;
+    var songLineModulation = typeof _songLineModulation == 'function' ? _songLineModulation() : _songLineModulation;
+    var modulation = getOption(obj, 'modulation');
+    return modulation * 1 + songModulation * 1 + songPartModulation * 1 + sequenceModulation * 1 + songLineModulation * 1;
+  }
+  /**
+   * Toggle this chord marker as selected
+   * @param {object} obj
+   * @param {object} marker Target chord marker
+   */
+
+
+  function selectMarker(obj) {
+    var chordBuilder = getOption(obj, 'chordBuilder');
+
+    if ($(obj).hasClass('selected')) {
+      unselectMarker(obj, chordBuilder);
+      if (chordBuilder == '') return;
+      $(chordBuilder).chordBuilder('setTarget', null);
+    } else {
+      unselectAllMarkers();
+      $(obj).addClass('selected');
+      if (chordBuilder == '') return;
+      $(chordBuilder).chordBuilder('setTarget', obj);
+    }
+  }
+  /**
+   * Unselect this chord marker
+   * @param {object} obj
+   */
+
+
+  function unselectMarker(obj) {
+    var chordBuilder = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+    if ($(obj).length <= 0) return;
+    $(obj).removeClass('selected'); // Remove if empty on unselect
+
+    if ($(obj).attr('data-value') == '') {
+      $(obj).remove();
+    }
+
+    if (chordBuilder == undefined) {
+      chordBuilder = getOption(obj, 'chordBuilder');
+    }
+
+    if (chordBuilder == '') return;
+    $(chordBuilder).chordBuilder('setTarget', null);
+    setOption(obj, 'remainSelected', false);
+  }
+  /**
+   * Unselect all selected chords markers
+   */
+
+
+  function unselectAllMarkers() {
+    $('.chord.selected').each(function () {
+      unselectMarker(this);
+      remainSelected = true;
+    });
+  }
+
+  $.fn.chordMarker = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var settings = $.extend({}, defaults, command);
+        var self = this; // Save settings
+
+        $(self).data('chordMarker-options', settings); // Set up attributes
+
+        $(self).addClass('chord').html('&nbsp;'); // Set up draggable
+
+        $(self).draggable({
+          axis: 'x',
+          addClasses: false,
+          containment: 'parent',
+          grid: [settings.dragSnap, 0],
+          disabled: !settings.editable,
+          create: function create(ev, ui) {
+            $(self).removeAttr('style').css('left', settings.leftOffset).css('position', 'absolute').attr('data-position', Math.round(settings.leftOffset / settings.dragSnap));
+          },
+          stop: function stop(ev, ui) {
+            var diff = $(self).position().left;
+            var snapPos = Math.round(diff / settings.dragSnap);
+            $(self).removeAttr('style').css('left', snapPos * settings.dragSnap).attr('data-position', snapPos);
+            $(self).trigger('chordMarker:dragstop', [$(self)]);
+          }
+        });
+
+        if (settings.editable) {
+          // Events
+          $(self).on('click', function (ev) {
+            selectMarker(self);
+            settings.remainSelected = true;
+          }); // Set-up context menu
+
+          $(self).on('contextmenu', function (ev) {
+            ev.preventDefault();
+            $(settings.contextMenu).contextMenu('toggle', this);
+          });
+
+          if (settings.chordBuilder != '') {
+            // Set-up double click
+            $(self).on('dblclick', function () {
+              $(settings.chordBuilder).chordBuilder('show', this);
+            }); // Remove selection when clicked outside chord markers
+
+            $(document).on('click', function (ev) {
+              if ($(ev.target).closest('.chords').length <= 0 && $(ev.target).closest(settings.contextMenu).length <= 0 && $(ev.target).closest(settings.chordBuilder).length <= 0) {
+                unselectMarker(self);
+              }
+            });
+          } // Custom events
+
+
+          $(self).on('chordMarker:dragstop', settings.onDragStop);
+        } // Append marker to parent
+
+
+        $(settings.parent).append($(self)); // Run on init
+
+        if (settings.value == null) {
+          var chordValue = $(settings.chordBuilder).chordBuilder('getChord', self);
+
+          if (settings.selectOnCreate) {
+            unselectAllMarkers();
+            selectMarker(self);
+          }
+
+          setValue(self, chordValue.value);
+        } else {
+          setValue(self, settings.value);
+          settings.value = null;
+        }
+      });
+    }
+
+    if (typeof command == 'string') {
+      switch (command.toLowerCase()) {
+        case 'update':
+          return $(this).each(function () {
+            updateChord(this);
+          });
+
+        case 'chordvalue':
+          return $(this).each(function () {
+            setValue(this, option);
+          });
+
+        case 'select':
+          return $(this).each(function () {
+            selectMarker(this);
+          });
+
+        case 'unselect':
+          return $(this).each(function () {
+            unselectMarker(this);
+          });
+
+        case 'unselectall':
+          unselectAllMarkers();
+          return this;
+
+        case 'modulate':
+          if (typeof option != 'number') return this;
+          return $(this).each(function () {
+            modulate(this, option);
+          });
+
+        case 'option':
+          if (typeof option != 'string') return null;
+
+          if (typeof value == 'string') {
+            return $(this).each(function () {
+              setOption(this, option, value);
+            });
+          }
+
+          return getOption(this, option);
+
+        case 'getmodulationamount':
+          return getModulationAmount(this);
+      }
+    }
+  };
+})(jQuery);
+
+/***/ }),
+
+/***/ "./resources/js/utilities/chordProcessor.js":
+/*!**************************************************!*\
+  !*** ./resources/js/utilities/chordProcessor.js ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+window.ChordProcessor = {
+  musicReference: window.musicReference || {},
+  processChord: function processChord(value, key, scale) {
+    var modulation = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
+    if (typeof value == 'string' && typeof scale == 'string' && typeof key == 'string') {
+      var musicReference = ChordProcessor.musicReference;
+      var rootKey = key;
+      var rootScale = scale;
+      var parts = value.split('/');
+      var measure = parts[0];
+      var root = parts[1];
+      var variation = parts[2];
+      var variation2 = parts[3];
+      var bass = parts[4];
+      if (measure == '' || root == '' || variation == '') return ''; // Get measure
+
+      var measureDisplay = musicReference.measures.find(function (o) {
+        return o.name == measure;
+      }).displayName; // IF custom
+
+      if (root == 'custom') {
+        return [measureDisplay, variation].join('');
+      } //** Get root and bass note **//
+      // Get scale
+
+
+      var scaleReference = musicReference.scale.find(function (o) {
+        return o.name == rootScale;
+      }) || musicReference.scale[0]; // Get position of root note
+
+      modulation = modulation >= 0 ? modulation : 12 + modulation % 12;
+      var keyNoteIndex = musicReference.notes.indexOf(musicReference.notes.find(function (note) {
+        return note.name == rootKey;
+      })) + modulation;
+      var rootNoteIndex = (scaleReference.pattern.find(function (o) {
+        return o.name == root;
+      }).noteIndex + keyNoteIndex) % musicReference.notes.length;
+      var noteRef = musicReference.notes[rootNoteIndex];
+      var rootDisplay = noteRef.displayName;
+      var bassDisplay = '';
+
+      if (bass != '') {
+        var bassNoteIndex = (scaleReference.pattern.find(function (o) {
+          return o.name == bass;
+        }).noteIndex + keyNoteIndex) % musicReference.notes.length;
+        var bassNoteRef = musicReference.notes[bassNoteIndex];
+        bassDisplay = "<sub>/" + bassNoteRef.displayName + '</sub>';
+      } //** Get Variations */
+
+
+      var variationDisplay = variation != '' ? musicReference.variations.find(function (o) {
+        return o.name == variation;
+      }).html : '';
+      var variation2Display = variation2 != '' ? musicReference.variations.find(function (o) {
+        return o.name == variation2;
+      }).html : '';
+      return [measureDisplay, rootDisplay, variationDisplay, variation2Display, bassDisplay].join('');
+    }
+  }
+};
+
+/***/ }),
+
+/***/ "./resources/js/utilities/chordsLine.js":
+/*!**********************************************!*\
+  !*** ./resources/js/utilities/chordsLine.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {
+    'spacing': 'css',
+    'height': 10,
+    'cursorWidth': 10,
+    'contextMenu': '.chord-context-menu',
+    'chordBuilder': '',
+    'mainScale': '',
+    'songModulation': 0,
+    'songPartScale': '',
+    'scale': '',
+    'key': '',
+    'songPartModulation': 0,
+    'modulation': 0,
+    'modulationInfo': '.song-line-modulation-info',
+    'value': '',
+    'fontSize': '',
+    'fontFamily': '',
+    'editable': false
+  };
+  /**
+   * Get option from DOM data
+   * @param {object} obj
+   * @param {string} name option name/key
+   */
+
+  function getOption(obj, name) {
+    var option = $(obj).data('chordsLine-options');
+
+    if (option == undefined || !option.hasOwnProperty(name)) {
+      return undefined;
+    }
+
+    return option[name];
+  }
+  /**
+   * Set option value
+   * @param {Object} obj
+   * @param {String} option
+   * @param {any} value
+   */
+
+
+  function setOption(obj, option, value) {
+    var options = $(obj).data('chordsLine-options');
+    options[option] = value;
+    $(obj).data('chordsLine-options', options);
+  }
+  /**
+   * Sort chord markers within the parent chord line
+   * @param {Jquery Object} chordMarker
+   */
+
+
+  function sortChordMarkers(chordMarker) {
+    var parent;
+    var markers;
+
+    if ($(chordMarker).hasClass('chord')) {
+      parent = $(chordMarker).parent();
+      markers = parent.children('.chord');
+    } else if ($(chordMarker).hasClass('chords')) {
+      markers = $(chordMarker).children('.chord');
+      parent = chordMarker;
+    } // Sort chords line
+
+
+    markers.sort(function (elem1, elem2) {
+      return $(elem1).offset().left > $(elem2).offset().left ? 1 : -1;
+    }).appendTo(parent);
+  }
+  /**
+   * Instantiate a new chord marker inside obj
+   * @param {object} obj
+   * @param {number} width the snap width of the marker
+   * @param {number} position the left offset of the marker from the left edge of the document
+   * @param {string} scale scale reference of the chord
+   * @param {number} modulation modulation of the chord
+   * @param {string} value chord value with parts delimited by /
+   */
+
+
+  function insertChordMarker(obj, width, position, scale) {
+    var modulation = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+    var value = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+    $('<span>').chordMarker({
+      'spacing': getOption(obj, 'spacing'),
+      'chordBuilder': getOption(obj, 'chordBuilder'),
+      'contextMenu': getOption(obj, 'contextMenu'),
+      'dragSnap': width,
+      'leftOffset': position,
+      'key': getOption(obj, 'key'),
+      'mainScale': getOption(obj, 'mainScale'),
+      'songPartScale': getOption(obj, 'songPartScale'),
+      'songLineScale': function songLineScale() {
+        getOption(obj, 'scale');
+      },
+      'scale': scale,
+      'parent': obj,
+      'songModulation': getOption(obj, 'songModulation'),
+      'songLineModulation': function songLineModulation() {
+        return getOption(obj, 'modulation');
+      },
+      'songPartModulation': getOption(obj, 'songPartModulation'),
+      'sequenceModulation': getOption(obj, 'sequenceModulation'),
+      'modulation': modulation,
+      'value': value,
+      'onDragStop': function onDragStop() {
+        sortChordMarkers(obj);
+      },
+      'editable': getOption(obj, 'editable')
+    });
+  }
+  /**
+   *
+   * @param {object} obj
+   * @param {string} values Chords values. String delimited by |
+   */
+
+
+  function setValue(obj, values) {
+    $(obj).children('.chord').remove();
+    var chords = values.split('|');
+
+    if (chords.length < 1) {
+      console.error('Error at chordsLine.setValue() => Invalid chords data');
+      return;
+    } // Set chord line details
+
+
+    var details = chords.splice(0, 1)[0].split('/');
+
+    if (details.length < 2) {
+      console.error('Error at chordsLine.setValue() => Invalid chords metadata');
+      return;
+    }
+
+    var modulation = details[0] * 1;
+    var scale = details[1];
+    modulate(obj, modulation);
+    changeScale(obj, scale);
+    chords.forEach(function (chord) {
+      // Get chord parts
+      var chordPart = chord.split('/');
+      if (chordPart.length != 8) return;
+      var keyReference = chordPart[0] * 1;
+      var scale = chordPart[1];
+      var position = chordPart[2] * 1;
+      var measure = chordPart[3];
+      var root = chordPart[4];
+      var variation = chordPart[5];
+      var variation2 = chordPart[6];
+      var bass = chordPart[7];
+      insertChordMarker(obj, getOption(obj, 'cursorWidth'), position * getOption(obj, 'cursorWidth'), scale, keyReference, [measure, root, variation, variation2, bass].join('/'));
+    });
+  }
+  /**
+   * Get the value of chords in this chord line in array form
+   * @param {object} obj
+   */
+
+
+  function getValue(obj) {
+    var chords = []; // Get details
+
+    var modulation = getOption(obj, 'modulation');
+    var scale = getOption(obj, 'scale');
+    modulation = typeof modulation == 'function' ? modulation() : modulation;
+    scale = typeof scale == 'function' ? scale() : scale;
+    chords.push([modulation, scale].join('/')); // Get chords in the line
+
+    $(obj).find('.chord').each(function () {
+      var modulation = $(this).chordMarker('option', 'modulation');
+      var scale = $(this).chordMarker('option', 'scale');
+      modulation = typeof modulation == 'function' ? modulation() : modulation;
+      scale = typeof scale == 'function' ? scale() : scale;
+      var position = $(this).attr('data-position');
+      var value = $(this).attr('data-value');
+      chords.push([modulation, scale, position, value].join('/'));
+    });
+    return chords;
+  }
+  /**
+   * Modulate the song line
+   * @param {object} obj
+   * @param {number} amount Amount of modulation
+   */
+
+
+  function modulate(obj, amount) {
+    $(obj).closest('.song-line').attr('data-modulation', amount);
+    setOption(obj, 'modulation', amount);
+    setModulationInfo(obj);
+  }
+  /**
+   * Change the scale of the song line
+   * @param {object} obj
+   * @param {string} scale Name of the new scale
+   */
+
+
+  function changeScale(obj, scale) {
+    $(obj).closest('.song-line').attr('data-scale', scale);
+    setOption(obj, 'scale', scale);
+    setModulationInfo(obj);
+  }
+
+  function setModulationInfo(obj) {
+    // Get the song's modulation
+    var songModulation = getOption(obj, 'songModulation');
+    songModulation = typeof songModulation == 'function' ? songModulation() : songModulation; // Get the song part modulation
+
+    var songPartModulation = getOption(obj, 'songPartModulation');
+    songPartModulation = typeof songPartModulation == 'function' ? songPartModulation() : songPartModulation; // Get the sequence modulation
+
+    var sequenceModulation = getOption(obj, 'sequenceModulation');
+    sequenceModulation = typeof sequenceModulation == 'function' ? sequenceModulation() : sequenceModulation || 0; // Get this line's modulation
+
+    var modulation = getOption(obj, 'modulation');
+    modulation = typeof modulation == 'function' ? modulation() : modulation || 0; // Get the scale of the song part
+
+    var songPartScale = getOption(obj, 'songPartScale');
+    songPartScale = typeof songPartScale == 'function' ? songPartScale() : songPartScale; // Get this line's current scale
+
+    var scale = getOption(obj, 'scale');
+    scale = typeof scale == 'function' ? scale() : scale; // Get the song's main key
+
+    var mainKey = getOption(obj, 'key');
+    mainKey = typeof mainKey == 'function' ? mainKey() : mainKey; // Hide the modulation info if no changes to key and scale in relation with it's parent song part
+
+    if (modulation == 0 && scale == songPartScale) {
+      $(obj).siblings(getOption(obj, 'modulationInfo')).hide();
+    } else {
+      // Get the reference key given modulation and display
+      var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation + songModulation * 1 + songPartModulation * 1 + sequenceModulation * 1);
+      $(obj).siblings(getOption(obj, 'modulationInfo')).show().children('span').html('Key of ' + display + (scale != 'major' ? ' ' + scale : ''));
+    }
+  }
+
+  $.fn.chordsLine = function (command, option, value) {
+    if (_typeof(command) === 'object' || command == undefined) {
+      return $(this).each(function () {
+        var self = this; // Skip if this element is already processed
+
+        if ($(self).hasClass('chordsLine-processed')) return true; // Set up settings
+
+        var settings = $.extend({}, defaults, command); // Save settings to DOM
+
+        $(self).data('chordsLine-options', settings); // Initialize chord cursor
+
+        if ($(self).children('.chord-cursor').length > 0) {
+          return false;
+        }
+
+        var cursor = $('<span>').addClass('chord-cursor').html('&nbsp;'); // Click event for cursor
+
+        cursor.on('click', function () {
+          // Get position of cursor
+          var position = cursor.position().left;
+          var parent = cursor.parent();
+          insertChordMarker(self, settings.cursorWidth, position, typeof settings.scale == 'function' ? settings.scale() : settings.scale); // Sort chords line
+
+          sortChordMarkers(parent[0]);
+        }); // Add chord cursor to chords line
+
+        $(self).append(cursor); // Mouseover event for chords line to make chord cursor follow the mouse cursor
+
+        $(self).on('mouseover', function () {
+          // When mouse is hovered to chord view, track mouse position
+          $(self).on('mousemove', function (event) {
+            if (!$(self).is(event.target)) return true; // Get new position based on mouse cursor position and offsets.
+
+            var diff = event.offsetX; // Get remainder and remove from difference for snapping
+
+            var remainder = diff % settings.cursorWidth;
+            cursor.css('left', diff - remainder + 'px');
+          }); // Unbind mousemove event
+        }).on('mouseout', function () {
+          $(self).off('mousemove');
+        }); // Set chords line attributes
+
+        $(self).css('height', settings.height).addClass('chordsLine-processed');
+        changeScale(self, typeof settings.songPartScale == 'function' ? settings.songPartScale() : settings.songPartScale);
+
+        if (settings.value != '') {
+          setValue(self, settings.value);
+        }
+
+        if (settings.fontFamily != '') {
+          $(self).css('font-family', settings.fontFamily);
+        }
+
+        if (settings.fontSize != '') {
+          $(self).css('font-size', settings.fontSize);
+        }
+      });
+    }
+
+    if (typeof command == 'string') {
+      switch (command.toLocaleLowerCase()) {
+        case 'setvalue':
+          if (typeof option != 'string') return this;
+          return $(this).each(function () {
+            setValue(this, option);
+          });
+
+        case 'getvalue':
+          return getValue(this);
+
+        case 'setscale':
+          return getValue(this);
+
+        case 'modulate':
+          if (typeof option != 'number') return; // NaN
+
+          return $(this).each(function () {
+            modulate(this, option);
+          });
+
+        case 'changescale':
+          return $(this).each(function () {
+            changeScale(this, option);
+          });
+
+        case 'update':
+          return $(this).each(function () {
+            setModulationInfo(this);
+          });
+      }
+    }
+  };
+})(jQuery);
+
+/***/ }),
+
+/***/ "./resources/js/utilities/lyricsLine.js":
+/*!**********************************************!*\
+  !*** ./resources/js/utilities/lyricsLine.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {
+    'dataSource': undefined,
+    'editable': true,
+    'contextMenu': '',
+    'spacerContextMenu': '',
+    'value': '',
+    'fontSize': '',
+    'fontFamily': '',
+    'cursorWidth': 10,
+    'offset': 4
+  };
+  /**
+   * Get option value
+   * @param {Object} object
+   * @param {String} key
+   */
+
+  function getOption(object, key) {
+    var options = $(object).data('lyricsLine-options');
+    if (options == undefined || !options.hasOwnProperty(key)) return null;
+    return options[key];
+  }
+  /**
+   * Add spacer next to this character
+   * @param {object} obj
+   * @param {number} width Width of the spacer
+   */
+
+
+  function addSpacer(obj, target, width) {
+    var i = width;
+    var arr = [];
+
+    while (--i) {
+      arr[i] = '&nbsp;';
+    }
+
+    var sibPrevCount = $(target).prevAll('.character').length + 1;
+    var spacer = $('<span>').addClass('spacer').attr('data-width', width).attr('data-position', sibPrevCount).html(arr.join('') + '-' + arr.join(''));
+    spacer.on('contextmenu', function (ev) {
+      ev.preventDefault();
+      $(getOption(obj, 'spacerContextMenu')).contextMenu('show', this);
+    });
+    $(target).after(spacer);
+  }
+  /**
+   * Remove temporary spacers
+   */
+
+
+  function cleanLine() {
+    $('.lyrics .temp-spacer').remove();
+  }
+  /**
+   * Get lyrics line value
+   */
+
+
+  function getValue(obj) {
+    var lyrics = [];
+    $(obj).children('span').each(function () {
+      if ($(this).hasClass('character')) lyrics.push($(this).text());else if ($(this).hasClass('spacer')) {
+        lyrics.push('{spacer-' + $(this).attr('data-width') + '}');
+      }
+    });
+    return lyrics.join('');
+  }
+  /**
+   *
+   * @param {object} obj
+   */
+
+
+  function processLine(obj) {
+    var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    var settings = $(obj).data('lyricsLine-options');
+
+    if (value != '') {
+      settings.value = value;
+    } // Get data
+
+
+    var preDefSpacers = []; // Get predefined spacers
+
+    if (settings.value.indexOf('{spacer-') >= 0) {
+      var content = settings.value;
+      var spacers = content.match(/\{spacer-[0-9]+\}/g);
+      spacers.forEach(function (spacer) {
+        // Get position and width of the spacer
+        var position = content.indexOf(spacer);
+        var width = spacer.match(/\d+/g)[0];
+        preDefSpacers.push({
+          'position': position,
+          'width': width
+        }); // Remove the spacer from the content
+
+        content = content.replace(/\{spacer-[0-9]+\}/, '');
+      });
+      settings.value = content;
+    }
+
+    var data = '';
+
+    if (settings.dataSource != undefined && $(settings.dataSource).hasClass('changed')) {
+      data = $(settings.dataSource).val();
+      $(settings.dataSource).removeClass('changed');
+    } else {
+      data = settings.value;
+    }
+
+    settings.value = '';
+    $(obj).data('lyricsLine-options', settings);
+
+    if (data == '') {
+      return;
+    }
+
+    var charArr = data.split('');
+    var formattedData = '';
+    charArr.forEach(function (_char) {
+      formattedData += '<span class="character">' + _char + '</span>';
+    });
+    $(obj).html(formattedData); // Set predefined spacers
+
+    preDefSpacers.reverse().forEach(function (spacer) {
+      addSpacer(obj, $(obj).children('.character')[spacer.position - 1], spacer.width);
+    }); // Set event listener
+
+    if (settings.editable) {
+      $(obj).find('.character').on('mouseover', function () {
+        $(this).css('border-right', '2.5px solid lightgray');
+      }).on('mouseleave', function () {
+        $(this).css('border-right', 'none');
+      }).on('contextmenu', function (ev) {
+        ev.preventDefault();
+        $(this).css('border-right', 'none');
+        $(settings.contextMenu).contextMenu('show', this);
+      });
+    }
+  }
+
+  $.fn.lyricsLine = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this;
+        var settings = $.extend({}, defaults, command);
+        $(self).data('lyricsLine-options', settings);
+        processLine(self);
+
+        if (settings.fontFamily != '') {
+          $(self).css('font-family', settings.fontFamily);
+        }
+
+        if (settings.fontSize != '') {
+          $(self).css('font-size', settings.fontSize);
+        }
+
+        if (settings.cursorWidth != NaN && settings.offset != NaN) {
+          $(self).css('margin-left', settings.cursorWidth * settings.offset);
+        }
+      });
+    }
+
+    if (typeof command == 'string') {
+      switch (command.toLowerCase()) {
+        case 'addspacer':
+          return $(this).each(function () {
+            addSpacer(this, option, value);
+          });
+
+        case 'clean':
+          return $(this).each(function () {
+            cleanLine();
+          });
+
+        case 'setvalue':
+          return $(this).each(function () {
+            processLine(this, option);
+          });
+
+        case 'getvalue':
+          return getValue(this);
+
+        case 'processline':
+          return $(this).each(function () {
+            processLine(this);
+          });
+      }
+    }
+  };
+})(jQuery);
 
 /***/ }),
 

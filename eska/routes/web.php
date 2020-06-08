@@ -17,7 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/songbuilder', function() {
     return view('SongBuilder/songBuilder');
 });
+Route::get('/songviewer', function() {
+    return view('SongViewer/songViewer');
+});
 
+Route::post('/songs', 'SongController@getList');
 Route::post('/song', 'SongController@upsert');
 Route::get('/song/{id}', 'SongController@get');
 

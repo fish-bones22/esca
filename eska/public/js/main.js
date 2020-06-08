@@ -48948,6 +48948,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     $(obj).trigger('contextMenu:hide', [obj, target]);
     $(obj).hide();
+    $($(obj).data('target')).removeClass('context-menu-target');
     $(obj).data('target', null);
   }
   /**
@@ -48992,6 +48993,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       $(obj).trigger('contextMenu:hide', [obj, target]);
       $(obj).data('target', target);
       $(obj).css('left', left).css('top', top);
+      $(target).addClass('context-menu-target');
     }
 
     if (!getOption(obj, 'nesting')) hideAll();
@@ -49341,16 +49343,28 @@ if (window.Array && !Array.prototype.forEach) {
 
 /***/ }),
 
+/***/ "./resources/sass/songViewer/songviewer.scss":
+/*!***************************************************!*\
+  !*** ./resources/sass/songViewer/songviewer.scss ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ 0:
-/*!**********************************************************************************************************************!*\
-  !*** multi ./resources/js/main.js ./resources/sass/common/common.scss ./resources/sass/songBuilder/songbuilder.scss ***!
-  \**********************************************************************************************************************/
+/*!******************************************************************************************************************************************************************!*\
+  !*** multi ./resources/js/main.js ./resources/sass/common/common.scss ./resources/sass/songBuilder/songbuilder.scss ./resources/sass/songViewer/songviewer.scss ***!
+  \******************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\js\main.js */"./resources/js/main.js");
 __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\common\common.scss */"./resources/sass/common/common.scss");
-module.exports = __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\songBuilder\songbuilder.scss */"./resources/sass/songBuilder/songbuilder.scss");
+__webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\songBuilder\songbuilder.scss */"./resources/sass/songBuilder/songbuilder.scss");
+module.exports = __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\songViewer\songviewer.scss */"./resources/sass/songViewer/songviewer.scss");
 
 
 /***/ })

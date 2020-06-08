@@ -1,17 +1,17 @@
 
-window.musicReference = require('./_musicReference.json');
+window.musicReference = require('../utilities/_musicReference.json');
 window.songData = {};
-require('./songPart');
-require('./outline');
-require('./songDetails');
+require('../common/dynamicPanel');
 
-require('./chordProcessor');
+require('../utilities/chordProcessor');
+require('../utilities/chordMarker');
+require('../utilities/lyricsLine');
+require('../utilities/chordsLine');
+
 require('./chordBuilder');
-require('./chordMarker');
-require('./dynamicPanel');
-require('./chordsLine');
-require('./songLine');
 require('./sequenceBuilder');
+require('./songDetails');
+require('./songPart');
 require('./outline');
 
 import { v4 as uuidv4 } from 'uuid';
@@ -148,8 +148,8 @@ $(function() {
                 'name': 'delete',
                 'selector': '.delete-chord',
                 'action': function(ev, obj, target) {
-                    $(target).remove();
                     $(obj).contextMenu('hide');
+                    $(target).remove();
                 }
             },
             {
@@ -360,8 +360,8 @@ $(function() {
                     var input = $(menu).find('.spacer-width input[type="number"]');
                     var width = input.val();
                     input.val(input.attr('data-default'));
-                    $(target).parent().songLine('addSpacer', target, width);
-                    $(target).parent().songLine('clean');
+                    $(target).parent().lyricsLine('addSpacer', target, width);
+                    $(target).parent().lyricsLine('clean');
                     $(menu).contextMenu('hide');
                 }
             }
@@ -417,6 +417,7 @@ $(function() {
     });
 
     $(songPartsContainer).songPart({
+        'chordBuilder': chordSelection,
         'contextMenu': songPartContextMenu,
         'fontSize': monospaceFontSize,
         'fontFamily': monospaceFontFamily,
@@ -691,7 +692,7 @@ function addChords(ev) {
         $(this).hide();
         var lyricsView = $(this).siblings('.lyrics-view');
         if (lyricsView.length <= 0) return;
-        lyricsView.songLine('processLine');
+        lyricsView.lyricsLine('processLine');
         lyricsView.show();
 
     });

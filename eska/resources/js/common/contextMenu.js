@@ -36,6 +36,7 @@
     function hide(obj, target = null) {
         $(obj).trigger('contextMenu:hide', [obj, target]);
         $(obj).hide();
+        $($(obj).data('target')).removeClass('context-menu-target');
         $(obj).data('target', null);
     }
     /**
@@ -76,6 +77,8 @@
             $(obj).data('target', target);
             $(obj).css('left', left)
             .css('top', top);
+
+            $(target).addClass('context-menu-target');
         }
         if (!getOption(obj, 'nesting')) hideAll();
         $(obj).show();

@@ -207,7 +207,8 @@ nav .song-information .song-key select option {
   z-index: 0;
 }
 
-.song-line .song-line-content .chords .chord:hover {
+.song-line .song-line-content .chords .chord:hover,
+.song-line .song-line-content .chords .chord.context-menu-target {
   background-color: #fafafa;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
   z-index: 1;
@@ -217,10 +218,6 @@ nav .song-information .song-key select option {
   background-color: lightgray;
 }
 
-.song-line .song-line-content .lyrics {
-  margin-left: 50px;
-}
-
 .song-line .song-line-content .lyrics .lyrics-view {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -228,9 +225,19 @@ nav .song-information .song-key select option {
   width: 598px;
 }
 
+.song-line .song-line-content .lyrics .lyrics-view .spacer {
+  cursor: pointer;
+}
+
+.song-line .song-line-content .lyrics .lyrics-view .spacer:hover,
+.song-line .song-line-content .lyrics .lyrics-view .spacer.context-menu-target {
+  background-color: #eaeaea;
+}
+
 .song-line .song-line-content .lyrics input {
   border: none;
   border-bottom: solid 1px gray;
+  margin-left: 20px;
   width: 97%;
 }
 

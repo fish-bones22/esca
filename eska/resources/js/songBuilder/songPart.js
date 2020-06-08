@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 (function($) {
 
     var defaults = {
+        'chordBuilder': '',
         'contextMenu': '',
         'songPartTitleInput': '.song-part-title .song-part-name',
         'songPartModulationInfo': '.song-part-modulation-info',
@@ -86,7 +87,7 @@ import { v4 as uuidv4 } from 'uuid';
         if (modulation == 0 && scale == mainScale) {
             $(panel).find(getOption(obj, 'songPartModulationInfo')).hide();
         } else {
-            var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation + songModulation*1);
+            var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation*1 + songModulation*1);
             $(panel).find(getOption(obj, 'songPartModulationInfo')).show().children('span').html('Key of ' + display + (scale != 'major' ? ' ' + scale : ''));
         }
 
@@ -159,7 +160,7 @@ import { v4 as uuidv4 } from 'uuid';
         linePanel.find('.lyrics input[type="text"]').val(lyricsDisplay);
         linePanel.find('.lyrics input[type="text"]').addClass('changed');
         // Set content to lyrics view
-        linePanel.find('.lyrics .lyrics-view').html(lyricsContent);
+        linePanel.find('.lyrics .lyrics-view').lyricsLine('setValue', lyricsContent);
         // Set content to chords view
         linePanel.find('.chords').chordsLine('setValue', chordsContent);
     }
@@ -178,10 +179,10 @@ import { v4 as uuidv4 } from 'uuid';
             var songPartLyricsCont = [];
             var songPartLyricsDisp = [];
             $(this).find('.panel-item .song-line-content').each(function() {
-                $(this).find('.lyrics-view').songLine('processLine');
+                $(this).find('.lyrics-view').lyricsLine('processLine');
                 var chords = $(this).children('.chords').chordsLine('getValue') || '';
                 var lyricsDisplay = $(this).find('.lyrics input[type="text"]').val() || '';
-                var lyricsContent = $(this).find('.lyrics-view').songLine('getValue') || '';
+                var lyricsContent = $(this).find('.lyrics-view').lyricsLine('getValue') || '';
 
                 songPartChords.push(chords.join('|'));
                 songPartLyricsCont.push(lyricsContent);
@@ -291,7 +292,7 @@ import { v4 as uuidv4 } from 'uuid';
                                 // Get sibling view element
                                 var lyricsView = songlinePanel.find('.lyrics-view');
                                 if (lyricsView.length > 0) {
-                                    lyricsView.songLine({
+                                    lyricsView.lyricsLine({
                                         'dataSource': songlinePanel.find('.lyrics input[type="text"]'),
                                         'contextMenu': '.character-context-menu',
                                         'spacerContextMenu': '.spacer-context-menu'
@@ -306,6 +307,7 @@ import { v4 as uuidv4 } from 'uuid';
                                 if (chordsView.length > 0) {
                                     // Initialize chords line
                                     chordsView.chordsLine({
+                                        'chordBuilder': settings.chordBuilder,
                                         'height': settings.fontHeight + 4,
                                         'cursorWidth': settings.fontWidth,
                                         'key': settings.key,

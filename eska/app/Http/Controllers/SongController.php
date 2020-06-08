@@ -25,6 +25,20 @@ class SongController extends Controller
         }
     }
 
+    public function getList(Request $request) {
+        try {
+            if(isset($request->songIds)) {
+                $songs = [];
+                foreach($request->songIds as $songId) {
+                    $songs[] = $this->songService->getSong($songId);
+                }
+                return json_encode($songs);
+            }
+        } catch (\Exception $ex) {
+            return json_encode(['error' => $ex->getMessage()]);
+        }
+    }
+
     public function upsert(SongRequest $request) {
         try {
             $this->songService->saveSong($request);
