@@ -3376,7 +3376,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     'value': '',
     'fontSize': '',
     'fontFamily': '',
-    'editable': false
+    'editable': true
   };
   /**
    * Get option from DOM data
@@ -3565,6 +3565,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     setModulationInfo(obj);
   }
 
+  function updateChords(obj) {
+    $(obj).find('.chord').each(function () {
+      $(this).chordMarker('update');
+    });
+  }
+
   function setModulationInfo(obj) {
     // Get the song's modulation
     var songModulation = getOption(obj, 'songModulation');
@@ -3682,6 +3688,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             changeScale(this, option);
           });
 
+        case 'updatechords':
+          return $(this).each(function () {
+            updateChords(this);
+          });
+
         case 'update':
           return $(this).each(function () {
             setModulationInfo(this);
@@ -3733,6 +3744,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   function addSpacer(obj, target, width) {
+    if (width == undefined || width == '') width = 1;
     var i = width;
     var arr = [];
 
@@ -3820,16 +3832,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return;
     }
 
-    var charArr = data.split('');
-    var formattedData = '';
-    charArr.forEach(function (_char) {
-      formattedData += '<span class="character">' + _char + '</span>';
-    });
-    $(obj).html(formattedData); // Set predefined spacers
+    if (settings.editable || preDefSpacers.length > 0) {
+      var charArr = data.split('');
+      var formattedData = '';
+      charArr.forEach(function (_char) {
+        formattedData += '<span class="character">' + _char + '</span>';
+      });
+      $(obj).html(formattedData); // Set predefined spacers
 
-    preDefSpacers.reverse().forEach(function (spacer) {
-      addSpacer(obj, $(obj).children('.character')[spacer.position - 1], spacer.width);
-    }); // Set event listener
+      preDefSpacers.reverse().forEach(function (spacer) {
+        addSpacer(obj, $(obj).children('.character')[spacer.position - 1], spacer.width);
+      });
+    } else {
+      $(obj).html(data);
+    } // Set event listener
+
 
     if (settings.editable) {
       $(obj).find('.character').on('mouseover', function () {

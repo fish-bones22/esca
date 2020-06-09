@@ -32,6 +32,7 @@
      */
     function addSpacer(obj, target, width) {
 
+        if (width == undefined || width == '') width = 1;
         var i = width;
         var arr = []
         while(--i) arr[i] = '&nbsp;';
@@ -114,20 +115,26 @@
             return;
         }
 
-        var charArr = data.split('');
+        if (settings.editable || preDefSpacers.length > 0) {
 
-        var formattedData = '';
+            var charArr = data.split('');
 
-        charArr.forEach(char => {
-            formattedData += '<span class="character">' + char + '</span>';
-        });
+            var formattedData = '';
 
-        $(obj).html(formattedData);
+            charArr.forEach(char => {
+                formattedData += '<span class="character">' + char + '</span>';
+            });
 
-        // Set predefined spacers
-        preDefSpacers.reverse().forEach(spacer => {
-            addSpacer(obj, $(obj).children('.character')[spacer.position-1], spacer.width);
-        });
+            $(obj).html(formattedData);
+
+            // Set predefined spacers
+            preDefSpacers.reverse().forEach(spacer => {
+                addSpacer(obj, $(obj).children('.character')[spacer.position-1], spacer.width);
+            });
+        } else {
+            $(obj).html(data);
+        }
+
 
         // Set event listener
         if (settings.editable) {

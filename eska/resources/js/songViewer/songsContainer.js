@@ -1,6 +1,7 @@
 (function($) {
 
     var defaults = {
+        'keySelector': '',
         'songItemTemplate': '',
         'songPartTemplate': '',
         'songLineTemplate': '',
@@ -16,17 +17,92 @@
         'lyricsDisplayLine': '',
         'fontSize': '',
         'fontFamily': '',
-        'isDraggable': false
+        'isDraggable': false,
+        'mode': 'performance',
+        'nextSongControl': '',
+        'previousSongControl': '',
+    }
+
+    var songValues = [];
+
+    /**
+     * Get option value
+     * @param {Object} object
+     * @param {String} key
+     */
+    function getOption(object, key) {
+        var options = $(object).data('songsContainer-options');
+
+        if (options == undefined || !options.hasOwnProperty(key)) return null;
+
+        return options[key];
+    }
+
+    function setCurrent(obj, songId) {
+        // Find selected song
+        var selectedSong = $('.song-item[data-id="' + songId + '"]');
+
+        // Get control buttons
+        var nextSongControl = $(getOption(obj, 'nextSongControl'));
+        var previousSongControl = $(getOption(obj, 'previousSongControl'));
+
+        if (nextSongControl.length > 0) nextSongControl.hide();
+        if (previousSongControl.length > 0) previousSongControl.hide();
+
+        if (selectedSong.length <= 0) return;
+
+        // Remove current
+        $('.song-item.current').removeClass('current');
+        selectedSong.addClass('current');
+        // Get next song
+        var nextSong = selectedSong.next('.song-item');
+        if (nextSong.length <= 0 && selectedSong.siblings('.song-item').length > 1) {
+            nextSong = selectedSong.prevAll('.song-item').first();
+        }
+        if (nextSong.length > 0) {
+            setSongControl(nextSongControl, nextSong.attr('data-id'));
+        }
+        // Get previous song
+        var prevSong = selectedSong.prev('.song-item');
+        if (prevSong.length <= 0 && selectedSong.siblings('.song-item').length > 1) {
+            prevSong = selectedSong.nextAll('.song-item').last();
+        }
+        if (prevSong.length > 0) {
+            setSongControl(previousSongControl, prevSong.attr('data-id'));
+        }
+
+        $(document).scrollTop(0);
+    }
+
+
+    function setSongControl(control, songId) {
+        var songDetails = songValues.find(o => o.id == songId);
+        if (songDetails != undefined) {
+            control.show();
+            control.find('.trigger').attr('data-song-id', songDetails.id);
+            control.find('.song-title').html(songDetails.title);
+            control.find('.song-artist').html(songDetails.artist);
+        } else {
+            control.hide();
+        }
     }
 
     function setValues(obj, songs) {
 
+        var first = '';
         $(obj).dynamicPanel('removeAll');
         songs.forEach(song => {
-            var panel = $(obj).dynamicPanel('insert');
+            var panel = $(obj).dynamicPanel('insert', null, song.id);
             panel.songItem('setValue', song);
+            songValues.push({
+                'id': song.id,
+                'title': song.title,
+                'artist': song.hasOwnProperty('details') && song.details.hasOwnProperty('artist') ? song.details.artist : ''
+            });
+            if (first == '') first = song.id;
         });
 
+        setCurrent(obj, first);
     }
 
     $.fn.songsContainer = function(command, option, value) {
@@ -46,6 +122,7 @@
                     'onInsert': function(event, panel) {
                         // Initialize song panels
                         panel.songItem({
+                            'keySelector': settings.keySelector,
                             'songTitlePanel': settings.songTitlePanel,
                             'songArtistPanel': settings.songArtistPanel,
                             'songPartsContainer': settings.songPartsContainer,
@@ -66,8 +143,37 @@
                     }
                 });
 
+                // Set keyboard
+                $(document).on('keyup', function(event) {
+                    if (event.which == 37 && $(settings.previousSongControl).is(':visible')) {
+                        $(settings.previousSongControl).find('.trigger').trigger('click');
+                    } else if (event.which == 39 && $(settings.nextSongControl).is(':visible')) {
+                        $(settings.nextSongControl).find('.trigger').trigger('click');
+                    }
+                });
+
+                // Set next/prev song actions
+                $(document).on('click', [settings.nextSongControl + ' .trigger', settings.previousSongControl + ' .trigger'].join(','), function() {
+                    var songId = $(this).attr('data-song-id');
+                    if (songId == '' || songId == undefined) return;
+                    setCurrent(self, songId);
+                });
+
+                // Scrolling event
+                var timeout;
+                $(document).on('scroll', function() {
+                    var songDetails = $(self).find('.song-item.current .song-details');
+                    if (songDetails.length > 0 && !songDetails.hasClass('scrolling')) {
+                        songDetails.addClass('scrolling');
+                    }
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function() {
+                        if (songDetails.hasClass('scrolling'))songDetails.removeClass('scrolling');
+                    }, 250);
+                });
 
                 $(self).data('songsContainer-options', settings);
+                $(self).addClass(settings.mode);
             });
         }
 

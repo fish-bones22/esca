@@ -1,0 +1,155 @@
+.songs-container.performance {
+  margin-bottom: 70px;
+}
+
+.songs-container.performance .song-item .song-details {
+  left: 0;
+  position: fixed;
+  top: 0;
+}
+
+.songs-container .song-item {
+  margin: 20px 50px;
+  display: none;
+}
+
+.songs-container .song-item.current {
+  display: block;
+}
+
+.songs-container .song-item .song-details {
+  background-color: white;
+  box-shadow: none;
+  display: flex;
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 1em;
+  padding: 5px 0;
+  width: 100%;
+  z-index: 9;
+  transition: box-shadow 200ms ease-in-out;
+}
+
+.songs-container .song-item .song-details.scrolling {
+  box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+}
+
+.songs-container .song-item .song-details .musical-details {
+  margin-left: auto;
+  margin-right: 30px;
+}
+
+.songs-container .song-item .song-details .musical-details select {
+  border: none;
+  float: right;
+  font-size: 18px;
+  margin-top: 3px;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.songs-container .song-item .song-details .musical-details select:hover:not(:focus) {
+  background-color: #eaeaea;
+}
+
+.songs-container .song-item .song-details .basic-details {
+  margin-left: 30px;
+}
+
+.songs-container .song-item .song-details .basic-details .song-name,
+.songs-container .song-item .song-details .basic-details .song-artist {
+  text-transform: uppercase;
+}
+
+.songs-container .song-item .song-details .basic-details .song-name {
+  font-weight: 600;
+}
+
+.songs-container .song-item .song-details .basic-details .song-artist {
+  font-style: italic;
+}
+
+.songparts-container {
+  margin: 50px 0;
+}
+
+.songparts-container .songpart-item {
+  margin-bottom: 20px;
+}
+
+.songparts-container .songpart-item .songpart-name {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.songs-control {
+  bottom: 2px;
+  display: flex;
+  flex-flow: row-reverse;
+  position: fixed;
+  right: 2px;
+  width: 100%;
+}
+
+.songs-control .song-control-container {
+  display: flex;
+  height: 40px;
+}
+
+.songs-control .song-control-container .song-control-details {
+  background-color: #eaeaea;
+  padding: 8px 20px;
+}
+
+.songs-control .song-control-container .song-control-details .song-title,
+.songs-control .song-control-container .song-control-details .song-artist {
+  font-family: 'consolas', 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 0.8;
+  text-transform: uppercase;
+}
+
+.songs-control .song-control-container .song-control-details .song-title {
+  font-weight: 600;
+}
+
+.songs-control .song-control-container .song-control-details .song-artist {
+  font-style: italic;
+}
+
+.songs-control .song-control-container button {
+  padding: 0 10px;
+}
+
+.songs-control .song-control-container button span {
+  padding-top: 2.5px;
+}
+
+.songs-control .songs-control-options {
+  height: 40px;
+}
+
+.songs-control .songs-control-options button {
+  background-color: #eaeaea;
+  border-top: none;
+  border-right: 0.5px solid white;
+  border-bottom: none;
+  border-left: 0.5px solid white;
+  color: gray;
+  padding: 4px 0;
+}
+
+.songs-control .songs-control-options button:hover {
+  background-color: lightgray;
+}
+
+.songs-control .songs-control-options button span {
+  padding-top: 5px;
+}
+
+.songs-control.audience {
+  display: none;
+}
+

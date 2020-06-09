@@ -17,7 +17,7 @@
             font-family: 'Consolas', 'Courier New', Courier, monospace;
             font-size: 14px;
             padding: 2px 10px;
-            &:hover {
+            &:hover, &.context-menu-target {
                 background-color: $dimmer;
                 cursor: pointer;
                 span {

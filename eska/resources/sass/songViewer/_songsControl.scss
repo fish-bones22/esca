@@ -1,0 +1,55 @@
+.songs-control {
+    bottom: 2px;
+    display: flex;
+    flex-flow: row-reverse;
+    position: fixed;
+    right: 2px;
+    width: 100%;
+    .song-control-container {
+        display: flex;
+        height: 40px;
+        .song-control-details {
+            background-color: $dimmer;
+            padding: 8px 20px;
+            .song-title, .song-artist {
+                font-family: 'consolas', 'Courier New', Courier, monospace;
+                font-size: 16px;
+                line-height: 0.8;
+                text-transform: uppercase;
+            }
+            .song-title {
+                font-weight: 600;
+            }
+            .song-artist {
+                font-style: italic;
+            }
+        }
+        button {
+            padding: 0 10px;
+            span {
+                padding-top: 2.5px;
+            }
+        }
+    }
+    .songs-control-options {
+        height: 40px;
+        button {
+            background-color: $dimmer;
+            border-top: none;
+            border-right: 0.5px solid white;
+            border-bottom: none;
+            border-left:  0.5px solid white;
+            color: $darker;
+            padding: 4px 0;
+            &:hover {
+                background-color: $dark;
+            }
+            span {
+                padding-top: 5px;
+            }
+        }
+    }
+    &.audience {
+        display: none;
+    }
+}

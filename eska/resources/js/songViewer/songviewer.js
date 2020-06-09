@@ -12,6 +12,7 @@ require('../utilities/chordMarker');
 
 import { v4 as uuidv4 } from 'uuid';
 
+var songMainKey = '.songkey';
 var songsContainer = '.songs-container';
 var songItemTemplate = '.song-item-template';
 var songTitlePanel = '.song-name';
@@ -26,8 +27,10 @@ var songLineModulationInfo = '.songline-modulation-info';
 var chordsLine = '.chords';
 var lyricsContentLine = '.lyrics-content'
 var lyricsDisplayLine = '.lyrics-display';
+var nextSongControl = '.next-song-container';
+var previousSongControl = '.prev-song-container';
 
-var monospaceFontSize = '20px';
+var monospaceFontSize = '26px';
 var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
 var monospaceWidth = 0;
 var monospaceHeight = 0;
@@ -35,6 +38,7 @@ var monospaceHeight = 0;
 $(function() {
     getPageDimensions();
     $(songsContainer).songsContainer({
+        'keySelector': songMainKey,
         'key': 'C',
         'scale': 'major',
         'songItemTemplate': songItemTemplate,
@@ -54,6 +58,9 @@ $(function() {
         'cursorWidth': monospaceWidth,
         'fontSize': monospaceFontSize,
         'fontFamily': monospaceFontFamily,
+        'mode': 'performance',
+        'nextSongControl': nextSongControl,
+        'previousSongControl': previousSongControl,
     });
 
     getSongs(['0e987bb3-5e32-41c7-b0a8-4e5b4866420b', '611c3248-7326-448b-b66c-5199f9009dc8']);

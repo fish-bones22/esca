@@ -17,7 +17,7 @@
         'value': '',
         'fontSize': '',
         'fontFamily': '',
-        'editable': false,
+        'editable': true,
     };
 
     /**
@@ -191,6 +191,13 @@
     }
 
 
+    function updateChords(obj) {
+        $(obj).find('.chord').each(function() {
+            $(this).chordMarker('update');
+        })
+    }
+
+
     function setModulationInfo(obj) {
         // Get the song's modulation
         var songModulation = getOption(obj, 'songModulation');
@@ -317,6 +324,10 @@
                 case 'changescale':
                     return $(this).each(function() {
                         changeScale(this, option);
+                    });
+                case 'updatechords':
+                    return $(this).each(function() {
+                        updateChords(this);
                     });
                 case 'update':
                     return $(this).each(function() {

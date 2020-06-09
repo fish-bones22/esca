@@ -66,7 +66,8 @@
             'songModulation': getOption(obj, 'songModulation'),
             'songPartModulation': getOption(obj, 'songPartModulation'),
             'sequenceModulation': getOption(obj, 'sequenceModulation'),
-            'modulation': function() { return getOption(obj, 'modulation')}
+            'modulation': function() { return getOption(obj, 'modulation')},
+            'editable': false
         });
     }
 
@@ -100,7 +101,11 @@
                         })
                     }
                     return getOption(this, option);
-                case 'updatechords':
+                case 'update':
+                    return $(this).each(function() {
+                        $(this).find('.chords').chordsLine('updatechords').chordsLine('update');
+                    });
+                case 'updatemodulation':
                     return $(this).each(function() {
                         $(this).find('.chords').chordsLine('update');
                     });

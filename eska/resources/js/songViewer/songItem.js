@@ -1,6 +1,7 @@
 (function($) {
 
     var defaults = {
+        'keySelector': '',
         'key': 'C',
         'scale': 'major',
         'modulation': 0,
@@ -46,7 +47,7 @@
     }
 
     /**
-     *
+     * Set the value of the song
      * @param {object} obj
      * @param {object} song song object
      */
@@ -60,6 +61,7 @@
         }
         if (song.hasOwnProperty('key')) {
             setOption(obj, 'key', song.key);
+            $(obj).find(getOption(obj, 'keySelector')).children('[value="' + song.key + '"]').prop('selected', true);
         }
         if (song.hasOwnProperty('scale')) {
             setOption(obj, 'scale', song.scale);
@@ -133,7 +135,15 @@
                             'sequenceModulation': 0,
                         });
                     }
-                })
+                });
+
+                $(self).find(settings.keySelector).on('change', function() {
+                    var key = $(this).val();
+                    setOption(self, 'key', key);
+                    $(self).find('.songpart-item').each(function() {
+                        $(this).songPart('update');
+                    });
+                });
 
                 $(self).data('songItem-options', settings);
             });

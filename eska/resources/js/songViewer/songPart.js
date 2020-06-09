@@ -48,6 +48,11 @@
         $(object).data('songPart-options', options);
     }
 
+    /**
+     * Fill song part
+     * @param {object} obj
+     * @param {array} songPart collection of song parts
+     */
     function setValue(obj, songPart) {
 
         if (typeof songPart != 'object') {
@@ -78,24 +83,13 @@
             }
         }
 
-        var songScale = getOption(obj, 'songScale');
-        songScale = typeof songScale == 'function' ? songScale() : songScale;
-
-        var modulation = getModulations(obj);
-
-        if (modulation[0] + modulation[2] == 0 && songScale == songPart.scale) {
-            $(obj).find(getOption(obj, 'songPartModulationInfo')).hide();
-        } else {
-            // Get main key
-            var mainKey = getOption(obj, 'key');
-            mainKey = typeof mainKey == 'function' ? mainKey() : mainKey;
-
-            var display = window.ChordProcessor.processChord('no/1/M//', mainKey, songPart.scale, modulation[0] + modulation[1] + modulation[2]);
-            $(obj).find(getOption(obj, 'songPartModulationInfo')).show().children('span').html('Key of ' + display + (songPart.scale != 'major' ? ' ' + songPart.scale : ''));
-        }
-
+        updateModulationInfo(obj);
     }
 
+    /**
+     * Get the modulation value from the song, sequence and the song part
+     * @param {object} obj
+     */
     function getModulations(obj) {
         // Get modulation value
         var songModulation = getOption(obj, 'songModulation');
@@ -108,6 +102,44 @@
         modulation = typeof modulation == 'function' ? modulation() : modulation || 0;
 
         return [ modulation*1, songModulation*1, sequenceModulation*1];
+    }
+
+    /**
+     * Update the modulation information of this song part
+     * @param {object} obj
+     */
+    function updateModulationInfo(obj) {
+
+        // Get the main scale of the song
+        var songScale = getOption(obj, 'songScale');
+        songScale = typeof songScale == 'function' ? songScale() : songScale;
+
+        // Get the current scale of this song part
+        var scale = getOption(obj, 'scale');
+        scale = typeof scale == 'function' ? scale() : scale;
+
+        // Get total modulation for this song part
+        var modulation = getModulations(obj);
+
+        // Set modulation info display
+        if (modulation[0] + modulation[2] == 0 && songScale == scale) {
+            $(obj).find(getOption(obj, 'songPartModulationInfo')).hide();
+        } else {
+            // Get main key
+            var mainKey = getOption(obj, 'key');
+            mainKey = typeof mainKey == 'function' ? mainKey() : mainKey;
+
+            var display = window.ChordProcessor.processChord('no/1/M//', mainKey, scale, modulation[0] + modulation[1] + modulation[2]);
+            $(obj).find(getOption(obj, 'songPartModulationInfo')).show().children('span').html('Key of ' + display + (scale != 'major' ? ' ' + scale : ''));
+        }
+
+    }
+
+    function update(obj) {
+        $(obj).find('.songline-item').each(function() {
+            $(this).songLine('update');
+        });
+        updateModulationInfo(obj);
     }
 
 
@@ -166,6 +198,11 @@
                         })
                     }
                     return getOption(this, option);
+
+                case 'update':
+                    return $(this).each(function() {
+                        update(this);
+                    });
             }
         }
     }

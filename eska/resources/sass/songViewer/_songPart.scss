@@ -1,0 +1,11 @@
+.songparts-container {
+    margin: 50px 0;
+    .songpart-item {
+        margin-bottom: 20px;
+        .songpart-name {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+    }
+}
