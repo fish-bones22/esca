@@ -627,6 +627,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             }
           });
         }
+
+        if (settings.panelTemplate == $(self).html() || $(self).children().is(settings.panelTemplate)) {
+          setOption(self, 'getChildOfTemplate', false);
+          settings.panelTemplate = $(settings.panelTemplate).clone();
+          $(self).empty();
+        }
         /** Event listeners **/
         // Add panels button
 
@@ -1257,7 +1263,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var previousSongControl = $(getOption(obj, 'previousSongControl'));
     if (nextSongControl.length > 0) nextSongControl.hide();
     if (previousSongControl.length > 0) previousSongControl.hide();
-    if (selectedSong.length <= 0) return; // Remove current
+    if (selectedSong.length <= 0) return; // Set the song from the song list as selected
+
+    var allSongsPanel = $(getOption(obj, 'allSongsList'));
+    allSongsPanel.find('.allsongs-item.current').removeClass('current');
+    allSongsPanel.find('.allsongs-item[data-id="' + songId + '"]').addClass('current'); // Remove current
 
     $('.song-item.current').removeClass('current');
     selectedSong.addClass('current'); // Get next song
@@ -1301,6 +1311,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   }
 
+  function setAllSongsPanel(obj) {
+    var allSongsPanel = $(getOption(obj, 'allSongsList'));
+    allSongsPanel.dynamicPanel('removeAll');
+    songValues.forEach(function (song) {
+      var panel = allSongsPanel.dynamicPanel('insert', null, song.id);
+      panel.find('.song-title').html(song.title);
+      panel.find('.song-artist').html(song.artist);
+    });
+  }
+
   function setValues(obj, songs) {
     var first = '';
     $(obj).dynamicPanel('removeAll');
@@ -1314,6 +1334,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       });
       if (first == '') first = song.id;
     });
+    setAllSongsPanel(obj);
     setCurrent(obj, first);
   }
 
@@ -1349,6 +1370,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               'cursorWidth': settings.cursorWidth
             });
           }
+        });
+        $(settings.allSongsList).dynamicPanel({
+          'panelTemplate': $(settings.allSongsList).html(),
+          'key': 'all-songs',
+          'isDraggable': false,
+          'onInsert': function onInsert(event, panel) {
+            $(panel).on('click', function () {
+              setCurrent(self, $(this).attr('data-id'));
+              $(settings.allSongsPanel).contextMenu('hide');
+            });
+          }
         }); // Set keyboard
 
         $(document).on('keyup', function (event) {
@@ -1377,6 +1409,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           timeout = setTimeout(function () {
             if (songDetails.hasClass('scrolling')) songDetails.removeClass('scrolling');
           }, 250);
+        }); // All songs panel
+
+        $(settings.allSongsPanel).contextMenu({
+          'top': 'unset',
+          'bottom': '44px',
+          'left': 'unset'
+        });
+        $(settings.allSongsButton).on('click', function () {
+          $(settings.allSongsPanel).contextMenu('show', this);
         });
         $(self).data('songsContainer-options', settings);
         $(self).addClass(settings.mode);
@@ -1445,6 +1486,9 @@ var lyricsContentLine = '.lyrics-content';
 var lyricsDisplayLine = '.lyrics-display';
 var nextSongControl = '.next-song-container';
 var previousSongControl = '.prev-song-container';
+var allSongsPanel = '.allsongs-expanded';
+var allSongsButton = '.songs-control-options button';
+var allSongsList = '.allsongs-list';
 var monospaceFontSize = '26px';
 var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
 var monospaceWidth = 0;
@@ -1474,7 +1518,10 @@ $(function () {
     'fontFamily': monospaceFontFamily,
     'mode': 'performance',
     'nextSongControl': nextSongControl,
-    'previousSongControl': previousSongControl
+    'previousSongControl': previousSongControl,
+    'allSongsPanel': allSongsPanel,
+    'allSongsButton': allSongsButton,
+    'allSongsList': allSongsList
   });
   getSongs(['0e987bb3-5e32-41c7-b0a8-4e5b4866420b', '611c3248-7326-448b-b66c-5199f9009dc8']);
 });

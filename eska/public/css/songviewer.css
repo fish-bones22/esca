@@ -141,7 +141,8 @@
   padding: 4px 0;
 }
 
-.songs-control .songs-control-options button:hover {
+.songs-control .songs-control-options button:hover,
+.songs-control .songs-control-options button.context-menu-target {
   background-color: lightgray;
 }
 
@@ -151,5 +152,49 @@
 
 .songs-control.audience {
   display: none;
+}
+
+.songs-control .allsongs-expanded {
+  background-color: white;
+  border: 1px solid lightgray;
+  min-width: 200px;
+  padding: 10px;
+  position: fixed;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.songs-control .allsongs-expanded .allsongs-list {
+  margin: 30px 5px 5px 5px;
+}
+
+.songs-control .allsongs-expanded .allsongs-list .allsongs-item {
+  background-color: #eaeaea;
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 1em;
+  text-transform: uppercase;
+  margin: 10px 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.songs-control .allsongs-expanded .allsongs-list .allsongs-item.current {
+  background-color: #e9c46a;
+  color: white;
+  cursor: default;
+}
+
+.songs-control .allsongs-expanded .allsongs-list .allsongs-item:hover:not(.current) {
+  background-color: lightgray;
+}
+
+.songs-control .allsongs-expanded .allsongs-list .allsongs-item .song-title {
+  font-weight: 600;
+}
+
+.songs-control .allsongs-expanded .allsongs-list .allsongs-item .song-artist {
+  font-style: italic;
 }
 

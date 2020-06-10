@@ -48925,7 +48925,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }],
     'onShow': function onShow(ev, obj, target) {},
     'onHide': function onHide(ev, obj) {},
-    'nesting': false
+    'nesting': false,
+    'bottom': null,
+    'left': null,
+    'top': null
   };
   /**
    * Get option value
@@ -48971,28 +48974,42 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   function show(obj, target) {
     if (target != undefined) {
-      // Compute where to place menu
-      var left = $(target).offset().left - $(target)[0].offsetParent.offsetLeft;
-      var top = $(target).offset().top;
-      var width = $(obj).width();
-      var height = $(obj).height();
-      var viewPortWidth = $(document).width();
-      var viewPortHeight = $(document).height();
+      var left = getOption(obj, 'left');
+      var top = getOption(obj, 'top'); // Compute where to place menu
 
-      if (left > viewPortWidth / 2) {
-        var targetWidth = $(target).width();
-        left = left - width + targetWidth;
+      if (left == null) {
+        left = $(target).offset().left - $(target)[0].offsetParent.offsetLeft;
+        var width = $(obj).width();
+        var viewPortWidth = $(window).width();
+
+        if (left > viewPortWidth / 2) {
+          var targetWidth = $(target).width();
+          left = left - width + targetWidth;
+        }
       }
 
-      if (viewPortHeight < top + height * 2.5) {
-        top = top - height;
-      } else {
-        top = top + $(target).height();
+      if (top == null) {
+        top = $(target).offset().top;
+        var height = $(obj).height();
+        var viewPortHeight = $(window).height();
+
+        if (viewPortHeight < top + height * 2.5) {
+          top = top - height;
+        } else {
+          top = top + $(target).height();
+        }
       }
 
       $(obj).trigger('contextMenu:hide', [obj, target]);
       $(obj).data('target', target);
-      $(obj).css('left', left).css('top', top);
+      $(obj).css('left', left);
+      $(obj).css('top', top);
+      var bottom = getOption(obj, 'bottom');
+
+      if (bottom != null) {
+        $(obj).css('bottom', bottom);
+      }
+
       $(target).addClass('context-menu-target');
     }
 

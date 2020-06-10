@@ -627,6 +627,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             }
           });
         }
+
+        if (settings.panelTemplate == $(self).html() || $(self).children().is(settings.panelTemplate)) {
+          setOption(self, 'getChildOfTemplate', false);
+          settings.panelTemplate = $(settings.panelTemplate).clone();
+          $(self).empty();
+        }
         /** Event listeners **/
         // Add panels button
 

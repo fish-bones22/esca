@@ -41,7 +41,7 @@
             border-left:  0.5px solid white;
             color: $darker;
             padding: 4px 0;
-            &:hover {
+            &:hover, &.context-menu-target {
                 background-color: $dark;
             }
             span {
@@ -52,4 +52,42 @@
     &.audience {
         display: none;
     }
+
+
+    .allsongs-expanded {
+        background-color: white;
+        border: 1px solid $dark;
+        min-width: 200px;
+        padding: 10px;
+        position: fixed;
+        width: fit-content;
+        .allsongs-list {
+            margin: 30px 5px 5px 5px;
+            .allsongs-item {
+                background-color: $dimmer;
+                font-family: 'Consolas', 'Courier New', Courier, monospace;
+                font-size: 16px;
+                line-height: 1em;
+                text-transform: uppercase;
+                margin: 10px 20px;
+                padding: 10px 20px;
+                cursor: pointer;
+                &.current {
+                    background-color: $accent;
+                    color: white;
+                    cursor: default;
+                }
+                &:hover:not(.current) {
+                    background-color: $dark;
+                }
+                .song-title {
+                    font-weight: 600;
+                }
+                .song-artist {
+                    font-style: italic;
+                }
+            }
+        }
+    }
+
 }

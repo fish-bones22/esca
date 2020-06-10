@@ -256,6 +256,12 @@ $.fn.dynamicPanel = function(command, option, val) {
                 });
             }
 
+            if (settings.panelTemplate == $(self).html() || $(self).children().is(settings.panelTemplate)) {
+                setOption(self, 'getChildOfTemplate', false);
+                settings.panelTemplate = $(settings.panelTemplate).clone();
+                $(self).empty();
+            }
+
             /** Event listeners **/
 
             // Add panels button
@@ -285,7 +291,7 @@ $.fn.dynamicPanel = function(command, option, val) {
                         panelInput.val(lines[i].trim());
                         panelInput.trigger('change');
                     }
-            });
+                });
 
             }
 

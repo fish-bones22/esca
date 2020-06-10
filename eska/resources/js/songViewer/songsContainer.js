@@ -51,6 +51,11 @@
 
         if (selectedSong.length <= 0) return;
 
+        // Set the song from the song list as selected
+        var allSongsPanel = $(getOption(obj, 'allSongsList'));
+        allSongsPanel.find('.allsongs-item.current').removeClass('current');
+        allSongsPanel.find('.allsongs-item[data-id="' + songId + '"]').addClass('current');
+
         // Remove current
         $('.song-item.current').removeClass('current');
         selectedSong.addClass('current');
@@ -87,6 +92,16 @@
         }
     }
 
+    function setAllSongsPanel(obj) {
+        var allSongsPanel = $(getOption(obj, 'allSongsList'));
+        allSongsPanel.dynamicPanel('removeAll');
+        songValues.forEach(song => {
+            var panel = allSongsPanel.dynamicPanel('insert', null, song.id);
+            panel.find('.song-title').html(song.title);
+            panel.find('.song-artist').html(song.artist);
+        })
+    }
+
     function setValues(obj, songs) {
 
         var first = '';
@@ -102,6 +117,7 @@
             if (first == '') first = song.id;
         });
 
+        setAllSongsPanel(obj);
         setCurrent(obj, first);
     }
 
@@ -143,6 +159,18 @@
                     }
                 });
 
+                $(settings.allSongsList).dynamicPanel({
+                    'panelTemplate': $(settings.allSongsList).html(),
+                    'key': 'all-songs',
+                    'isDraggable': false,
+                    'onInsert': function(event, panel) {
+                        $(panel).on('click', function() {
+                            setCurrent(self, $(this).attr('data-id'));
+                            $(settings.allSongsPanel).contextMenu('hide');
+                        });
+                    }
+                });
+
                 // Set keyboard
                 $(document).on('keyup', function(event) {
                     if (event.which == 37 && $(settings.previousSongControl).is(':visible')) {
@@ -170,6 +198,17 @@
                     timeout = setTimeout(function() {
                         if (songDetails.hasClass('scrolling'))songDetails.removeClass('scrolling');
                     }, 250);
+                });
+
+                // All songs panel
+                $(settings.allSongsPanel).contextMenu({
+                    'top': 'unset',
+                    'bottom': '44px',
+                    'left': 'unset'
+                });
+
+                $(settings.allSongsButton).on('click', function() {
+                    $(settings.allSongsPanel).contextMenu('show', this);
                 });
 
                 $(self).data('songsContainer-options', settings);
