@@ -1,11 +1,32 @@
 .songparts-container {
-    margin: 50px 0;
     .songpart-item {
-        margin-bottom: 20px;
-        .songpart-name {
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
-            font-size: 14px;
-            text-transform: uppercase;
+        .content {
+            margin-left: 50px;
+            padding: 20px 0;
+            position: relative;
+            .songpart-details {
+                margin-left: 10px;
+            }
+            .songpart-name {
+                font-family: 'Consolas', 'Courier New', Courier, monospace;
+                font-size: 14px;
+                text-transform: uppercase;
+            }
+        }
+    }
+}
+
+.songs-container.performance {
+    .songparts-container {
+        .songpart-item {
+            color: $darker;
+            &.current {
+                background-color: $accent;
+                .content {
+                    background-color: white;
+                    color: black;
+                }
+            }
         }
     }
 }

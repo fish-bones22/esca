@@ -48953,6 +48953,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     $(obj).hide();
     $($(obj).data('target')).removeClass('context-menu-target');
     $(obj).data('target', null);
+    $(obj).removeClass('expanded');
   }
   /**
    * Hide context menu
@@ -49014,6 +49015,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     if (!getOption(obj, 'nesting')) hideAll();
+    $(obj).addClass('expanded');
     $(obj).show();
     $(obj).trigger('contextMenu:show', [obj, target]);
   }

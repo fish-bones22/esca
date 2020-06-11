@@ -1,4 +1,10 @@
 @import '../_variables';
 @import '_songItem';
 @import '_songPart';
+@import '_songLine';
 @import '_songsControl';
+@import '_sequenceControl';
+
+html, body {
+    overflow-x: hidden;
+}

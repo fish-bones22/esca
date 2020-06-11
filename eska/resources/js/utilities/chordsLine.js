@@ -103,7 +103,7 @@
     }
 
     /**
-     *
+     * Set value of this chords line
      * @param {object} obj
      * @param {string} values Chords values. String delimited by |
      */
@@ -114,17 +114,27 @@
             console.error('Error at chordsLine.setValue() => Invalid chords data');
             return;
         }
+
         // Set chord line details
         var details = chords.splice(0, 1)[0].split('/');
         if (details.length < 2) {
             console.error('Error at chordsLine.setValue() => Invalid chords metadata');
             return;
         }
+
+        // Set modulation and scale details for this line
         var modulation = details[0]*1;
         var scale = details[1];
         modulate(obj, modulation);
         changeScale(obj, scale);
 
+        // Don't show chords line when no chords to show
+        if (chords.length <= 0) {
+            $(obj).hide();
+            return;
+        }
+
+        // Create a chord marker for each chord
         chords.forEach(chord => {
             // Get chord parts
             var chordPart = chord.split('/');

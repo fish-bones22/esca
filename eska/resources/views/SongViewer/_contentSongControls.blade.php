@@ -7,7 +7,7 @@
         <button class="btn-primary trigger"><span class="material-icons">navigate_next</span></button>
     </div>
     <div class="songs-control-options">
-        <button><span class="material-icons">more_vert</span></button>
+        <button style="display: none"><span class="material-icons">more_vert</span></button>
     </div>
     <div class="prev-song-container song-control-container" style="display: none">
         <button class="btn-primary trigger"><span class="material-icons">navigate_before</span></button>
@@ -16,12 +16,14 @@
             <div class="song-artist"></div>
         </div>
     </div>
-    <div class="allsongs-expanded" style="display: none">
+    <div class="songlist-expanded" style="display: none">
         <button class="btn-action close"><span class="material-icons">clear</span></button>
-        <div class="allsongs-list">
-            <div class="allsongs-item">
-                <div class="song-title"></div>
-                <div class="song-artist"></div>
+        <div class="content">
+            <div class="songlist-body">
+                <div class="songlist-item">
+                    <div class="song-title"></div>
+                    <div class="song-artist"></div>
+                </div>
             </div>
         </div>
     </div>

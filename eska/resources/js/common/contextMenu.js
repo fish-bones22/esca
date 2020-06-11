@@ -41,6 +41,7 @@
         $(obj).hide();
         $($(obj).data('target')).removeClass('context-menu-target');
         $(obj).data('target', null);
+        $(obj).removeClass('expanded');
     }
     /**
      * Hide context menu
@@ -97,6 +98,7 @@
             $(target).addClass('context-menu-target');
         }
         if (!getOption(obj, 'nesting')) hideAll();
+        $(obj).addClass('expanded');
         $(obj).show();
         $(obj).trigger('contextMenu:show', [obj, target]);
     }

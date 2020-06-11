@@ -1,0 +1,59 @@
+.sequence-controls {
+    position: fixed;
+    right: 1px;
+    top: 50px;
+    .quick-control {
+        display: flex;
+        .current-sequence-display {
+            background-color: $dimmer;
+            font-family: 'consolas', 'Courier New', Courier, monospace;
+            font-size: 16px;
+            padding-top: 8px;
+            width: 150px;
+            text-align: center;
+        }
+        .sequence-list-options {
+            background-color: $dimmer;
+            border-top: none;
+            border-bottom: none;
+            border-left: 1px solid white;
+            border-right: 1px solid white;
+            color: $dark;
+            padding: 5px 0;
+            &:hover {
+                background-color: $dark;
+                color: $darker;
+            }
+        }
+    }
+    .sequence-list {
+        background-color: white;
+        border: 1px solid $dark;
+        display: none;
+        padding: 10px 10px 0 0;
+        &.expanded {
+            display: block;
+        }
+        .content {
+            margin: 40px 20px 20px 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+            .sequence-list-body {
+                .sequence-list-item {
+                    background-color: $dimmer;
+                    color: black;
+                    cursor: pointer;
+                    margin: 0 10px 5px 10px;
+                    padding: 5px 10px;
+                    &.current {
+                        background-color: $accent;
+                        color: white;
+                    }
+                    &:hover:not(.current) {
+                        background-color: $dark;
+                    }
+                }
+            }
+        }
+    }
+}

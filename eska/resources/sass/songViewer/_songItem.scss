@@ -1,16 +1,21 @@
 .songs-container {
     &.performance {
-        margin-bottom: 70px;
         .song-item {
+            background-color: $dim;
+            padding: 60px 0 42% 0;
             .song-details {
                 left: 0;
                 position: fixed;
                 top: 0;
+                transition: box-shadow 200ms ease-in-out;
+                &.scrolling {
+                    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+                }
             }
         }
     }
     .song-item {
-        margin: 20px 50px;
+        margin: 20px 0;
         display: none;
         &.current {
             display: block;
@@ -25,10 +30,6 @@
             padding: 5px 0;
             width: 100%;
             z-index: 9;
-            transition: box-shadow 200ms ease-in-out;
-            &.scrolling {
-                box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
-            }
             .musical-details {
                 margin-left: auto;
                 margin-right: 30px;

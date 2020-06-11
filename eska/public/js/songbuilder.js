@@ -452,10 +452,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // then set event listener for delete
 
     var removerSelector = getOption(obj, 'removerSelector');
-    panel.find(removerSelector).bind('click', function () {
-      var index = $(this).closest(panelSelector).attr('data-order') * 1 - 1;
-      removePanel(obj, index);
-    }); // Event listener for keys
+
+    if (removerSelector != '' && removerSelector != undefined) {
+      panel.find(removerSelector).bind('click', function () {
+        var index = $(this).closest(panelSelector).attr('data-order') * 1 - 1;
+        removePanel(obj, index);
+      });
+    } // Event listener for keys
+
 
     panel.find('input[type="text"]').keyup(function (event) {
       focusPanelByKey(obj, panel, event.which);
@@ -573,8 +577,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     setOption(obj, 'panelCount', --panelCount);
   }
+  /**
+   * Remove all panels
+   * @param {object} obj
+   */
+
 
   function removeAll(obj) {
+    if ($(obj).children('.panel-item').length <= 0) return;
     $(obj).children('.panel-item').each(function () {
       removePanel(obj, $(this).attr('data-order') * 1 - 1);
     });
@@ -604,7 +614,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         var settings = $.extend({}, defaults, initOptions(command));
         $(self).data('dynamicPanel-options', settings);
-        $(self).addClass('dynamicPanel'); // Set draggable
+        $(self).addClass('dynamicPanel');
+
+        if (typeof settings.panelTemplate == 'string' && settings.panelTemplate == $(self).html() || _typeof(settings.panelTemplate) == 'object' && $(self).children().is(settings.panelTemplate)) {
+          setOption(self, 'getChildOfTemplate', false);
+          settings.panelTemplate = $(settings.panelTemplate).clone();
+          $(self).empty();
+        } // Set draggable
+
 
         var dragOpt = settings.draggable;
         var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];
@@ -626,12 +643,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               }); //$(ui.item).removeAttr('style');
             }
           });
-        }
-
-        if (settings.panelTemplate == $(self).html() || $(self).children().is(settings.panelTemplate)) {
-          setOption(self, 'getChildOfTemplate', false);
-          settings.panelTemplate = $(settings.panelTemplate).clone();
-          $(self).empty();
         }
         /** Event listeners **/
         // Add panels button
@@ -3478,7 +3489,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     });
   }
   /**
-   *
+   * Set value of this chords line
    * @param {object} obj
    * @param {string} values Chords values. String delimited by |
    */
@@ -3499,12 +3510,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (details.length < 2) {
       console.error('Error at chordsLine.setValue() => Invalid chords metadata');
       return;
-    }
+    } // Set modulation and scale details for this line
+
 
     var modulation = details[0] * 1;
     var scale = details[1];
     modulate(obj, modulation);
-    changeScale(obj, scale);
+    changeScale(obj, scale); // Don't show chords line when no chords to show
+
+    if (chords.length <= 0) {
+      $(obj).hide();
+      return;
+    } // Create a chord marker for each chord
+
+
     chords.forEach(function (chord) {
       // Get chord parts
       var chordPart = chord.split('/');

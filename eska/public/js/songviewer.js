@@ -452,10 +452,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // then set event listener for delete
 
     var removerSelector = getOption(obj, 'removerSelector');
-    panel.find(removerSelector).bind('click', function () {
-      var index = $(this).closest(panelSelector).attr('data-order') * 1 - 1;
-      removePanel(obj, index);
-    }); // Event listener for keys
+
+    if (removerSelector != '' && removerSelector != undefined) {
+      panel.find(removerSelector).bind('click', function () {
+        var index = $(this).closest(panelSelector).attr('data-order') * 1 - 1;
+        removePanel(obj, index);
+      });
+    } // Event listener for keys
+
 
     panel.find('input[type="text"]').keyup(function (event) {
       focusPanelByKey(obj, panel, event.which);
@@ -573,8 +577,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     setOption(obj, 'panelCount', --panelCount);
   }
+  /**
+   * Remove all panels
+   * @param {object} obj
+   */
+
 
   function removeAll(obj) {
+    if ($(obj).children('.panel-item').length <= 0) return;
     $(obj).children('.panel-item').each(function () {
       removePanel(obj, $(this).attr('data-order') * 1 - 1);
     });
@@ -604,7 +614,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         var settings = $.extend({}, defaults, initOptions(command));
         $(self).data('dynamicPanel-options', settings);
-        $(self).addClass('dynamicPanel'); // Set draggable
+        $(self).addClass('dynamicPanel');
+
+        if (typeof settings.panelTemplate == 'string' && settings.panelTemplate == $(self).html() || _typeof(settings.panelTemplate) == 'object' && $(self).children().is(settings.panelTemplate)) {
+          setOption(self, 'getChildOfTemplate', false);
+          settings.panelTemplate = $(settings.panelTemplate).clone();
+          $(self).empty();
+        } // Set draggable
+
 
         var dragOpt = settings.draggable;
         var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];
@@ -626,12 +643,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               }); //$(ui.item).removeAttr('style');
             }
           });
-        }
-
-        if (settings.panelTemplate == $(self).html() || $(self).children().is(settings.panelTemplate)) {
-          setOption(self, 'getChildOfTemplate', false);
-          settings.panelTemplate = $(settings.panelTemplate).clone();
-          $(self).empty();
         }
         /** Event listeners **/
         // Add panels button
@@ -738,8 +749,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     'lyricsContentLine': '',
     'lyricsDisplayLine': '',
     'fontSize': '',
-    'fontFamily': ''
+    'fontFamily': '',
+    'mode': 'performance',
+    'sequenceListPanel': '',
+    'sequenceList': '',
+    'sequenceListToggler': '',
+    'sequences': []
   };
+  var changeSongpartOffset = 100;
   /**
    * Get option value
    * @param {Object} object
@@ -788,13 +805,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     if (song.hasOwnProperty('scale')) {
       setOption(obj, 'scale', song.scale);
-    } // Set song parts
-
+    }
 
     setSongParts(obj, song.songParts, song.sequence);
   }
+  /**
+   * Fill song parts for the song based on the sequence
+   * @param {object} obj
+   * @param {array} songParts Collection of song parts object
+   * @param {array} sequences Collection of sequence objects
+   */
+
 
   function setSongParts(obj, songParts, sequences) {
+    var sequencesArr = [];
     var songPartsContainer = $(obj).find(getOption(obj, 'songPartsContainer')); // Remove panels first
 
     songPartsContainer.dynamicPanel('removeAll'); // Set up song parts with regards to eats sequence
@@ -817,9 +841,87 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           var songPartPanel = songPartsContainer.dynamicPanel('insert');
           songPartPanel.songPart('option', 'sequenceModulation', songPartRef.referenceKey);
           songPartPanel.songPart('setValue', songPart);
+          sequencesArr.push(songPartRef.name);
         }
       });
       return;
+    });
+    setOption(obj, 'sequences', sequencesArr);
+  }
+  /**
+   * Set the current song part
+   * @param {obect} obj
+   * @param {number} index Location of the song part from the sequence array (0-based)
+   * @param {boolean} scroll ill engage auto scrolling
+   */
+
+
+  function setCurrentSongPart(obj, index) {
+    var scroll = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    var scrollSequenceList = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    // Get the song part from the sequence order
+    var songParts = $(obj).find(getOption(obj, 'songPartsContainer'));
+    var songPartTarget = songParts.children('[data-order="' + (index + 1) + '"]').first();
+    if (songPartTarget.length <= 0) return;
+    var sequenceListPanel = $(getOption(obj, 'sequenceList'));
+    var sequences = getOption(obj, 'sequences'); // On performance mode, scroll to the songpart
+
+    if (scroll && getOption(obj, 'mode') == 'performance') {
+      $('html, body').animate({
+        scrollTop: songPartTarget.offset().top - changeSongpartOffset + 5
+      }, 500, function () {
+        // Remove currently selected songpart
+        songParts.children('.current').removeClass('current'); // Set this song part as the current one
+
+        songPartTarget.addClass('current');
+        $(getOption(obj, 'currentSequenceDisplay')).html(sequences[index]); // Set sequence list selected
+
+        sequenceListPanel.children('.current').removeClass('current');
+        sequenceListPanel.children('[data-order="' + (index + 1) + '"]').addClass('current');
+
+        if (scrollSequenceList) {
+          var par = sequenceListPanel.parent();
+          var scrollDistance = sequenceListPanel.height() - par.height() + 6;
+          par.scrollTop(scrollDistance / (sequences.length - 1) * index);
+        } // Set quick controls
+
+
+        $(getOption(obj, 'nextSequenceControl')).attr('data-target-index', index < sequences.length - 1 ? index + 1 : 0);
+        $(getOption(obj, 'prevSequenceControl')).attr('data-target-index', index > 0 ? index - 1 : sequences.length - 1);
+      });
+    } else {
+      // Remove currently selected songpart
+      songParts.children('.current').removeClass('current'); // Set this song part as the current one
+
+      songPartTarget.addClass('current');
+      $(getOption(obj, 'currentSequenceDisplay')).html(sequences[index]); // Set sequence list selected
+
+      sequenceListPanel.children('.current').removeClass('current');
+      sequenceListPanel.children('[data-order="' + (index + 1) + '"]').addClass('current');
+
+      if (scrollSequenceList) {
+        var par = sequenceListPanel.parent();
+        var scrollDistance = sequenceListPanel.height() - par.height() + 6;
+        par.scrollTop(scrollDistance / (sequences.length - 1) * index);
+      } // Set quick controls
+
+
+      $(getOption(obj, 'nextSequenceControl')).attr('data-target-index', index < sequences.length - 1 ? index + 1 : 0);
+      $(getOption(obj, 'prevSequenceControl')).attr('data-target-index', index > 0 ? index - 1 : sequences.length - 1);
+    }
+
+    if ($(getOption(obj, 'sequenceListPanel')).parent().is(':hidden')) $(getOption(obj, 'sequenceListPanel')).parent().show();
+  }
+
+  function setSequenceListPanel(obj) {
+    var sequenceList = $(getOption(obj, 'sequenceList'));
+    var sequences = getOption(obj, 'sequences');
+    if (sequenceList.length <= 0) return;
+    if (sequences == null || sequences.length <= 0) return;
+    sequenceList.dynamicPanel('removeAll');
+    sequences.forEach(function (sequence) {
+      var panel = sequenceList.dynamicPanel('insert');
+      panel.html(sequence);
     });
   }
 
@@ -857,12 +959,39 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               'sequenceModulation': 0
             });
           }
-        });
+        }); // Key selector from the song item
+
         $(self).find(settings.keySelector).on('change', function () {
           var key = $(this).val();
           setOption(self, 'key', key);
           $(self).find('.songpart-item').each(function () {
             $(this).songPart('update');
+          });
+        }); // Get window height value
+
+        $(window).on('resize', function () {
+          changeSongpartOffset = $(window).height() * 0.2;
+        }).trigger('resize'); // Scroll event listener.
+        // Change selected sequence based on scrolling
+
+        $(document).on('scroll', function () {
+          var docScroll = $(document).scrollTop();
+          $(self).find('.songpart-item.current').each(function () {
+            var posTop = $(this).offset().top;
+            var sib = null; // Scroll down, get the next sequence
+
+            if (docScroll + changeSongpartOffset > posTop + $(this).height()) {
+              sib = $(this).next('.songpart-item');
+            } // Scroll up, get the previous sequence
+            else if (posTop > docScroll + changeSongpartOffset) {
+                sib = $(this).prev('.songpart-item');
+              } // Set the selected sequence as current
+
+
+            if (sib != null && sib.length > 0) {
+              setCurrentSongPart(self, sib.attr('data-order') * 1 - 1, false);
+              return false; // Stop loop
+            }
           });
         });
         $(self).data('songItem-options', settings);
@@ -874,6 +1003,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'setvalue':
           return $(this).each(function () {
             setValue(this, option);
+          });
+
+        case 'setcurrentsongpart':
+          return $(this).each(function () {
+            setCurrentSongPart(this, option, true, value);
+          });
+
+        case 'setsequencelist':
+          return $(this).each(function () {
+            setSequenceListPanel(this);
           });
       }
     }
@@ -933,6 +1072,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     options[key] = value;
     $(object).data('songLine-options', options);
   }
+  /**
+   * Set value of the song line (lyrics and chords)
+   * @param {object} obj
+   * @param {array} songLine Pair of chords and lyrics, at index 0 and index 1 respectively
+   */
+
 
   function setValue(obj, songLine) {
     $(obj).find(getOption(obj, 'lyricsContentLine')).lyricsLine({
@@ -1240,7 +1385,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     'isDraggable': false,
     'mode': 'performance',
     'nextSongControl': '',
-    'previousSongControl': ''
+    'previousSongControl': '',
+    'sequenceListPanel': '',
+    'sequenceList': '',
+    'sequenceListToggler': ''
   };
   var songValues = [];
   /**
@@ -1254,76 +1402,87 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (options == undefined || !options.hasOwnProperty(key)) return null;
     return options[key];
   }
+  /**
+   * Set song as selected
+   * @param {object} obj
+   * @param {number} index Index of the song from the set (0-based)
+   */
 
-  function setCurrent(obj, songId) {
+
+  function setCurrent(obj, index) {
     // Find selected song
-    var selectedSong = $('.song-item[data-id="' + songId + '"]'); // Get control buttons
+    var selectedSong = $('.song-item[data-order="' + (index + 1) + '"]'); // Get control buttons
 
     var nextSongControl = $(getOption(obj, 'nextSongControl'));
     var previousSongControl = $(getOption(obj, 'previousSongControl'));
     if (nextSongControl.length > 0) nextSongControl.hide();
     if (previousSongControl.length > 0) previousSongControl.hide();
+    if ($(getOption(obj, 'allSongsButton')).is(':hidden')) $(getOption(obj, 'allSongsButton')).show();
     if (selectedSong.length <= 0) return; // Set the song from the song list as selected
 
     var allSongsPanel = $(getOption(obj, 'allSongsList'));
-    allSongsPanel.find('.allsongs-item.current').removeClass('current');
-    allSongsPanel.find('.allsongs-item[data-id="' + songId + '"]').addClass('current'); // Remove current
+    allSongsPanel.find('.songlist-item.current').removeClass('current');
+    allSongsPanel.find('.songlist-item[data-order="' + (index + 1) + '"]').addClass('current'); // Remove current
 
-    $('.song-item.current').removeClass('current');
-    selectedSong.addClass('current'); // Get next song
+    $('.song-item.current').removeClass('current'); // Display song navigation only for more than 1 song
 
-    var nextSong = selectedSong.next('.song-item');
+    selectedSong.addClass('current'); // Get previous song
+    // Display previous song navigation only for more than 2 songs
 
-    if (nextSong.length <= 0 && selectedSong.siblings('.song-item').length > 1) {
-      nextSong = selectedSong.prevAll('.song-item').first();
-    }
+    setSongControl(previousSongControl, index > 0 ? index - 1 : songValues.length - 1, songValues.length > 2); // Get next song
 
-    if (nextSong.length > 0) {
-      setSongControl(nextSongControl, nextSong.attr('data-id'));
-    } // Get previous song
+    setSongControl(nextSongControl, index < songValues.length - 1 ? index + 1 : 0, songValues.length > 1); // Set the first song-part from the song as selected
 
-
-    var prevSong = selectedSong.prev('.song-item');
-
-    if (prevSong.length <= 0 && selectedSong.siblings('.song-item').length > 1) {
-      prevSong = selectedSong.nextAll('.song-item').last();
-    }
-
-    if (prevSong.length > 0) {
-      setSongControl(previousSongControl, prevSong.attr('data-id'));
-    }
-
-    $(document).scrollTop(0);
+    selectedSong.songItem('setSequenceList');
+    selectedSong.songItem('setCurrentSongPart', 0);
   }
+  /**
+   * Set element to toggle the song via song ID
+   * @param {jQuery object} control Element to set
+   * @param {string} index Pointer of the location of the song from the set array (0-based)
+   */
 
-  function setSongControl(control, songId) {
-    var songDetails = songValues.find(function (o) {
-      return o.id == songId;
-    });
+
+  function setSongControl(control, index) {
+    var show = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    var songDetails = songValues[index];
 
     if (songDetails != undefined) {
-      control.show();
-      control.find('.trigger').attr('data-song-id', songDetails.id);
+      control.find('.trigger').attr('data-target-index', index);
       control.find('.song-title').html(songDetails.title);
       control.find('.song-artist').html(songDetails.artist);
-    } else {
-      control.hide();
     }
+
+    if (show) control.show();
   }
+  /**
+   * Populate the All-Songs Panel
+   * @param {object} obj
+   */
+
 
   function setAllSongsPanel(obj) {
     var allSongsPanel = $(getOption(obj, 'allSongsList'));
     allSongsPanel.dynamicPanel('removeAll');
     songValues.forEach(function (song) {
-      var panel = allSongsPanel.dynamicPanel('insert', null, song.id);
+      var panel = allSongsPanel.dynamicPanel('insert');
       panel.find('.song-title').html(song.title);
       panel.find('.song-artist').html(song.artist);
     });
   }
+  /**
+   * Populate container with songs
+   * @param {object} obj
+   * @param {array} songs Collection of song object
+   */
+
 
   function setValues(obj, songs) {
-    var first = '';
-    $(obj).dynamicPanel('removeAll');
+    if (songs.length <= 0) return;
+    var first = ''; // Empty the container first
+
+    $(obj).dynamicPanel('removeAll'); // Create panel foreach song
+
     songs.forEach(function (song) {
       var panel = $(obj).dynamicPanel('insert', null, song.id);
       panel.songItem('setValue', song);
@@ -1332,10 +1491,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         'title': song.title,
         'artist': song.hasOwnProperty('details') && song.details.hasOwnProperty('artist') ? song.details.artist : ''
       });
-      if (first == '') first = song.id;
     });
-    setAllSongsPanel(obj);
-    setCurrent(obj, first);
+    setAllSongsPanel(obj); // Set first song from the list
+
+    setCurrent(obj, 0);
   }
 
   $.fn.songsContainer = function (command, option, value) {
@@ -1367,7 +1526,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               'fontSize': settings.fontSize,
               'fontFamily': settings.fontFamily,
               'lineHeight': settings.lineHeight,
-              'cursorWidth': settings.cursorWidth
+              'cursorWidth': settings.cursorWidth,
+              'mode': settings.mode,
+              'sequenceListPanel': settings.sequenceListPanel,
+              'sequenceList': settings.sequenceList,
+              'sequenceListToggler': settings.sequenceListToggler,
+              'currentSequenceDisplay': settings.currentSequenceDisplay,
+              'nextSequenceControl': settings.nextSequenceControl,
+              'prevSequenceControl': settings.prevSequenceControl
             });
           }
         });
@@ -1377,24 +1543,44 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           'isDraggable': false,
           'onInsert': function onInsert(event, panel) {
             $(panel).on('click', function () {
-              setCurrent(self, $(this).attr('data-id'));
+              setCurrent(self, $(this).attr('data-order') * 1 - 1);
               $(settings.allSongsPanel).contextMenu('hide');
+            });
+          }
+        });
+        $(settings.sequenceList).dynamicPanel({
+          'key': 'sequenceList',
+          'isDraggable': false,
+          'panelTemplate': $(settings.sequenceList).html(),
+          'onInsert': function onInsert(event, panel) {
+            panel.on('click', function () {
+              $('.song-item.current').songItem('setCurrentSongPart', panel.attr('data-order') * 1 - 1, false);
             });
           }
         }); // Set keyboard
 
         $(document).on('keyup', function (event) {
-          if (event.which == 37 && $(settings.previousSongControl).is(':visible')) {
+          if (event.which == 37) {
             $(settings.previousSongControl).find('.trigger').trigger('click');
-          } else if (event.which == 39 && $(settings.nextSongControl).is(':visible')) {
+          } else if (event.which == 39) {
             $(settings.nextSongControl).find('.trigger').trigger('click');
+          } else if (event.which == 38 && $(settings.prevSequenceControl).is(':visible')) {
+            $(settings.prevSequenceControl).trigger('click');
+          } else if (event.which == 40 && $(settings.nextSequenceControl).is(':visible')) {
+            $(settings.nextSequenceControl).trigger('click');
           }
         }); // Set next/prev song actions
 
         $(document).on('click', [settings.nextSongControl + ' .trigger', settings.previousSongControl + ' .trigger'].join(','), function () {
-          var songId = $(this).attr('data-song-id');
-          if (songId == '' || songId == undefined) return;
-          setCurrent(self, songId);
+          var songIndex = $(this).attr('data-target-index') * 1;
+          if (songIndex == NaN) return;
+          setCurrent(self, songIndex);
+        }); // Set next/prev sequence actions
+
+        $(document).on('click', [settings.nextSequenceControl, settings.prevSequenceControl].join(','), function () {
+          var songIndex = $(this).attr('data-target-index') * 1;
+          if (songIndex == NaN) return;
+          $(self).find('.song-item.current').songItem('setCurrentSongPart', songIndex);
         }); // Scrolling event
 
         var timeout;
@@ -1418,6 +1604,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         });
         $(settings.allSongsButton).on('click', function () {
           $(settings.allSongsPanel).contextMenu('show', this);
+        });
+        $(settings.sequenceListToggler).on('click', function () {
+          if ($(settings.sequenceListPanel).hasClass('expanded')) {
+            $(settings.sequenceListPanel).removeClass('expanded');
+          } else {
+            $(settings.sequenceListPanel).addClass('expanded');
+          }
+        });
+        $(settings.sequenceListPanel).find('.close').on('click', function () {
+          $(settings.sequenceListPanel).removeClass('expanded');
         });
         $(self).data('songsContainer-options', settings);
         $(self).addClass(settings.mode);
@@ -1486,15 +1682,24 @@ var lyricsContentLine = '.lyrics-content';
 var lyricsDisplayLine = '.lyrics-display';
 var nextSongControl = '.next-song-container';
 var previousSongControl = '.prev-song-container';
-var allSongsPanel = '.allsongs-expanded';
+var allSongsPanel = '.songlist-expanded';
 var allSongsButton = '.songs-control-options button';
-var allSongsList = '.allsongs-list';
+var allSongsList = '.songlist-body';
+var sequenceListPanel = '.sequence-list';
+var sequenceList = '.sequence-list-body';
+var sequenceListToggler = '.sequence-list-options';
+var currentSequenceDisplay = '.current-sequence-display';
+var nextSequenceControl = '.quick-control .next';
+var prevSequenceControl = '.quick-control .prev';
+var loadingScreen = '.loading-panel';
 var monospaceFontSize = '26px';
 var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
 var monospaceWidth = 0;
 var monospaceHeight = 0;
 $(function () {
-  getPageDimensions();
+  getPageDimensions(); // Loading screen
+
+  $(loadingScreen).loadingScreen();
   $(songsContainer).songsContainer({
     'keySelector': songMainKey,
     'key': 'C',
@@ -1521,12 +1726,19 @@ $(function () {
     'previousSongControl': previousSongControl,
     'allSongsPanel': allSongsPanel,
     'allSongsButton': allSongsButton,
-    'allSongsList': allSongsList
+    'allSongsList': allSongsList,
+    'sequenceListPanel': sequenceListPanel,
+    'sequenceList': sequenceList,
+    'sequenceListToggler': sequenceListToggler,
+    'currentSequenceDisplay': currentSequenceDisplay,
+    'nextSequenceControl': nextSequenceControl,
+    'prevSequenceControl': prevSequenceControl
   });
   getSongs(['0e987bb3-5e32-41c7-b0a8-4e5b4866420b', '611c3248-7326-448b-b66c-5199f9009dc8']);
 });
 
 function getSongs(songIds) {
+  $(loadingScreen).loadingScreen('show');
   $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1550,7 +1762,9 @@ function getSongs(songIds) {
     $(songsContainer).songsContainer('setValues', response);
   }).fail(function (response) {
     console.error(response);
-  }).always(function () {});
+  }).then(function () {
+    $(loadingScreen).loadingScreen('hide');
+  });
 }
 
 function getPageDimensions() {
@@ -2071,7 +2285,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     });
   }
   /**
-   *
+   * Set value of this chords line
    * @param {object} obj
    * @param {string} values Chords values. String delimited by |
    */
@@ -2092,12 +2306,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (details.length < 2) {
       console.error('Error at chordsLine.setValue() => Invalid chords metadata');
       return;
-    }
+    } // Set modulation and scale details for this line
+
 
     var modulation = details[0] * 1;
     var scale = details[1];
     modulate(obj, modulation);
-    changeScale(obj, scale);
+    changeScale(obj, scale); // Don't show chords line when no chords to show
+
+    if (chords.length <= 0) {
+      $(obj).hide();
+      return;
+    } // Create a chord marker for each chord
+
+
     chords.forEach(function (chord) {
       // Get chord parts
       var chordPart = chord.split('/');

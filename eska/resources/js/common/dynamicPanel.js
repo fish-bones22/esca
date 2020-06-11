@@ -90,10 +90,12 @@ function insertPanel(obj, index, id = null) {
     // Get delete selector from options
     // then set event listener for delete
     var removerSelector = getOption(obj, 'removerSelector');
-    panel.find(removerSelector).bind('click', function() {
-        var index = $(this).closest(panelSelector).attr('data-order')*1 - 1;
-        removePanel(obj, index);
-    });
+    if (removerSelector != '' && removerSelector != undefined) {
+        panel.find(removerSelector).bind('click', function() {
+            var index = $(this).closest(panelSelector).attr('data-order')*1 - 1;
+            removePanel(obj, index);
+        });
+    }
     // Event listener for keys
     panel.find('input[type="text"]').keyup(function(event) {
         focusPanelByKey(obj, panel, event.which);
@@ -202,7 +204,14 @@ function removePanel(obj, index) {
     setOption(obj, 'panelCount', --panelCount);
 }
 
+/**
+ * Remove all panels
+ * @param {object} obj
+ */
 function removeAll(obj) {
+
+    if ($(obj).children('.panel-item').length <= 0) return;
+
     $(obj).children('.panel-item').each(function() {
         removePanel(obj, $(this).attr('data-order')*1-1);
     });
@@ -234,6 +243,13 @@ $.fn.dynamicPanel = function(command, option, val) {
 
             $(self).addClass('dynamicPanel');
 
+            if ((typeof settings.panelTemplate == 'string' && settings.panelTemplate == $(self).html())
+            || (typeof settings.panelTemplate == 'object' && $(self).children().is(settings.panelTemplate))) {
+                setOption(self, 'getChildOfTemplate', false);
+                settings.panelTemplate = $(settings.panelTemplate).clone();
+                $(self).empty();
+            }
+
             // Set draggable
             var dragOpt = settings.draggable;
             var cancelOpt = dragOpt != undefined && dragOpt.hasOwnProperty('cancel') ? dragOpt.cancel : [];
@@ -254,12 +270,6 @@ $.fn.dynamicPanel = function(command, option, val) {
                         //$(ui.item).removeAttr('style');
                     }
                 });
-            }
-
-            if (settings.panelTemplate == $(self).html() || $(self).children().is(settings.panelTemplate)) {
-                setOption(self, 'getChildOfTemplate', false);
-                settings.panelTemplate = $(settings.panelTemplate).clone();
-                $(self).empty();
             }
 
             /** Event listeners **/

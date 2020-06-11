@@ -21,6 +21,9 @@
         'mode': 'performance',
         'nextSongControl': '',
         'previousSongControl': '',
+        'sequenceListPanel': '',
+        'sequenceList': '',
+        'sequenceListToggler': ''
     }
 
     var songValues = [];
@@ -38,9 +41,14 @@
         return options[key];
     }
 
-    function setCurrent(obj, songId) {
+    /**
+     * Set song as selected
+     * @param {object} obj
+     * @param {number} index Index of the song from the set (0-based)
+     */
+    function setCurrent(obj, index) {
         // Find selected song
-        var selectedSong = $('.song-item[data-id="' + songId + '"]');
+        var selectedSong = $('.song-item[data-order="' + (index + 1) + '"]');
 
         // Get control buttons
         var nextSongControl = $(getOption(obj, 'nextSongControl'));
@@ -49,63 +57,74 @@
         if (nextSongControl.length > 0) nextSongControl.hide();
         if (previousSongControl.length > 0) previousSongControl.hide();
 
+        if ($(getOption(obj, 'allSongsButton')).is(':hidden'))
+            $(getOption(obj, 'allSongsButton')).show();
+
         if (selectedSong.length <= 0) return;
 
         // Set the song from the song list as selected
         var allSongsPanel = $(getOption(obj, 'allSongsList'));
-        allSongsPanel.find('.allsongs-item.current').removeClass('current');
-        allSongsPanel.find('.allsongs-item[data-id="' + songId + '"]').addClass('current');
+        allSongsPanel.find('.songlist-item.current').removeClass('current');
+        allSongsPanel.find('.songlist-item[data-order="' + (index + 1) + '"]').addClass('current');
 
         // Remove current
         $('.song-item.current').removeClass('current');
-        selectedSong.addClass('current');
-        // Get next song
-        var nextSong = selectedSong.next('.song-item');
-        if (nextSong.length <= 0 && selectedSong.siblings('.song-item').length > 1) {
-            nextSong = selectedSong.prevAll('.song-item').first();
-        }
-        if (nextSong.length > 0) {
-            setSongControl(nextSongControl, nextSong.attr('data-id'));
-        }
-        // Get previous song
-        var prevSong = selectedSong.prev('.song-item');
-        if (prevSong.length <= 0 && selectedSong.siblings('.song-item').length > 1) {
-            prevSong = selectedSong.nextAll('.song-item').last();
-        }
-        if (prevSong.length > 0) {
-            setSongControl(previousSongControl, prevSong.attr('data-id'));
-        }
 
-        $(document).scrollTop(0);
+        // Display song navigation only for more than 1 song
+        selectedSong.addClass('current');
+        // Get previous song
+        // Display previous song navigation only for more than 2 songs
+        setSongControl(previousSongControl, index > 0 ? index-1 : songValues.length - 1, songValues.length > 2);
+        // Get next song
+        setSongControl(nextSongControl, index < songValues.length - 1 ? index + 1 : 0, songValues.length > 1);
+        // Set the first song-part from the song as selected
+        selectedSong.songItem('setSequenceList');
+        selectedSong.songItem('setCurrentSongPart', 0);
     }
 
 
-    function setSongControl(control, songId) {
-        var songDetails = songValues.find(o => o.id == songId);
+    /**
+     * Set element to toggle the song via song ID
+     * @param {jQuery object} control Element to set
+     * @param {string} index Pointer of the location of the song from the set array (0-based)
+     */
+    function setSongControl(control, index, show = true) {
+        var songDetails = songValues[index];
         if (songDetails != undefined) {
-            control.show();
-            control.find('.trigger').attr('data-song-id', songDetails.id);
+            control.find('.trigger').attr('data-target-index', index);
             control.find('.song-title').html(songDetails.title);
             control.find('.song-artist').html(songDetails.artist);
-        } else {
-            control.hide();
         }
+        if (show) control.show();
     }
 
+    /**
+     * Populate the All-Songs Panel
+     * @param {object} obj
+     */
     function setAllSongsPanel(obj) {
         var allSongsPanel = $(getOption(obj, 'allSongsList'));
         allSongsPanel.dynamicPanel('removeAll');
         songValues.forEach(song => {
-            var panel = allSongsPanel.dynamicPanel('insert', null, song.id);
+            var panel = allSongsPanel.dynamicPanel('insert');
             panel.find('.song-title').html(song.title);
             panel.find('.song-artist').html(song.artist);
         })
     }
 
+    /**
+     * Populate container with songs
+     * @param {object} obj
+     * @param {array} songs Collection of song object
+     */
     function setValues(obj, songs) {
 
+        if (songs.length <= 0) return;
+
         var first = '';
+        // Empty the container first
         $(obj).dynamicPanel('removeAll');
+        // Create panel foreach song
         songs.forEach(song => {
             var panel = $(obj).dynamicPanel('insert', null, song.id);
             panel.songItem('setValue', song);
@@ -114,11 +133,11 @@
                 'title': song.title,
                 'artist': song.hasOwnProperty('details') && song.details.hasOwnProperty('artist') ? song.details.artist : ''
             });
-            if (first == '') first = song.id;
         });
 
         setAllSongsPanel(obj);
-        setCurrent(obj, first);
+        // Set first song from the list
+        setCurrent(obj, 0);
     }
 
     $.fn.songsContainer = function(command, option, value) {
@@ -154,7 +173,14 @@
                             'fontSize': settings.fontSize,
                             'fontFamily': settings.fontFamily,
                             'lineHeight': settings.lineHeight,
-                            'cursorWidth': settings.cursorWidth
+                            'cursorWidth': settings.cursorWidth,
+                            'mode': settings.mode,
+                            'sequenceListPanel': settings.sequenceListPanel,
+                            'sequenceList': settings.sequenceList,
+                            'sequenceListToggler': settings.sequenceListToggler,
+                            'currentSequenceDisplay': settings.currentSequenceDisplay,
+                            'nextSequenceControl': settings.nextSequenceControl,
+                            'prevSequenceControl': settings.prevSequenceControl,
                         });
                     }
                 });
@@ -165,26 +191,48 @@
                     'isDraggable': false,
                     'onInsert': function(event, panel) {
                         $(panel).on('click', function() {
-                            setCurrent(self, $(this).attr('data-id'));
+                            setCurrent(self, $(this).attr('data-order')*1 - 1);
                             $(settings.allSongsPanel).contextMenu('hide');
                         });
                     }
                 });
 
+                $(settings.sequenceList).dynamicPanel({
+                    'key': 'sequenceList',
+                    'isDraggable': false,
+                    'panelTemplate': $(settings.sequenceList).html(),
+                    'onInsert': function(event, panel) {
+                        panel.on('click', function() {
+                            $('.song-item.current').songItem('setCurrentSongPart', panel.attr('data-order')*1-1, false);
+                        })
+                    }
+                });
+
                 // Set keyboard
                 $(document).on('keyup', function(event) {
-                    if (event.which == 37 && $(settings.previousSongControl).is(':visible')) {
+                    if (event.which == 37) {
                         $(settings.previousSongControl).find('.trigger').trigger('click');
-                    } else if (event.which == 39 && $(settings.nextSongControl).is(':visible')) {
+                    } else if (event.which == 39) {
                         $(settings.nextSongControl).find('.trigger').trigger('click');
+                    } else if (event.which == 38 && $(settings.prevSequenceControl).is(':visible')) {
+                        $(settings.prevSequenceControl).trigger('click');
+                    } else if (event.which == 40 && $(settings.nextSequenceControl).is(':visible')) {
+                        $(settings.nextSequenceControl).trigger('click');
                     }
                 });
 
                 // Set next/prev song actions
                 $(document).on('click', [settings.nextSongControl + ' .trigger', settings.previousSongControl + ' .trigger'].join(','), function() {
-                    var songId = $(this).attr('data-song-id');
-                    if (songId == '' || songId == undefined) return;
-                    setCurrent(self, songId);
+                    var songIndex = $(this).attr('data-target-index')*1;
+                    if (songIndex == NaN) return;
+                    setCurrent(self, songIndex);
+                });
+
+                // Set next/prev sequence actions
+                $(document).on('click', [settings.nextSequenceControl, settings.prevSequenceControl].join(','), function() {
+                    var songIndex = $(this).attr('data-target-index')*1;
+                    if (songIndex == NaN) return;
+                    $(self).find('.song-item.current').songItem('setCurrentSongPart', songIndex);
                 });
 
                 // Scrolling event
@@ -209,6 +257,18 @@
 
                 $(settings.allSongsButton).on('click', function() {
                     $(settings.allSongsPanel).contextMenu('show', this);
+                });
+
+                $(settings.sequenceListToggler).on('click', function() {
+                    if ($(settings.sequenceListPanel).hasClass('expanded')) {
+                        $(settings.sequenceListPanel).removeClass('expanded');
+                    } else {
+                        $(settings.sequenceListPanel).addClass('expanded');
+                    }
+                });
+
+                $(settings.sequenceListPanel).find('.close').on('click', function() {
+                    $(settings.sequenceListPanel).removeClass('expanded');
                 });
 
                 $(self).data('songsContainer-options', settings);

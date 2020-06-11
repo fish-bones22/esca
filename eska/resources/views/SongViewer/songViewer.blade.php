@@ -14,7 +14,9 @@ ESKA
 @include('SongViewer._songLineTemplate')
 @include('SongViewer._songPartTemplate')
 <div class="songs-container"></div>
+@include('SongViewer._contentSequenceControls')
 @include('SongViewer._contentSongControls')
+@include('Shared.DialogBoxes._loader')
 @stop
 
 @section('script')

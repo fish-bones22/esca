@@ -44,6 +44,11 @@
         $(object).data('songLine-options', options);
     }
 
+    /**
+     * Set value of the song line (lyrics and chords)
+     * @param {object} obj
+     * @param {array} songLine Pair of chords and lyrics, at index 0 and index 1 respectively
+     */
     function setValue(obj, songLine) {
 
         $(obj).find(getOption(obj, 'lyricsContentLine')).lyricsLine({
