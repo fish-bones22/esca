@@ -2,29 +2,78 @@
     .songpart-item {
         .content {
             margin-left: 50px;
-            padding: 20px 0;
+            padding: 20px 50px 20px 0;
             position: relative;
             .songpart-details {
                 margin-left: 10px;
-            }
-            .songpart-name {
-                font-family: 'Consolas', 'Courier New', Courier, monospace;
-                font-size: 14px;
-                text-transform: uppercase;
+                .songpart-name {
+                    font-family: 'Consolas', 'Courier New', Courier, monospace;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                }
             }
         }
     }
 }
 
-.songs-container.performance {
+.song-viewer.performance {
     .songparts-container {
         .songpart-item {
             color: $darker;
+            display: block;
+            &[data-simple] {
+                display: none;
+            }
             &.current {
                 background-color: $accent;
                 .content {
                     background-color: white;
                     color: black;
+                }
+            }
+        }
+    }
+}
+.song-viewer.audience {
+    .songparts-container {
+        .songpart-item {
+            display: none;
+            &[data-simple] {
+                display: none;
+            }
+            &.current {
+                display: block;
+            }
+            .content {
+                .songpart-details {
+                    display:none;
+                    .songpart-name {
+                        bottom: 10px;
+                        position: fixed;
+                        right: 20px;
+                    }
+                    .songpart-modulation-info {
+                        display:none;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.song-viewer.simple {
+    .songparts-container {
+        .songpart-item {
+            display: none;
+            &[data-simple=''] {
+                display: block;
+            }
+            .content {
+                padding: 10px 50px 10px 0;
+                .songpart-details {
+                    .songpart-name, .songpart-modulation-info {
+                        font-size: 10px;
+                    }
                 }
             }
         }

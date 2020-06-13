@@ -13,10 +13,13 @@ ESKA
 @include('SongViewer._songItemTemplate')
 @include('SongViewer._songLineTemplate')
 @include('SongViewer._songPartTemplate')
-<div class="songs-container"></div>
-@include('SongViewer._contentSequenceControls')
-@include('SongViewer._contentSongControls')
-@include('Shared.DialogBoxes._loader')
+<div class="song-viewer">
+    <div class="songs-container"></div>
+    @include('SongViewer._contentSequenceControls')
+    @include('SongViewer._contentSongControls')
+    @include('SongViewer._contentOptions')
+    @include('Shared.DialogBoxes._loader')
+</div>
 @stop
 
 @section('script')

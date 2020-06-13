@@ -660,7 +660,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             if (clipboardData == undefined) return true; // Split clipboard data by newline
 
             var lines = clipboardData.split('\n');
-            if (lines == undefined || lines.length <= 0) return true;
+            if (lines == undefined || lines.length <= 1) return true;
             event.preventDefault(); // Process clipboard data, creating new panel per line of text
 
             var panelInput = $(this);
@@ -3156,6 +3156,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     $(chordBuilder).chordBuilder('setTarget', null);
     setOption(obj, 'remainSelected', false);
   }
+
+  function updatePosition(obj) {
+    $(obj).css('left', getOption(obj, 'leftOffset'));
+  }
   /**
    * Unselect all selected chords markers
    */
@@ -3176,7 +3180,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         $(self).data('chordMarker-options', settings); // Set up attributes
 
-        $(self).addClass('chord').html('&nbsp;'); // Set up draggable
+        $(self).addClass('chord').html('&nbsp;');
+        var position = settings.position;
+
+        if (settings.position != null) {
+          position = Math.round(settings.leftOffset / settings.dragSnap);
+          setOption(self, 'position', position);
+        } // Set up draggable
+
 
         $(self).draggable({
           axis: 'x',
@@ -3185,7 +3196,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           grid: [settings.dragSnap, 0],
           disabled: !settings.editable,
           create: function create(ev, ui) {
-            $(self).removeAttr('style').css('left', settings.leftOffset).css('position', 'absolute').attr('data-position', Math.round(settings.leftOffset / settings.dragSnap));
+            $(self).removeAttr('style').css('left', settings.leftOffset).css('position', 'absolute').attr('data-position', position);
           },
           stop: function stop(ev, ui) {
             var diff = $(self).position().left;
@@ -3278,7 +3289,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'option':
           if (typeof option != 'string') return null;
 
-          if (typeof value == 'string') {
+          if (value != undefined) {
             return $(this).each(function () {
               setOption(this, option, value);
             });
@@ -3288,6 +3299,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         case 'getmodulationamount':
           return getModulationAmount(this);
+
+        case 'updateposition':
+          return $(this).each(function () {
+            updatePosition(this);
+          });
       }
     }
   };
@@ -3457,15 +3473,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
    */
 
 
-  function insertChordMarker(obj, width, position, scale) {
-    var modulation = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-    var value = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+  function insertChordMarker(obj, width, leftOffset, position, scale) {
+    var modulation = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+    var value = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : null;
     $('<span>').chordMarker({
       'spacing': getOption(obj, 'spacing'),
       'chordBuilder': getOption(obj, 'chordBuilder'),
       'contextMenu': getOption(obj, 'contextMenu'),
       'dragSnap': width,
-      'leftOffset': position,
+      'leftOffset': leftOffset,
+      'position': position,
       'key': getOption(obj, 'key'),
       'mainScale': getOption(obj, 'mainScale'),
       'songPartScale': getOption(obj, 'songPartScale'),
@@ -3536,7 +3553,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var variation = chordPart[5];
       var variation2 = chordPart[6];
       var bass = chordPart[7];
-      insertChordMarker(obj, getOption(obj, 'cursorWidth'), position * getOption(obj, 'cursorWidth'), scale, keyReference, [measure, root, variation, variation2, bass].join('/'));
+      insertChordMarker(obj, getOption(obj, 'cursorWidth'), position * getOption(obj, 'cursorWidth'), position, scale, keyReference, [measure, root, variation, variation2, bass].join('/'));
     });
   }
   /**
@@ -3628,6 +3645,36 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   }
 
+  function updateDisplay(obj) {
+    var fontFamily = getOption(obj, 'fontFamily');
+    var fontSize = getOption(obj, 'fontSize');
+    var height = getOption(obj, 'height');
+    var cursorWidth = getOption(obj, 'cursorWidth') * 1;
+
+    if (fontFamily != null) {
+      $(obj).css('font-family', fontFamily);
+    }
+
+    if (fontSize != null) {
+      $(obj).css('font-size', fontSize);
+    }
+
+    if (fontSize != null) {
+      $(obj).css('font-size', fontSize);
+    }
+
+    if (height != null) {
+      $(obj).css('height', height);
+    }
+
+    $(obj).find('.chord').each(function () {
+      var pos = $(this).chordMarker('option', 'position');
+      $(this).chordMarker('option', 'leftOffset', pos * cursorWidth);
+      $(this).chordMarker('option', 'dragSnap', cursorWidth);
+      $(this).chordMarker('updatePosition');
+    });
+  }
+
   $.fn.chordsLine = function (command, option, value) {
     if (_typeof(command) === 'object' || command == undefined) {
       return $(this).each(function () {
@@ -3649,7 +3696,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           // Get position of cursor
           var position = cursor.position().left;
           var parent = cursor.parent();
-          insertChordMarker(self, settings.cursorWidth, position, typeof settings.scale == 'function' ? settings.scale() : settings.scale); // Sort chords line
+          insertChordMarker(self, settings.cursorWidth, position, null, typeof settings.scale == 'function' ? settings.scale() : settings.scale); // Sort chords line
 
           sortChordMarkers(parent[0]);
         }); // Add chord cursor to chords line
@@ -3668,27 +3715,31 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }); // Unbind mousemove event
         }).on('mouseout', function () {
           $(self).off('mousemove');
-        }); // Set chords line attributes
-
-        $(self).css('height', settings.height).addClass('chordsLine-processed');
+        });
+        $(self).addClass('chordsLine-processed');
         changeScale(self, typeof settings.songPartScale == 'function' ? settings.songPartScale() : settings.songPartScale);
 
         if (settings.value != '') {
           setValue(self, settings.value);
         }
 
-        if (settings.fontFamily != '') {
-          $(self).css('font-family', settings.fontFamily);
-        }
-
-        if (settings.fontSize != '') {
-          $(self).css('font-size', settings.fontSize);
-        }
+        updateDisplay(self);
       });
     }
 
     if (typeof command == 'string') {
       switch (command.toLocaleLowerCase()) {
+        case 'option':
+          if (typeof option != 'string') return this;
+
+          if (value != undefined) {
+            return $(this).each(function () {
+              setOption(this, option, value);
+            });
+          }
+
+          return getOption(this, option);
+
         case 'setvalue':
           if (typeof option != 'string') return this;
           return $(this).each(function () {
@@ -3721,6 +3772,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'update':
           return $(this).each(function () {
             setModulationInfo(this);
+          });
+
+        case 'updatedisplay':
+          return $(this).each(function () {
+            updateDisplay(this);
           });
       }
     }
@@ -3760,6 +3816,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var options = $(object).data('lyricsLine-options');
     if (options == undefined || !options.hasOwnProperty(key)) return null;
     return options[key];
+  }
+  /**
+   * Set option value
+   * @param {Object} obj
+   * @param {String} option
+   * @param {any} value
+   */
+
+
+  function setOption(obj, option, value) {
+    var options = $(obj).data('lyricsLine-options');
+    options[option] = value;
+    $(obj).data('lyricsLine-options', options);
   }
   /**
    * Add spacer next to this character
@@ -3886,6 +3955,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
   }
 
+  function updateDisplay(obj) {
+    var fontFamily = getOption(obj, 'fontFamily');
+    var fontSize = getOption(obj, 'fontSize');
+    var cursorWidth = getOption(obj, 'cursorWidth');
+    var offset = getOption(obj, 'offset');
+
+    if (fontFamily != null) {
+      $(obj).css('font-family', fontFamily);
+    }
+
+    if (fontSize != null) {
+      $(obj).css('font-size', fontSize);
+    }
+
+    if (cursorWidth != NaN && offset != NaN) {
+      $(obj).css('margin-left', cursorWidth * offset);
+    }
+  }
+
   $.fn.lyricsLine = function (command, option, value) {
     if (command == undefined || _typeof(command) == 'object') {
       return $(this).each(function () {
@@ -3893,23 +3981,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var settings = $.extend({}, defaults, command);
         $(self).data('lyricsLine-options', settings);
         processLine(self);
-
-        if (settings.fontFamily != '') {
-          $(self).css('font-family', settings.fontFamily);
-        }
-
-        if (settings.fontSize != '') {
-          $(self).css('font-size', settings.fontSize);
-        }
-
-        if (settings.cursorWidth != NaN && settings.offset != NaN) {
-          $(self).css('margin-left', settings.cursorWidth * settings.offset);
-        }
+        updateDisplay(self);
       });
     }
 
     if (typeof command == 'string') {
       switch (command.toLowerCase()) {
+        case 'option':
+          if (typeof option != 'string') return this;
+
+          if (value != undefined) {
+            return $(this).each(function () {
+              setOption(this, option, value);
+            });
+          }
+
+          return getOption(this, option);
+
         case 'addspacer':
           return $(this).each(function () {
             addSpacer(this, option, value);
@@ -3931,6 +4019,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         case 'processline':
           return $(this).each(function () {
             processLine(this);
+          });
+
+        case 'updatedisplay':
+          return $(this).each(function () {
+            updateDisplay(this);
           });
       }
     }

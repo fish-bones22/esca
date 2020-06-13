@@ -9,10 +9,10 @@ require('../utilities/chordProcessor');
 require('../utilities/lyricsLine');
 require('../utilities/chordsLine');
 require('../utilities/chordMarker');
-
-import { v4 as uuidv4 } from 'uuid';
+require('./options');
 
 var songMainKey = '.songkey';
+var songMainScale = '.songscale';
 var songsContainer = '.songs-container';
 var songItemTemplate = '.song-item-template';
 var songTitlePanel = '.song-name';
@@ -27,6 +27,7 @@ var songLineModulationInfo = '.songline-modulation-info';
 var chordsLine = '.chords';
 var lyricsContentLine = '.lyrics-content'
 var lyricsDisplayLine = '.lyrics-display';
+var songControl = '.songs-control';
 var nextSongControl = '.next-song-container';
 var previousSongControl = '.prev-song-container';
 var allSongsPanel = '.songlist-expanded';
@@ -36,23 +37,34 @@ var sequenceListPanel = '.sequence-list';
 var sequenceList = '.sequence-list-body';
 var sequenceListToggler = '.sequence-list-options';
 var currentSequenceDisplay = '.current-sequence-display';
+var sequencesQuickControl = '.quick-control';
 var nextSequenceControl = '.quick-control .next';
 var prevSequenceControl = '.quick-control .prev';
+var sequenceControl = '.sequence-controls';
+var totalSequences = '.total-sequences';
+var currentSequenceOrder = '.current-sequence-order';
 var loadingScreen = '.loading-panel';
+var optionsToggler = '.options-toggler';
+var optionsPanel = '.options-panel';
 
+var simpleFontSize = '16px';
 var monospaceFontSize = '26px';
 var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
 var monospaceWidth = 0;
 var monospaceHeight = 0;
+var displayFontSize = '36px';
+var displayFontFamily = '"Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif';
+var displayAlignment = 'center';
+var displayColor = 'red';
 
 $(function() {
-    getPageDimensions();
 
     // Loading screen
     $(loadingScreen).loadingScreen();
 
     $(songsContainer).songsContainer({
         'keySelector': songMainKey,
+        'scaleSelector': songMainScale,
         'key': 'C',
         'scale': 'major',
         'songItemTemplate': songItemTemplate,
@@ -72,18 +84,31 @@ $(function() {
         'cursorWidth': monospaceWidth,
         'fontSize': monospaceFontSize,
         'fontFamily': monospaceFontFamily,
+        'displayFontSize': displayFontSize,
+        'displayFontFamily': displayFontFamily,
+        'displayAlignment': displayAlignment,
+        'displayColor': displayColor,
+        'simpleFontSize': simpleFontSize,
         'mode': 'performance',
         'nextSongControl': nextSongControl,
         'previousSongControl': previousSongControl,
+        'songControl': songControl,
         'allSongsPanel': allSongsPanel,
         'allSongsButton': allSongsButton,
         'allSongsList': allSongsList,
+        'sequenceControl': sequenceControl,
         'sequenceListPanel': sequenceListPanel,
         'sequenceList': sequenceList,
         'sequenceListToggler': sequenceListToggler,
+        'sequencesQuickControl': sequencesQuickControl,
         'currentSequenceDisplay': currentSequenceDisplay,
+        'totalSequences': totalSequences,
+        'currentSequenceOrder': currentSequenceOrder,
         'nextSequenceControl': nextSequenceControl,
         'prevSequenceControl': prevSequenceControl,
+        'optionsPanel': optionsPanel,
+        'optionsToggler': optionsToggler,
+        'loadingScreen': loadingScreen
     });
 
     getSongs(['0e987bb3-5e32-41c7-b0a8-4e5b4866420b', '611c3248-7326-448b-b66c-5199f9009dc8']);
@@ -113,19 +138,4 @@ function getSongs(songIds) {
     }).then(function() {
         $(loadingScreen).loadingScreen('hide');
     })
-}
-
-function getPageDimensions() {
-    // Get width of a single monospace
-    var unique = uuidv4();
-    var spanTest = $('<span>')
-    .addClass(unique)
-    .css('font-family', monospaceFontFamily)
-    .css('font-size', monospaceFontSize)
-    .css('position', 'absolute')
-    .html('&nbsp;');
-    $('body').append(spanTest);
-    monospaceWidth = spanTest.width();
-    monospaceHeight = spanTest.height();
-    $('.' + unique).remove();
 }

@@ -1,19 +1,72 @@
-.songs-container {
+.song-viewer {
     &.performance {
-        .song-item {
-            background-color: $dim;
-            padding: 60px 0 42% 0;
-            .song-details {
-                left: 0;
-                position: fixed;
-                top: 0;
-                transition: box-shadow 200ms ease-in-out;
-                &.scrolling {
-                    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+        .songs-container {
+            .song-item {
+                background-color: $dim;
+                padding: 60px 0 42% 0;
+                .song-details {
+                    font-family: 'Consolas', 'Courier New', Courier, monospace;
+                    font-size: 16px;
+                    left: 0;
+                    line-height: 1em;
+                    position: fixed;
+                    top: 0;
+                    transition: box-shadow 200ms ease-in-out;
+                    &.scrolling {
+                        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+                    }
+                    .song-name, .song-artist {
+                        text-transform: uppercase;
+                    }
                 }
             }
         }
     }
+    &.audience {
+        .songs-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            .song-item {
+                margin: auto;
+                .song-details {
+                    bottom: 0;
+                    display: block;
+                    left: 0;
+                    position: fixed;
+                    width: auto;
+                    .basic-details {
+                        font-size: 22px;
+                        line-height: 1em;
+                        margin-bottom: 10px;
+                    }
+                    .musical-details {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+    &.simple {
+        .songs-container {
+            .song-item {
+                padding: 20px 0 42% 0;
+                .song-details {
+                    font-family: 'Consolas', 'Courier New', Courier, monospace;
+                    font-size: 12px;
+                    left: 0;
+                    line-height: 1em;
+                    position: absolute;
+                    top: 0;
+                    .song-name, .song-artist {
+                        text-transform: uppercase;
+                    }
+                }
+            }
+        }
+    }
+}
+.songs-container {
     .song-item {
         margin: 20px 0;
         display: none;
@@ -24,33 +77,31 @@
             background-color: white;
             box-shadow: none;
             display: flex;
-            font-family: 'Consolas', 'Courier New', Courier, monospace;
-            font-size: 16px;
-            line-height: 1em;
             padding: 5px 0;
             width: 100%;
             z-index: 9;
             .musical-details {
                 margin-left: auto;
-                margin-right: 30px;
+                margin-right: 50px;
                 select {
+                    appearance: none;
                     border: none;
-                    float: right;
                     font-size: 18px;
                     margin-top: 3px;
+                    padding-right: 0;
                     -moz-appearance: none;
                     -webkit-appearance: none;
-                    appearance: none;
                     &:hover:not(:focus) {
                         background-color: $dimmer;
                     }
                 }
+                .songscale {
+                    font-size: 18px;
+                    margin-top: 3px;
+                }
             }
             .basic-details {
                 margin-left: 30px;
-                .song-name, .song-artist {
-                    text-transform: uppercase;
-                }
                 .song-name {
                     font-weight: 600;
                 }

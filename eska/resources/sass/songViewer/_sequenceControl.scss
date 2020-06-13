@@ -36,7 +36,7 @@
         }
         .content {
             margin: 40px 20px 20px 20px;
-            max-height: 70vh;
+            max-height: 68vh;
             overflow-y: auto;
             .sequence-list-body {
                 .sequence-list-item {
@@ -54,6 +54,56 @@
                     }
                 }
             }
+        }
+    }
+}
+.song-viewer.performance {
+    .sequence-controls {
+        .sequence-summary {
+            display: none;
+        }
+    }
+}
+.song-viewer.audience {
+    .sequence-controls {
+        .sequence-summary {
+            color: $dark;
+            display: block;
+            font-weight: 600;
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+        }
+    }
+}
+
+.song-viewer.simple {
+    .sequence-controls {
+        .sequence-list {
+            .content {
+                margin: 20px;
+                max-height: 68vh;
+                overflow-y: auto;
+                .sequence-list-body {
+                    .sequence-list-item {
+                        background-color: white;
+                        color: black;
+                        cursor: default;
+                        margin: 0 10px;
+                        padding: 0 10px;
+                        &.current {
+                            background-color: $accent;
+                            color: white;
+                        }
+                        &:hover:not(.current) {
+                            background-color: white;
+                        }
+                    }
+                }
+            }
+        }
+        .sequence-summary {
+            display: none;
         }
     }
 }

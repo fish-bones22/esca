@@ -74,6 +74,43 @@
             'modulation': function() { return getOption(obj, 'modulation')},
             'editable': false
         });
+        $(obj).find(getOption(obj, 'lyricsDisplayLine')).html(songLine[2])
+        .css('font-size', getOption(obj,'displayFontSize'))
+        .css('font-family', getOption(obj,'displayFontFamily'))
+        .css('text-align', getOption(obj,'displayAlignment'))
+        .css('color', getOption(obj,'displayColor'));
+    }
+
+    function updateDisplay(obj) {
+        var mode = getOption(obj, 'mode');
+        var fontSize = getOption(obj, 'fontSize');
+        var simpleFontSize = getOption(obj, 'simpleFontSize');
+        var fontFamily = getOption(obj, 'fontFamily');
+        var displayFontSize = getOption(obj, 'displayFontSize');
+        var displayFontFamily = getOption(obj, 'displayFontFamily');
+        var displayAlignment = getOption(obj, 'displayAlignment');
+        var displayColor = getOption(obj, 'displayColor');
+        var lineHeight = getOption(obj, 'lineHeight');
+        var cursorWidth = getOption(obj, 'cursorWidth');
+
+        var lyricsContentLine = $(obj).find(getOption(obj, 'lyricsContentLine'));
+        lyricsContentLine.lyricsLine('option', 'fontSize', mode == 'performance' ? fontSize : simpleFontSize);
+        lyricsContentLine.lyricsLine('option', 'fontFamily', fontFamily);
+        lyricsContentLine.lyricsLine('option', 'cursorWidth', cursorWidth);
+        lyricsContentLine.lyricsLine('updateDisplay');
+
+        var chordsLine = $(obj).find(getOption(obj, 'chordsLine'));
+        chordsLine.chordsLine('option', 'fontSize', mode == 'performance' ? fontSize : simpleFontSize);
+        chordsLine.chordsLine('option', 'fontFamily', fontFamily);
+        chordsLine.chordsLine('option', 'height', lineHeight);
+        chordsLine.chordsLine('option', 'cursorWidth', cursorWidth);
+        chordsLine.chordsLine('updateDisplay');
+
+        $(obj).find(getOption(obj, 'lyricsDisplayLine'))
+        .css('font-size', displayFontSize)
+        .css('font-family', displayFontFamily)
+        .css('text-align', displayAlignment)
+        .css('color',displayColor);
     }
 
     $.fn.songLine = function(command, option, value) {
@@ -100,7 +137,8 @@
                         setValue(this, option);
                     });
                 case 'option':
-                    if (typeof value == 'string') {
+                    if (typeof option != 'string') return this;
+                    if (value != undefined) {
                         return $(this).each(function() {
                             setOption(this, option, value);
                         })
@@ -113,6 +151,10 @@
                 case 'updatemodulation':
                     return $(this).each(function() {
                         $(this).find('.chords').chordsLine('update');
+                    });
+                case 'updatedisplay':
+                    return $(this).each(function() {
+                        updateDisplay(this);
                     });
             }
         }

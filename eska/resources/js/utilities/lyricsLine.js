@@ -26,6 +26,18 @@
     }
 
     /**
+     * Set option value
+     * @param {Object} obj
+     * @param {String} option
+     * @param {any} value
+     */
+    function setOption(obj, option, value) {
+        var options = $(obj).data('lyricsLine-options');
+        options[option] = value;
+        $(obj).data('lyricsLine-options', options);
+    }
+
+    /**
      * Add spacer next to this character
      * @param {object} obj
      * @param {number} width Width of the spacer
@@ -151,6 +163,25 @@
 
     }
 
+    function updateDisplay(obj) {
+
+        var fontFamily = getOption(obj, 'fontFamily');
+        var fontSize = getOption(obj, 'fontSize');
+        var cursorWidth = getOption(obj, 'cursorWidth');
+        var offset = getOption(obj, 'offset');
+
+        if (fontFamily != null) {
+            $(obj).css('font-family', fontFamily);
+        }
+        if (fontSize != null) {
+            $(obj).css('font-size', fontSize);
+        }
+
+        if (cursorWidth != NaN && offset != NaN) {
+            $(obj).css('margin-left', cursorWidth * offset);
+        }
+    }
+
     $.fn.lyricsLine = function(command, option, value) {
 
 
@@ -163,22 +194,21 @@
                 $(self).data('lyricsLine-options', settings);
 
                 processLine(self);
-
-                if (settings.fontFamily != '') {
-                    $(self).css('font-family', settings.fontFamily);
-                }
-                if (settings.fontSize != '') {
-                    $(self).css('font-size', settings.fontSize);
-                }
-                if (settings.cursorWidth != NaN && settings.offset != NaN) {
-                    $(self).css('margin-left', settings.cursorWidth * settings.offset);
-                }
+                updateDisplay(self);
             });
 
         }
 
         if (typeof command == 'string') {
             switch(command.toLowerCase()) {
+                case 'option':
+                    if (typeof option != 'string') return this;
+                    if (value != undefined) {
+                        return $(this).each(function() {
+                            setOption(this, option, value);
+                        });
+                    }
+                    return getOption(this, option);
                 case 'addspacer':
                     return $(this).each(function() {
                             addSpacer(this, option, value);
@@ -196,7 +226,11 @@
                 case 'processline':
                     return $(this).each(function() {
                         processLine(this);
-                    })
+                    });
+                case 'updatedisplay':
+                    return $(this).each(function() {
+                        updateDisplay(this);
+                    });
             }
         }
     }

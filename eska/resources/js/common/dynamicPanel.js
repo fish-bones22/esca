@@ -288,7 +288,7 @@ $.fn.dynamicPanel = function(command, option, val) {
                     if (clipboardData == undefined) return true;
                     // Split clipboard data by newline
                     var lines = clipboardData.split('\n');
-                    if (lines == undefined || lines.length <= 0) return true;
+                    if (lines == undefined || lines.length <= 1) return true;
                     event.preventDefault();
                     // Process clipboard data, creating new panel per line of text
                     let panelInput = $(this);

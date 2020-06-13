@@ -1,0 +1,18 @@
+nav {
+    display: flex;
+    height: 0;
+    position: fixed;
+    width: 100%;
+    z-index: 99;
+    .rightside-menu {
+        margin-left: auto;
+        .options-toggler {
+            color: $dimmer;
+            margin: 4px;
+            padding: 3px 6px;
+            &:hover {
+                color: $dark;
+            }
+        }
+    }
+}

@@ -142,6 +142,33 @@
         updateModulationInfo(obj);
     }
 
+    function updateDisplay(obj) {
+
+        var mode = getOption(obj, 'mode');
+        var fontSize = getOption(obj, 'fontSize');
+        var simpleFontSize = getOption(obj, 'simpleFontSize');
+        var fontFamily = getOption(obj, 'fontFamily');
+        var displayFontSize = getOption(obj, 'displayFontSize');
+        var displayFontFamily = getOption(obj, 'displayFontFamily');
+        var displayAlignment = getOption(obj, 'displayAlignment');
+        var displayColor = getOption(obj, 'displayColor');
+        var lineHeight = getOption(obj, 'lineHeight');
+        var cursorWidth = getOption(obj, 'cursorWidth');
+
+        $(obj).find('.songline-item').each(function() {
+            $(this).songLine('option', 'mode', mode);
+            $(this).songLine('option', 'lineHeight', lineHeight);
+            $(this).songLine('option', 'cursorWidth', cursorWidth);
+            $(this).songLine('option', 'fontSize', fontSize);
+            $(this).songLine('option', 'fontFamily', fontFamily);
+            $(this).songLine('option', 'simpleFontSize', simpleFontSize);
+            $(this).songLine('option', 'displayFontSize', displayFontSize);
+            $(this).songLine('option', 'displayFontFamily', displayFontFamily);
+            $(this).songLine('option', 'displayAlignment', displayAlignment);
+            $(this).songLine('option', 'displayColor', displayColor);
+            $(this).songLine('updateDisplay');
+        });
+    }
 
     $.fn.songPart = function(command, option, value) {
 
@@ -168,6 +195,11 @@
                             'lyricsDisplayLine': settings.lyricsDisplayLine,
                             'fontSize': settings.fontSize,
                             'fontFamily': settings.fontFamily,
+                            'displayFontSize': settings.displayFontSize,
+                            'displayFontFamily': settings.displayFontFamily,
+                            'displayAlignment': settings.displayAlignment,
+                            'displayColor': settings.displayColor,
+                            'simpleFontSize': settings.simpleFontSize,
                             'lineHeight': settings.lineHeight,
                             'cursorWidth': settings.cursorWidth,
                             'songModulation': settings.songModulation,
@@ -192,7 +224,7 @@
                     });
 
                 case 'option':
-                    if (typeof value == 'string') {
+                    if (value != undefined) {
                         return $(this).each(function() {
                             setOption(this, option, value);
                         })
@@ -202,6 +234,10 @@
                 case 'update':
                     return $(this).each(function() {
                         update(this);
+                    });
+                case 'updatedisplay':
+                    return $(this).each(function() {
+                        updateDisplay(this);
                     });
             }
         }

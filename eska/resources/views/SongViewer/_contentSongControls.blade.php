@@ -1,4 +1,4 @@
-<div class="songs-control">
+<div class="songs-control" style="display: none">
     <div class="next-song-container song-control-container" style="display: none">
         <div class="song-control-details" id="nextSongDetails">
             <div class="song-title"></div>
@@ -7,7 +7,7 @@
         <button class="btn-primary trigger"><span class="material-icons">navigate_next</span></button>
     </div>
     <div class="songs-control-options">
-        <button style="display: none"><span class="material-icons">more_vert</span></button>
+        <button><span class="material-icons">more_vert</span></button>
     </div>
     <div class="prev-song-container song-control-container" style="display: none">
         <button class="btn-primary trigger"><span class="material-icons">navigate_before</span></button>

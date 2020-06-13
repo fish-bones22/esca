@@ -7,6 +7,7 @@
             </div>
             <div class="musical-details">
                 <x-key-selector class='songkey' />
+                <span class="songscale"></span>
             </div>
         </div>
         <div class="songparts-container"></div>

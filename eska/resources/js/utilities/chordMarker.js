@@ -143,6 +143,11 @@
         setOption(obj, 'remainSelected', false);
     }
 
+    function updatePosition(obj) {
+
+        $(obj).css('left', getOption(obj, 'leftOffset'));
+    }
+
     /**
      * Unselect all selected chords markers
      */
@@ -166,28 +171,34 @@
                 // Set up attributes
                 $(self).addClass('chord').html('&nbsp;');
 
-                    // Set up draggable
-                    $(self).draggable({
-                        axis: 'x',
-                        addClasses: false,
-                        containment: 'parent',
-                        grid:[settings.dragSnap, 0],
-                        disabled: !settings.editable,
-                        create: function(ev, ui) {
-                            $(self).removeAttr('style')
-                            .css('left', settings.leftOffset)
-                            .css('position', 'absolute')
-                            .attr('data-position', Math.round(settings.leftOffset/settings.dragSnap));
-                        },
-                        stop: function(ev, ui) {
-                            let diff = $(self).position().left;
-                            let snapPos = Math.round(diff / settings.dragSnap);
-                            $(self).removeAttr('style')
-                            .css('left', snapPos * settings.dragSnap)
-                            .attr('data-position', snapPos);
-                            $(self).trigger('chordMarker:dragstop', [$(self)]);
-                        }
-                    });
+                var position =  settings.position;
+                if (settings.position != null) {
+                    position = Math.round(settings.leftOffset/settings.dragSnap);
+                    setOption(self, 'position', position);
+                }
+
+                // Set up draggable
+                $(self).draggable({
+                    axis: 'x',
+                    addClasses: false,
+                    containment: 'parent',
+                    grid:[settings.dragSnap, 0],
+                    disabled: !settings.editable,
+                    create: function(ev, ui) {
+                        $(self).removeAttr('style')
+                        .css('left', settings.leftOffset)
+                        .css('position', 'absolute')
+                        .attr('data-position', position);
+                    },
+                    stop: function(ev, ui) {
+                        let diff = $(self).position().left;
+                        let snapPos = Math.round(diff / settings.dragSnap);
+                        $(self).removeAttr('style')
+                        .css('left', snapPos * settings.dragSnap)
+                        .attr('data-position', snapPos);
+                        $(self).trigger('chordMarker:dragstop', [$(self)]);
+                    }
+                });
 
                 if (settings.editable) {
                     // Events
@@ -268,7 +279,7 @@
                     });
                 case 'option':
                     if (typeof option != 'string') return null;
-                    if (typeof value == 'string') {
+                    if (value != undefined) {
                         return $(this).each(function() {
                             setOption(this, option, value);
                         });
@@ -276,6 +287,10 @@
                     return getOption(this, option);
                 case 'getmodulationamount':
                     return getModulationAmount(this);
+                case 'updateposition':
+                    return $(this).each(function() {
+                        updatePosition(this);
+                    });
             }
         }
 

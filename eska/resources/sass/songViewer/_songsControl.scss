@@ -49,49 +49,45 @@
             }
         }
     }
-    &.audience {
-        display: none;
-    }
+}
 
-
-    .songlist-expanded {
-        background-color: white;
-        border: 1px solid $dark;
-        min-width: 200px;
-        padding: 10px;
-        position: fixed;
-        width: fit-content;
-        .content {
-            margin: 30px 10px 0 10px;
-            max-height: 80vh;
-            overflow-y: auto;
-            .songlist-body {
-                .songlist-item {
-                    background-color: $dimmer;
-                    font-family: 'Consolas', 'Courier New', Courier, monospace;
-                    font-size: 16px;
-                    line-height: 1em;
-                    text-transform: uppercase;
-                    margin-bottom: 10px;
-                    padding: 10px 20px;
-                    cursor: pointer;
-                    &.current {
-                        background-color: $accent;
-                        color: white;
-                        cursor: default;
-                    }
-                    &:hover:not(.current) {
-                        background-color: $dark;
-                    }
-                    .song-title {
-                        font-weight: 600;
-                    }
-                    .song-artist {
-                        font-style: italic;
-                    }
+.songlist-expanded {
+    background-color: white;
+    border: 1px solid $dark;
+    min-width: 200px;
+    padding: 10px;
+    position: fixed;
+    width: fit-content;
+    .content {
+        margin: 30px 10px 0 10px;
+        max-height: 80vh;
+        overflow-y: auto;
+        .songlist-body {
+            .songlist-item {
+                background-color: $dimmer;
+                font-family: 'Consolas', 'Courier New', Courier, monospace;
+                font-size: 16px;
+                line-height: 1em;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+                padding: 10px 20px;
+                cursor: pointer;
+                &.current {
+                    background-color: $accent;
+                    color: white;
+                    cursor: default;
+                }
+                &:hover:not(.current) {
+                    background-color: $dark;
+                }
+                .song-title {
+                    font-weight: 600;
+                }
+                .song-artist {
+                    font-style: italic;
                 }
             }
         }
     }
-
 }
+

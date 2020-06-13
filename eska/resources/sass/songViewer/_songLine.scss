@@ -5,3 +5,37 @@
         }
     }
 }
+
+.song-viewer.performance {
+    .songlines-container {
+        .songline-item {
+            .lyrics-display {
+                display: none;
+            }
+        }
+    }
+}
+.song-viewer.audience {
+    .songlines-container {
+        .songline-item {
+            .lyrics-content, .chords {
+                display: none;
+            }
+            .songline-modulation-info {
+                display: none!important;
+            }
+        }
+    }
+}
+.song-viewer.simple {
+    .songlines-container {
+        .songline-item {
+            .lyrics-display {
+                display: none;
+            }
+            .songline-modulation-info {
+                font-size: 10px;
+            }
+        }
+    }
+}

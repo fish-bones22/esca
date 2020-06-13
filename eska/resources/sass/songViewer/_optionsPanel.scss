@@ -1,0 +1,89 @@
+.options-panel {
+    background-color: white;
+    border: 1px solid $dark;
+    display: none;
+    height: 100%;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: fit-content;
+    z-index: 99;
+    &.shown {
+        display: block;
+    }
+    .close {
+        margin: 3px;
+    }
+    .content {
+        margin: 20px;
+        .header {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .body {
+            margin: 15px 0 20px 0;
+        }
+        .section {
+            border: 1px solid $dark;
+            width: 300px;
+            .section-tab {
+                border-bottom: none;
+                padding: 5px 10px 8px 10px;
+                button {
+                    padding-top: 0;
+                }
+                .fold {
+                    display: none;
+                }
+                .expand {
+                    display: block;
+                }
+            }
+            &.expanded {
+                .section-tab {
+                    border-bottom: 1px solid $dark;
+                    .fold {
+                        display: block;
+                    }
+                    .expand {
+                        display: none;
+                    }
+                }
+                .section-content {
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+            }
+            .section-content {
+                display: none;
+                padding: 10px;
+                .option-item {
+                    cursor: pointer;
+                    display: flex;
+                    flex-direction: column;
+                    padding: 5px 10px;
+                    margin: 0 10px 10px 10px;
+                    &.selected {
+                        background-color: $accent;
+                        color: white;
+                        cursor: default;
+                    }
+                    &:hover:not(.selected) {
+                        background-color: $dimmer;
+                    }
+                    .thumbnail {
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        height: 80px;
+                        width: 100px;
+                        img {display: none;}
+                    }
+                    .text {
+                        margin: auto;
+                    }
+                }
+            }
+        }
+    }
+}

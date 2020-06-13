@@ -76,13 +76,14 @@
      * @param {number} modulation modulation of the chord
      * @param {string} value chord value with parts delimited by /
      */
-    function insertChordMarker(obj, width, position, scale, modulation = 0, value = null) {
+    function insertChordMarker(obj, width, leftOffset, position, scale, modulation = 0, value = null) {
         $('<span>').chordMarker({
             'spacing': getOption(obj, 'spacing'),
             'chordBuilder': getOption(obj, 'chordBuilder'),
             'contextMenu': getOption(obj, 'contextMenu'),
             'dragSnap': width,
-            'leftOffset': position,
+            'leftOffset': leftOffset,
+            'position': position,
             'key': getOption(obj, 'key'),
             'mainScale': getOption(obj, 'mainScale'),
             'songPartScale': getOption(obj, 'songPartScale'),
@@ -148,7 +149,7 @@
             var variation = chordPart[5];
             var variation2 = chordPart[6];
             var bass = chordPart[7];
-            insertChordMarker(obj, getOption(obj, 'cursorWidth'), position*getOption(obj, 'cursorWidth'), scale, keyReference, [measure, root, variation, variation2, bass].join('/'));
+            insertChordMarker(obj, getOption(obj, 'cursorWidth'), position*getOption(obj, 'cursorWidth'), position, scale, keyReference, [measure, root, variation, variation2, bass].join('/'));
         });
     }
 
@@ -247,6 +248,33 @@
         }
     }
 
+    function updateDisplay(obj) {
+
+        var fontFamily = getOption(obj, 'fontFamily');
+        var fontSize = getOption(obj, 'fontSize');
+        var height = getOption(obj, 'height');
+        var cursorWidth = getOption(obj, 'cursorWidth')*1;
+
+        if (fontFamily != null) {
+            $(obj).css('font-family', fontFamily);
+        }
+        if (fontSize != null) {
+            $(obj).css('font-size', fontSize);
+        }
+        if (fontSize != null) {
+            $(obj).css('font-size', fontSize);
+        }
+        if (height != null) {
+            $(obj).css('height', height)
+        }
+        $(obj).find('.chord').each(function() {
+            var pos = $(this).chordMarker('option', 'position');
+
+            $(this).chordMarker('option', 'leftOffset', pos * cursorWidth);
+            $(this).chordMarker('option', 'dragSnap', cursorWidth);
+            $(this).chordMarker('updatePosition');
+        });
+    }
 
     $.fn.chordsLine = function(command, option, value) {
 
@@ -273,7 +301,7 @@
                     // Get position of cursor
                     let position = cursor.position().left;
                     let parent = cursor.parent();
-                    insertChordMarker(self, settings.cursorWidth, position, typeof settings.scale == 'function' ? settings.scale() : settings.scale);
+                    insertChordMarker(self, settings.cursorWidth, position, null, typeof settings.scale == 'function' ? settings.scale() : settings.scale);
                     // Sort chords line
                     sortChordMarkers(parent[0]);
                 });
@@ -296,27 +324,27 @@
                     $(self).off('mousemove');
                 });
 
-                // Set chords line attributes
-                $(self).css('height', settings.height)
-                .addClass('chordsLine-processed');
+                $(self).addClass('chordsLine-processed');
 
                 changeScale(self, typeof settings.songPartScale == 'function' ? settings.songPartScale() : settings.songPartScale);
 
                 if (settings.value != '') {
                     setValue(self, settings.value);
                 }
-
-                if (settings.fontFamily != '') {
-                    $(self).css('font-family', settings.fontFamily);
-                }
-                if (settings.fontSize != '') {
-                    $(self).css('font-size', settings.fontSize);
-                }
+                updateDisplay(self);
              });
         }
 
         if (typeof command == 'string') {
             switch (command.toLocaleLowerCase()) {
+                case 'option':
+                    if (typeof option != 'string') return this;
+                    if (value != undefined) {
+                        return $(this).each(function() {
+                            setOption(this, option, value);
+                        });
+                    }
+                    return getOption(this, option);
                 case 'setvalue':
                     if (typeof option != 'string') return this;
                     return $(this).each(function() {
@@ -342,6 +370,10 @@
                 case 'update':
                     return $(this).each(function() {
                         setModulationInfo(this);
+                    });
+                case 'updatedisplay':
+                    return $(this).each(function() {
+                        updateDisplay(this);
                     });
             }
         }

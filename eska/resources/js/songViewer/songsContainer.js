@@ -1,3 +1,6 @@
+
+import { v4 as uuidv4 } from 'uuid';
+
 (function($) {
 
     var defaults = {
@@ -42,6 +45,20 @@
     }
 
     /**
+     * Set option value
+     * @param {Object} object
+     * @param {String} key
+     * @param {String} value
+     */
+    function setOption(object, key, value) {
+        var options = $(object).data('songsContainer-options');
+
+        options[key] = value;
+
+        $(object).data('songsContainer-options', options);
+    }
+
+    /**
      * Set song as selected
      * @param {object} obj
      * @param {number} index Index of the song from the set (0-based)
@@ -57,8 +74,6 @@
         if (nextSongControl.length > 0) nextSongControl.hide();
         if (previousSongControl.length > 0) previousSongControl.hide();
 
-        if ($(getOption(obj, 'allSongsButton')).is(':hidden'))
-            $(getOption(obj, 'allSongsButton')).show();
 
         if (selectedSong.length <= 0) return;
 
@@ -80,6 +95,8 @@
         // Set the first song-part from the song as selected
         selectedSong.songItem('setSequenceList');
         selectedSong.songItem('setCurrentSongPart', 0);
+
+        update(obj);
     }
 
 
@@ -140,6 +157,57 @@
         setCurrent(obj, 0);
     }
 
+    function update(obj) {
+
+        var mode = getOption(obj, 'mode');
+
+        $(obj).parent().removeClass('performance')
+        .removeClass('audience')
+        .removeClass('simple')
+        .addClass(mode);
+
+        // Show song list controls
+        var songControl = $(getOption(obj, 'songControl'));
+
+        if (mode == 'performance' || mode == 'simple' && songControl.length > 0) {
+            songControl.show();
+        } else if (songControl.is(':visible')) {
+            songControl.hide();
+        }
+
+        getDimensions(obj);
+
+        // Set new values
+        $(obj).find('.song-item').songItem('option', 'mode', mode);
+        $(obj).find('.song-item').songItem('option', 'lineHeight', getOption(obj, 'lineHeight'));
+        $(obj).find('.song-item').songItem('option', 'cursorWidth', getOption(obj, 'cursorWidth'));
+        $(obj).find('.song-item').songItem('option', 'fontSize', getOption(obj, 'fontSize'));
+        $(obj).find('.song-item').songItem('option', 'simpleFontSize', getOption(obj, 'simpleFontSize'));
+        $(obj).find('.song-item').songItem('option', 'displayFontSize', getOption(obj, 'displayFontSize'));
+        $(obj).find('.song-item').songItem('option', 'displayFontFamily', getOption(obj, 'displayFontFamily'));
+        $(obj).find('.song-item').songItem('option', 'displayAlignment', getOption(obj, 'displayAlignment'));
+        $(obj).find('.song-item').songItem('option', 'displayColor', getOption(obj, 'displayColor'));
+        $(obj).find('.song-item').songItem('update');
+    }
+
+    function getDimensions(obj) {
+
+        var mode = getOption(obj, 'mode');
+
+        // Get width of a single monospace
+        var unique = uuidv4();
+        var spanTest = $('<span>')
+        .addClass(unique)
+        .css('font-family', getOption(obj, 'fontFamily'))
+        .css('font-size', mode == 'performance' ?  getOption(obj, 'fontSize') :  getOption(obj, 'simpleFontSize'))
+        .css('position', 'absolute')
+        .html('&nbsp;');
+        $('body').append(spanTest);
+        setOption(obj, 'cursorWidth', spanTest.width());
+        setOption(obj, 'lineHeight', spanTest.height());
+        $('.' + unique).remove();
+    }
+
     $.fn.songsContainer = function(command, option, value) {
 
         if (command == undefined || typeof command == 'object') {
@@ -148,6 +216,11 @@
 
                 var self = this;
                 var settings = $.extend({}, defaults, command);
+                $(self).data('songsContainer-options', settings);
+
+                getDimensions(self);
+
+                settings = $(self).data('songsContainer-options');
 
                 // Initialize dynamicpanel
                 $(self).dynamicPanel({
@@ -158,6 +231,7 @@
                         // Initialize song panels
                         panel.songItem({
                             'keySelector': settings.keySelector,
+                            'scaleSelector': settings.scaleSelector,
                             'songTitlePanel': settings.songTitlePanel,
                             'songArtistPanel': settings.songArtistPanel,
                             'songPartsContainer': settings.songPartsContainer,
@@ -172,15 +246,24 @@
                             'lyricsDisplayLine': settings.lyricsDisplayLine,
                             'fontSize': settings.fontSize,
                             'fontFamily': settings.fontFamily,
+                            'displayFontSize': settings.displayFontSize,
+                            'displayFontFamily': settings.displayFontFamily,
+                            'displayAlignment': settings.displayAlignment,
+                            'displayColor': settings.displayColor,
+                            'simpleFontSize': settings.simpleFontSize,
                             'lineHeight': settings.lineHeight,
                             'cursorWidth': settings.cursorWidth,
                             'mode': settings.mode,
+                            'sequenceControl': settings.sequenceControl,
                             'sequenceListPanel': settings.sequenceListPanel,
                             'sequenceList': settings.sequenceList,
                             'sequenceListToggler': settings.sequenceListToggler,
                             'currentSequenceDisplay': settings.currentSequenceDisplay,
                             'nextSequenceControl': settings.nextSequenceControl,
                             'prevSequenceControl': settings.prevSequenceControl,
+                            'sequencesQuickControl': settings.sequencesQuickControl,
+                            'totalSequences': settings.totalSequences,
+                            'currentSequenceOrder': settings.currentSequenceOrder,
                         });
                     }
                 });
@@ -203,20 +286,28 @@
                     'panelTemplate': $(settings.sequenceList).html(),
                     'onInsert': function(event, panel) {
                         panel.on('click', function() {
-                            $('.song-item.current').songItem('setCurrentSongPart', panel.attr('data-order')*1-1, false);
+                            $(self).find('.song-item.current').songItem('setCurrentSongPart', panel.attr('data-order')*1-1, false);
                         })
                     }
                 });
 
                 // Set keyboard
                 $(document).on('keyup', function(event) {
-                    if (event.which == 37) {
+                    if (event.which == 37 || event.which == 65) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         $(settings.previousSongControl).find('.trigger').trigger('click');
-                    } else if (event.which == 39) {
+                    } else if (event.which == 39 || event.which == 68) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         $(settings.nextSongControl).find('.trigger').trigger('click');
-                    } else if (event.which == 38 && $(settings.prevSequenceControl).is(':visible')) {
+                    } else if (event.which == 38 || event.which == 87) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         $(settings.prevSequenceControl).trigger('click');
-                    } else if (event.which == 40 && $(settings.nextSequenceControl).is(':visible')) {
+                    } else if (event.which == 40 || event.which == 83) {
+                        event.preventDefault();
+                        event.stopPropagation();
                         $(settings.nextSequenceControl).trigger('click');
                     }
                 });
@@ -271,7 +362,25 @@
                     $(settings.sequenceListPanel).removeClass('expanded');
                 });
 
-                $(self).data('songsContainer-options', settings);
+                // Set up options panel listeners
+                $(settings.optionsPanel).optionsPanel({
+                    'toggler': settings.optionsToggler,
+                    'listeners': [
+                        {
+                            'event': 'change',
+                            'target': '#optionView',
+                            'action': function(event) {
+
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'mode', $(event.target).val());
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('hide');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        }
+                    ]
+                });
+
                 $(self).addClass(settings.mode);
             });
         }
