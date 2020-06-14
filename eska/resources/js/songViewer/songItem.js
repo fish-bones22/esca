@@ -70,14 +70,11 @@
         if (song.hasOwnProperty('title')) {
             var elem = $(obj).find(getOption(obj, 'songTitlePanel')).text(song.title);
             if (mode == 'audience') {
-                setDisplayCss(obj, elem);
+                setDisplayCss(obj, elem.parent());
             }
         }
         if (song.details.hasOwnProperty('artist')) {
             elem = $(obj).find(getOption(obj, 'songArtistPanel')).text(song.details.artist);
-            if (mode == 'audience') {
-                setDisplayCss(obj, elem);
-            }
         }
         if (song.hasOwnProperty('key')) {
             setOption(obj, 'key', song.key);
@@ -96,7 +93,7 @@
     }
 
     function setDisplayCss(obj, element) {
-        var fontFamily = getOption(obj, 'displayfontFamily');
+        var fontFamily = getOption(obj, 'displayFontFamily');
         var displayColor = getOption(obj, 'displayColor');
 
         element.css('font-family', fontFamily)
@@ -232,7 +229,7 @@
             if (sequenceControl.length > 0 && sequenceControl.is(':hidden')) {
                 sequenceControl.show();
             }
-        } else if ( mode == 'audience') {
+        } else if (mode == 'audience') {
             if (sequenceListPanel.length > 0 && sequenceListPanel.hasClass('expanded')) {
                 sequenceListPanel.removeClass('expanded');
             }
@@ -250,7 +247,6 @@
         var displayColor = getOption(obj, 'displayColor');
         var lineHeight = getOption(obj, 'lineHeight');
         var cursorWidth = getOption(obj, 'cursorWidth');
-        console.log(getOption(obj, 'lineHeight'));
 
         $(obj).find('.songpart-item').each(function() {
             $(this).songPart('option', 'mode', mode);
@@ -265,6 +261,11 @@
             $(this).songPart('option', 'displayColor', displayColor);
             $(this).songPart('updateDisplay');
         });
+        if (mode == 'audience') {
+            setDisplayCss(obj, $(obj).find('.basic-details'));
+        } else {
+            $(obj).find('.basic-details').removeAttr('style');
+        }
     }
 
 
@@ -380,8 +381,6 @@
                     if (typeof option != 'string') return this;
                     if (value != undefined) {
                         return $(this).each(function() {
-                            console.log(option)
-                            console.log(value)
                             setOption(this, option, value);
                         });
                     }

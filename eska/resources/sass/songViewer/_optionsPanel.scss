@@ -1,3 +1,4 @@
+@import '~@simonwep/pickr/dist/themes/monolith.min.css';  // 'monolith' theme
 .options-panel {
     background-color: white;
     border: 1px solid $dark;
@@ -25,7 +26,11 @@
         }
         .section {
             border: 1px solid $dark;
+            border-top: none;
             width: 300px;
+            &:first-child {
+                border-top: 1px solid $dark;;
+            }
             .section-tab {
                 border-bottom: none;
                 padding: 5px 10px 8px 10px;
@@ -58,31 +63,101 @@
                 display: none;
                 padding: 10px;
                 .option-item {
-                    cursor: pointer;
                     display: flex;
                     flex-direction: column;
-                    padding: 5px 10px;
-                    margin: 0 10px 10px 10px;
-                    &.selected {
-                        background-color: $accent;
-                        color: white;
-                        cursor: default;
+                    &.group, &.toggle {
+                        cursor: pointer;
+                        &.selected {
+                            background-color: $accent;
+                            color: white;
+                            cursor: default;
+                        }
+                        &:hover:not(.selected) {
+                            background-color: $dimmer;
+                        }
                     }
-                    &:hover:not(.selected) {
-                        background-color: $dimmer;
+                    &.group {
+                        margin: 0 10px 10px 10px;
+                        padding: 5px 10px;
+                        .thumbnail {
+                            background-size: contain;
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            height: 80px;
+                            width: 100px;
+                            img {display: none;}
+                        }
+                        .text {
+                            margin: auto;
+                        }
                     }
-                    .thumbnail {
-                        background-size: contain;
-                        background-repeat: no-repeat;
-                        background-position: center;
-                        height: 80px;
-                        width: 100px;
-                        img {display: none;}
+                    &.mini {
+                        margin: 5px 0 0 0;
+                        padding: 1px 5px;
+                        span {
+                            font-size: 18px;
+                            line-height: 1em;
+                            margin: auto;
+                        }
+                        .text {
+                            font-size: 12px;
+                        }
                     }
-                    .text {
+                    &.select {
+                        margin: 0 5px 0 0;
+                        select {
+                            font-size: 14px;
+                            padding: 4px 10px;
+                        }
+                    }
+                    &.ml-2 {
+                        margin-left: 5px;
+                    }
+                    &.button {
+                        margin: 0;
+                        padding-top: 0;
+                    }
+                    .pickr {
                         margin: auto;
+                        .pcr-button {
+                            padding-top: 0;
+                            position: unset;
+                            &:focus {
+                                box-shadow: none;
+                            }
+                        }
                     }
                 }
+            }
+        }
+    }
+    &.performance {
+        .content .section .section-content .option-item:not([data-performance]) {
+            display: none;
+        }
+    }
+    &.simple {
+        .content .section .section-content .option-item:not([data-simple='']) {
+            display: none;
+        }
+    }
+    &.audience {
+        .content .section .section-content .option-item:not([data-audience='']) {
+            display: none;
+        }
+    }
+}
+
+.pcr-app {
+    border: 1px solid $dark;
+    box-shadow: none;
+    transition: none;
+    .pcr-interaction {
+        .pcr-save {
+            background-color: $primary;
+            &:focus, &:active {
+                box-shadow: none;
+                outline: none;
             }
         }
     }

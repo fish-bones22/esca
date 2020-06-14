@@ -254,7 +254,6 @@
         var fontSize = getOption(obj, 'fontSize');
         var height = getOption(obj, 'height');
         var cursorWidth = getOption(obj, 'cursorWidth')*1;
-
         if (fontFamily != null) {
             $(obj).css('font-family', fontFamily);
         }

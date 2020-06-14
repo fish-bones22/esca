@@ -49,13 +49,13 @@ var optionsPanel = '.options-panel';
 
 var simpleFontSize = '16px';
 var monospaceFontSize = '26px';
-var monospaceFontFamily = '"Consolas", "Courier New", Courier, monospace';
+var monospaceFontFamily = '\'Consolas\', \'Courier New\', Courier, monospace';
 var monospaceWidth = 0;
 var monospaceHeight = 0;
 var displayFontSize = '36px';
-var displayFontFamily = '"Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif';
+var displayFontFamily = '\'Franklin Gothic Medium\', \'Arial Narrow\', Arial, sans-serif';
 var displayAlignment = 'center';
-var displayColor = 'red';
+var displayColor = 'rgb(83, 172, 138)';
 
 $(function() {
 

@@ -39,6 +39,66 @@ textarea {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+@font-face {
+  font-family: 'Space Mono';
+  src: url(/fonts/SpaceMono-Regular.ttf?52eb73dbce8bf4083a59acc2e91699ad) format("opentype");
+}
+
+@font-face {
+  font-family: 'Nova Mono';
+  src: url(/fonts/NovaMono-Regular.ttf?c6c5fb5b90d742845f1a5864d9c36896) format("opentype");
+}
+
+@font-face {
+  font-family: 'Anonymous Pro';
+  src: url(/fonts/AnonymousPro-Regular.ttf?418d6668afcddb7714104f43bfb39657) format("opentype");
+}
+
+@font-face {
+  font-family: 'Roboto Slab';
+  src: url(/fonts/RobotoSlab-VariableFont_wght.ttf?0b2aeb1c9f580b22533476443b47f0ad) format("truetype");
+}
+
+@font-face {
+  font-family: 'Sriracha';
+  src: url(/fonts/Sriracha-Regular.ttf?0847227b3c5baa567b6630e28f8cc0d8) format("truetype");
+}
+
+@font-face {
+  font-family: 'Sriracha';
+  src: url(/fonts/Sriracha-Regular.ttf?0847227b3c5baa567b6630e28f8cc0d8) format("truetype");
+}
+
+@font-face {
+  font-family: 'Oswald';
+  src: url(/fonts/Oswald-VariableFont_wght.ttf?a6e5446a7c5789aabc9b37eaaf72134d) format("truetype");
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url(/fonts/Montserrat-Regular.ttf?ee6539921d713482b8ccd4d0d23961bb) format("opentype");
+}
+
+@font-face {
+  font-family: 'Anton';
+  src: url(/fonts/Anton-Regular.ttf?10c6818802ed96f9d6976633ae148c37) format("opentype");
+}
+
+@font-face {
+  font-family: 'Suez One';
+  src: url(/fonts/SuezOne-Regular.ttf?0d5f74db34aab37da60d2e18e443d2e1) format("opentype");
+}
+
+@font-face {
+  font-family: 'Lobster';
+  src: url(/fonts/Lobster-Regular.ttf?9406d0ab606cf8cb91c41b65556bd836) format("opentype");
+}
+
+@font-face {
+  font-family: 'Amiri';
+  src: url(/fonts/Amiri-Regular.ttf?ca4550ad2edcc95c1086266f83616636) format("opentype");
+}
+
 .text-muted {
   color: gray;
 }

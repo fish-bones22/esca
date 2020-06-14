@@ -181,6 +181,7 @@ import { v4 as uuidv4 } from 'uuid';
         $(obj).find('.song-item').songItem('option', 'mode', mode);
         $(obj).find('.song-item').songItem('option', 'lineHeight', getOption(obj, 'lineHeight'));
         $(obj).find('.song-item').songItem('option', 'cursorWidth', getOption(obj, 'cursorWidth'));
+        $(obj).find('.song-item').songItem('option', 'fontFamily', getOption(obj, 'fontFamily'));
         $(obj).find('.song-item').songItem('option', 'fontSize', getOption(obj, 'fontSize'));
         $(obj).find('.song-item').songItem('option', 'simpleFontSize', getOption(obj, 'simpleFontSize'));
         $(obj).find('.song-item').songItem('option', 'displayFontSize', getOption(obj, 'displayFontSize'));
@@ -217,6 +218,143 @@ import { v4 as uuidv4 } from 'uuid';
                 var self = this;
                 var settings = $.extend({}, defaults, command);
                 $(self).data('songsContainer-options', settings);
+
+
+                // Set up options panel listeners
+                $(settings.optionsPanel).optionsPanel({
+                    'toggler': settings.optionsToggler,
+                    'options': {
+                        'mode': settings.mode,
+                        'performancefontsize': settings.fontSize,
+                        'performancefontfamily': settings.fontFamily,
+                        'displayfontsize': settings.displayFontSize,
+                        'displayfontfamily': settings.displayFontFamily,
+                        'displayfontcolor': settings.displayColor,
+                        'displayalignment': settings.displayAlignment,
+                        'simplefontsize': settings.simpleFontSize,
+                    },
+                    'listeners': [
+                        {
+                            'event': 'change',
+                            'target': '#optionView',
+                            'action': function(event) {
+                                var mode = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'mode', mode);
+                                update(self);
+                                $(settings.optionsPanel).removeClass('performance')
+                                .removeClass('simple')
+                                .removeClass('audience')
+                                .addClass(mode);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'mode', mode);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.optionsPanel).optionsPanel('hide');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionPerformanceFontFamily',
+                            'action': function(event) {
+                                var fontFamily = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'fontFamily', fontFamily);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'performancefontfamily', fontFamily);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionPerformanceFontSize',
+                            'action': function(event) {
+                                var fontSize = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'fontSize', fontSize);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'performancefontsize', fontSize);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionSimpleFontSize',
+                            'action': function(event) {
+                                var fontSize = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'simpleFontSize', fontSize);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'simplefontsize', fontSize);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionAudienceFontFamily',
+                            'action': function(event) {
+                                var fontFamily = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'displayFontFamily', fontFamily);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'displayfontfamily', fontFamily);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionAudienceFontColor',
+                            'action': function(event) {
+                                var color = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'displayColor', color);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'displayfontcolor', color);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionAudienceFontSize',
+                            'action': function(event) {
+                                var fontSize = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'displayFontSize', fontSize);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'displayfontsize', fontSize);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionAudienceAlignment',
+                            'action': function(event) {
+                                var alignment = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'displayAlignment', alignment);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'displayalignment', alignment);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        }
+                    ]
+                });
+
+                // Get saved settings
+                var savedOptions = $(settings.optionsPanel).optionsPanel('option', 'options');
+                settings.fontSize = savedOptions.performancefontsize;
+                settings.fontFamily = savedOptions.performancefontfamily;
+                settings.displayFontSize = savedOptions.displayfontsize;
+                settings.displayFontFamily = savedOptions.displayfontfamily;
+                settings.displayColor = savedOptions.displayfontcolor;
+                settings.displayAlignment = savedOptions.displayalignment;
+                settings.simpleFontSize = savedOptions.simplefontsize;
 
                 getDimensions(self);
 
@@ -360,25 +498,6 @@ import { v4 as uuidv4 } from 'uuid';
 
                 $(settings.sequenceListPanel).find('.close').on('click', function() {
                     $(settings.sequenceListPanel).removeClass('expanded');
-                });
-
-                // Set up options panel listeners
-                $(settings.optionsPanel).optionsPanel({
-                    'toggler': settings.optionsToggler,
-                    'listeners': [
-                        {
-                            'event': 'change',
-                            'target': '#optionView',
-                            'action': function(event) {
-
-                                $(settings.loadingScreen).loadingScreen('show');
-                                setOption(self, 'mode', $(event.target).val());
-                                update(self);
-                                $(settings.optionsPanel).optionsPanel('hide');
-                                $(settings.loadingScreen).loadingScreen('hide');
-                            }
-                        }
-                    ]
                 });
 
                 $(self).addClass(settings.mode);
