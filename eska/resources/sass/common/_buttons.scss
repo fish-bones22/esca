@@ -4,6 +4,9 @@ button {
     &:focus {
         outline: none;
     }
+    &:disabled {
+        cursor: not-allowed;
+    }
 }
 .btn-primary {
     background-color: $primary;
@@ -14,6 +17,11 @@ button {
         border: 1px solid $primary_dark;
         color: white;
     }
+    &:disabled {
+        background-color: $primary_light;
+        border: 1px solid $primary_light;
+        color: $primary_lighter;
+    }
 }
 .btn-accent {
     background-color: $accent;
@@ -23,6 +31,15 @@ button {
         background-color: $secondary;
         border: 1px solid $secondary;
         color: white;
+    }
+}
+.btn-secondary {
+    background-color: $dimmer;
+    border: 1px solid $dimmer;
+    color: black;
+    &:hover {
+        background-color: $dark;
+        border: 1px solid $dark;
     }
 }
 .btn-white {

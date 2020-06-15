@@ -5,6 +5,7 @@ require('jquery-ui-dist/jquery-ui');
 require('./common/contextMenu');
 require('./common/dialogBox');
 require('./common/loadingScreen');
+require('./common/imageSelector');
 
 // Polyfills
 if (window.NodeList && !NodeList.prototype.forEach) {

@@ -20,6 +20,7 @@ ESKA
     @include('SongViewer._contentOptions')
     @include('Shared.DialogBoxes._loader')
 </div>
+@include('Shared._imageSelector')
 @stop
 
 @section('script')

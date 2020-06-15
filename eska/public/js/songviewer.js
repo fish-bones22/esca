@@ -2285,6 +2285,7 @@ var currentSequenceOrder = '.current-sequence-order';
 var loadingScreen = '.loading-panel';
 var optionsToggler = '.options-toggler';
 var optionsPanel = '.options-panel';
+var imageSelector = '.image-selector';
 var simpleFontSize = '16px';
 var monospaceFontSize = '26px';
 var monospaceFontFamily = '\'Consolas\', \'Courier New\', Courier, monospace';
@@ -2297,6 +2298,7 @@ var displayColor = 'rgb(83, 172, 138)';
 $(function () {
   // Loading screen
   $(loadingScreen).loadingScreen();
+  $(imageSelector).imageSelector({});
   $(songsContainer).songsContainer({
     'keySelector': songMainKey,
     'scaleSelector': songMainScale,

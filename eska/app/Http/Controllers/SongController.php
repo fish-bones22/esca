@@ -16,6 +16,9 @@ class SongController extends Controller
         $this->songService = $songService;
     }
 
+    /**
+     * Get song by ID
+     */
     public function get($id) {
         try {
             $song = $this->songService->getSong($id);
@@ -25,6 +28,9 @@ class SongController extends Controller
         }
     }
 
+    /**
+     * Get songs by list of IDs enclosed in the request
+     */
     public function getList(Request $request) {
         try {
             if(isset($request->songIds)) {
@@ -39,6 +45,9 @@ class SongController extends Controller
         }
     }
 
+    /**
+     * Create or update a song
+     */
     public function upsert(SongRequest $request) {
         try {
             $this->songService->saveSong($request);

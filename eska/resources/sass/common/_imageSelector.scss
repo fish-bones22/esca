@@ -1,0 +1,99 @@
+.image-selector {
+    background-color: white;
+    border: 1px solid $dark;
+    bottom: 0;
+    height: fit-content;
+    left: 0;
+    margin: auto auto;
+    padding: 10px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 400px;
+    z-index: 99;
+    .content {
+        .header {
+            font-weight: 600;
+        }
+        .body {
+            margin: 20px;
+            .label {
+                margin: 10px 0;
+                label {
+                    margin: 0;
+                }
+            }
+            .image-uploader {
+                input[type="text"] {
+                    font-size: 14px;
+                }
+                .file-selection {
+                    display: flex;
+                    margin-bottom: 10px;
+                    .input-file-select {
+                        display: none;
+                    }
+                    .input-file-path {
+                        color: $dark;
+                        flex-grow: 1;
+                    }
+
+                }
+                .file-details {
+                    display: flex;
+                    flex-direction: column;
+                    flex-wrap: wrap;
+                    width: 100%;
+                    .input-file-name {
+                        flex-grow: 1;
+                    }
+                    .btn-file-uploader {
+                        margin-top: 10px;
+                        margin-left: auto;
+                    }
+                    .error {
+                        color: $red;
+                        display: none;
+                        flex-grow: 2;
+                        font-size: 12px;
+                        width: 100%;
+                    }
+                }
+                &.haserror {
+                    .error {
+                        display: block;
+                    }
+                }
+            }
+            .image-selections {
+                .image-selections-content {
+                    display: flex;
+                    flex-wrap: wrap;
+                    max-height: 400px;
+                    overflow-y: auto;
+                    .image-item {
+                        margin: 6px 4px 6px 4px;
+                        .image-thumbnail {
+                            height: 60px;
+                            overflow: hidden;
+                            width: 60px;
+                            .image {
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                background-size: cover;
+                                height: 100%;
+                                width: 100%;
+                                &:hover {
+                                    transform: scale(1.1);
+                                }
+                            }
+                        }
+                        &.selected {
+                            outline: 3px solid $accent;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

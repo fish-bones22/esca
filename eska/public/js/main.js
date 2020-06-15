@@ -49244,6 +49244,84 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 /***/ }),
 
+/***/ "./resources/js/common/imageSelector.js":
+/*!**********************************************!*\
+  !*** ./resources/js/common/imageSelector.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+(function ($) {
+  var defaults = {
+    'selection': []
+  };
+  /**
+   * Get option value
+   * @param {Object} object
+   * @param {String} key
+   */
+
+  function getOption(object, key) {
+    var options = $(object).data('imageSelector-options');
+    if (options == undefined || !options.hasOwnProperty(key)) return null;
+    return options[key];
+  }
+  /**
+   * Set option value
+   * @param {Object} object
+   * @param {String} key
+   * @param {String} value
+   */
+
+
+  function setOption(object, key, value) {
+    var options = $(object).data('imageSelector-options');
+    options[key] = value;
+    $(object).data('imageSelector-options', options);
+  }
+
+  function clickImage(event) {
+    var imageItem = $(event.target);
+
+    if (!imageItem.hasClass('image-item')) {
+      imageItem = imageItem.closest('.image-item');
+    }
+
+    var selection = getOption(event.data.object, 'selection');
+    if (!Array.isArray(selection)) selection = [];
+    var imagePath = imageItem.attr('data-path');
+    if (imagePath == undefined) return;
+
+    if (imageItem.hasClass('selected')) {
+      imageItem.removeClass('selected');
+      selection.splice(selection.indexOf(imagePath));
+    } else {
+      imageItem.addClass('selected');
+      selection.push(imagePath);
+    }
+
+    console.log(selection);
+    setOption(event.data.object, 'selection', selection);
+  }
+
+  $.fn.imageSelector = function (command, option, value) {
+    if (command == undefined || _typeof(command) == 'object') {
+      return $(this).each(function () {
+        var self = this;
+        var settings = $.extend({}, defaults, command);
+        $(self).data('imageSelector-options', settings);
+        $(self).find('.image-item').on('click', {
+          'object': self
+        }, clickImage);
+      });
+    }
+  };
+})(jQuery);
+
+/***/ }),
+
 /***/ "./resources/js/common/loadingScreen.js":
 /*!**********************************************!*\
   !*** ./resources/js/common/loadingScreen.js ***!
@@ -49315,7 +49393,9 @@ __webpack_require__(/*! ./common/contextMenu */ "./resources/js/common/contextMe
 
 __webpack_require__(/*! ./common/dialogBox */ "./resources/js/common/dialogBox.js");
 
-__webpack_require__(/*! ./common/loadingScreen */ "./resources/js/common/loadingScreen.js"); // Polyfills
+__webpack_require__(/*! ./common/loadingScreen */ "./resources/js/common/loadingScreen.js");
+
+__webpack_require__(/*! ./common/imageSelector */ "./resources/js/common/imageSelector.js"); // Polyfills
 
 
 if (window.NodeList && !NodeList.prototype.forEach) {
