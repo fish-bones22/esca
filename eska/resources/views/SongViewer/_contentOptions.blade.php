@@ -116,6 +116,23 @@
                         <label for="optionColorPicker">Color</label>
                         <span id="optionColorPicker"></span>
                     </div>
+                    <input id="optionAudienceBackgroundType" type="hidden" value="image" />
+                    <div class="option-item group mini" data-target="#optionAudienceBackgroundType" data-value="image" data-audience='' data-toggle='#optionBgImageSelector'>
+                        <span class="material-icons">image</span>
+                    </div>
+                    <div class="option-item group mini" data-target="#optionAudienceBackgroundType" data-value="color" data-audience='' data-toggle="#optionBgColorSelector">
+                        <span class="material-icons">palette</span>
+                    </div>
+                    <input id="optionAudienceBackgroundImage" type="hidden" value="" />
+                    <div id="optionBgImageSelector" class="option-item button mini toggleable" data-target="#optionAudienceBackgroundImage" data-audience=''>
+                        <label for="optionBgImage">BG Image</label>
+                        <span id="optionBgImage"></span>
+                    </div>
+                    <input id="optionAudienceBackgroundColor" type="hidden" value="" />
+                    <div id="optionBgColorSelector" class="option-item button mini toggleable" data-target="#optionAudienceBackgroundColor" data-audience=''>
+                        <label for="optionBgColor">BG Color</label>
+                        <span id="optionBgColor"></span>
+                    </div>
                     <div class="option-item select" data-target="#optionSimpleFontSize" data-simple=''>
                         <label for="optionSimpleFontSize">Size</label>
                         <select id="optionSimpleFontSize">

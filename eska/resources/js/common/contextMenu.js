@@ -13,6 +13,9 @@
         'onShow': function(ev, obj, target) {},
         'onHide': function(ev, obj) {},
         'nesting': false,
+        'followCursor': false,
+        'cursorLeft': 0,
+        'cursorTop': 0,
         'bottom': null,
         'left':null,
         'top': null,
@@ -32,6 +35,19 @@
         return options[key];
     }
 
+    /**
+     * Set option value
+     * @param {Object} object
+     * @param {String} key
+     * @param {String} value
+     */
+    function setOption(object, key, value) {
+        var options = $(object).data('contextMenu-options');
+
+        options[key] = value;
+
+        $(object).data('contextMenu-options', options);
+    }
     /**
      * Hide context menu
      * @param {Object} obj
@@ -62,27 +78,41 @@
 
             var left = getOption(obj, 'left');
             var top = getOption(obj, 'top');
+            var followCursor = getOption(obj, 'followCursor');
+            var viewPortWidth = $(window).width();
+            var viewPortHeight = $(window).height();
 
             // Compute where to place menu
-            if (left == null) {
-                left = $(target).offset().left - $(target)[0].offsetParent.offsetLeft;
+            if (!followCursor && left == null) {
+                margin = $($(target)[0].offsetParent).css('margin-left').replace('px', '')*1;
+                left = $(target).offset().left - $(target)[0].offsetParent.offsetLeft + margin;
                 var width = $(obj).width();
-                var viewPortWidth = $(window).width();
                 if (left > viewPortWidth / 2) {
                     var targetWidth = $(target).width();
-                    left = left - width + targetWidth;
+                    left = left - width + targetWidth - margin;
                 }
             }
 
-            if (top == null) {
+            if (!followCursor && top == null) {
                 top = $(target).offset().top;
                 var height = $(obj).height();
-                var viewPortHeight = $(window).height();
                 if (viewPortHeight < top + height*2.5) {
                     top = top - height;
                 }
                 else {
                     top = top + $(target).height();
+                }
+            }
+
+            if (followCursor) {
+                left = getOption(obj, 'cursorLeft');
+                top = getOption(obj, 'cursorTop');
+                if (left > viewPortWidth / 2) {
+                    var targetWidth = $(target).width();
+                    left = left -  $(obj).width();
+                }
+                if (viewPortHeight < top + height*2.5) {
+                    top = top - $(obj).height();
                 }
             }
 
@@ -152,6 +182,13 @@
                 $(self).on('contextMenu:hide', settings.onHide);
 
                 $(self).addClass('contextMenu');
+
+                if (settings.followCursor) {
+                    $(document).on('mouseup', function(event) {
+                        setOption(self, 'cursorLeft', event.pageX);
+                        setOption(self, 'cursorTop', event.pageY);
+                    })
+                }
             });
         }
 

@@ -57,13 +57,14 @@ var displayFontSize = '36px';
 var displayFontFamily = '\'Franklin Gothic Medium\', \'Arial Narrow\', Arial, sans-serif';
 var displayAlignment = 'center';
 var displayColor = 'rgb(83, 172, 138)';
+var bgType = 'color';
+var bgColor = 'white';
+var bgImage = '';
 
 $(function() {
 
     // Loading screen
     $(loadingScreen).loadingScreen();
-
-    $(imageSelector).imageSelector({});
 
     $(songsContainer).songsContainer({
         'keySelector': songMainKey,
@@ -111,7 +112,11 @@ $(function() {
         'prevSequenceControl': prevSequenceControl,
         'optionsPanel': optionsPanel,
         'optionsToggler': optionsToggler,
-        'loadingScreen': loadingScreen
+        'loadingScreen': loadingScreen,
+        'imageSelector': imageSelector,
+        'bgType': bgType,
+        'bgImage': bgImage,
+        'bgColor': bgColor
     });
 
     getSongs(['0e987bb3-5e32-41c7-b0a8-4e5b4866420b', '611c3248-7326-448b-b66c-5199f9009dc8']);

@@ -18,6 +18,12 @@ input, select, textarea {
     &::placeholder {
         color: $dark;
     }
+    &:read-only {
+        &:focus {
+            border: 1px solid $dark;
+            outline: none;
+        }
+    }
 }
 
 // Select

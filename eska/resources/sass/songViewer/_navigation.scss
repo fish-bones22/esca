@@ -9,6 +9,7 @@ nav {
         .options-toggler {
             color: $dimmer;
             margin: 4px;
+            opacity: 0.5;
             padding: 3px 6px;
             &:hover {
                 color: $dark;

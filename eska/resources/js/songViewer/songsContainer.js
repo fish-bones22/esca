@@ -26,7 +26,10 @@ import { v4 as uuidv4 } from 'uuid';
         'previousSongControl': '',
         'sequenceListPanel': '',
         'sequenceList': '',
-        'sequenceListToggler': ''
+        'sequenceListToggler': '',
+        'bgType': 'color',
+        'bgImage': '',
+        'bgColor': 'white'
     }
 
     var songValues = [];
@@ -175,6 +178,16 @@ import { v4 as uuidv4 } from 'uuid';
             songControl.hide();
         }
 
+        // Change background
+        if (getOption(obj, 'bgType') == 'image') {
+            $(obj).addClass('bgimage');
+            $(obj).css('background-image','url("' + getOption(obj, 'bgImage') + '")');
+        } else {
+            $(obj).removeClass('bgimage');
+            $(obj).css('background-image','none');
+            $(obj).css('background-color', getOption(obj, 'bgColor'));
+        }
+
         getDimensions(obj);
 
         // Set new values
@@ -219,10 +232,11 @@ import { v4 as uuidv4 } from 'uuid';
                 var settings = $.extend({}, defaults, command);
                 $(self).data('songsContainer-options', settings);
 
-
                 // Set up options panel listeners
                 $(settings.optionsPanel).optionsPanel({
                     'toggler': settings.optionsToggler,
+                    'imageSelector': settings.imageSelector,
+                    'loadingScreen': settings.loadingScreen,
                     'options': {
                         'mode': settings.mode,
                         'performancefontsize': settings.fontSize,
@@ -232,6 +246,9 @@ import { v4 as uuidv4 } from 'uuid';
                         'displayfontcolor': settings.displayColor,
                         'displayalignment': settings.displayAlignment,
                         'simplefontsize': settings.simpleFontSize,
+                        'displaybgtype': settings.bgType,
+                        'displaybgcolor': settings.bgColor,
+                        'displaybgimage': settings.bgImage,
                     },
                     'listeners': [
                         {
@@ -342,6 +359,46 @@ import { v4 as uuidv4 } from 'uuid';
                                 $(settings.optionsPanel).optionsPanel('serialize');
                                 $(settings.loadingScreen).loadingScreen('hide');
                             }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionAudienceBackgroundType',
+                            'action': function(event) {
+                                var bgType = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'bgType', bgType);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'displaybgtype', bgType);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionAudienceBackgroundColor',
+                            'action': function(event) {
+                                var bgColor = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'bgColor', bgColor);
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'displaybgcolor', bgColor);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
+                        },
+                        {
+                            'event': 'change',
+                            'target': '#optionAudienceBackgroundImage',
+                            'action': function(event) {
+                                var bgImage = $(event.target).val();
+                                $(settings.loadingScreen).loadingScreen('show');
+                                setOption(self, 'bgImage', bgImage);
+                                $('#optionBgImage').css('background-image', 'url("' + bgImage + '")');
+                                update(self);
+                                $(settings.optionsPanel).optionsPanel('setOptionValue', 'displaybgimage', bgImage);
+                                $(settings.optionsPanel).optionsPanel('serialize');
+                                $(settings.loadingScreen).loadingScreen('hide');
+                            }
                         }
                     ]
                 });
@@ -355,6 +412,9 @@ import { v4 as uuidv4 } from 'uuid';
                 settings.displayColor = savedOptions.displayfontcolor;
                 settings.displayAlignment = savedOptions.displayalignment;
                 settings.simpleFontSize = savedOptions.simplefontsize;
+                settings.bgType = savedOptions.displaybgtype;
+                settings.bgColor = savedOptions.displaybgcolor;
+                settings.bgImage = savedOptions.displaybgimage;
 
                 getDimensions(self);
 
@@ -431,6 +491,7 @@ import { v4 as uuidv4 } from 'uuid';
 
                 // Set keyboard
                 $(document).on('keyup', function(event) {
+                    if (!$(event.target).is('body')) return false;
                     if (event.which == 37 || event.which == 65) {
                         event.preventDefault();
                         event.stopPropagation();

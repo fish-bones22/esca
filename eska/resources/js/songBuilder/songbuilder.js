@@ -328,6 +328,7 @@ $(function() {
 
     // Sequence builder
     $(sequenceOptions).contextMenu({
+        'followCursor': true,
         'menuItems': [
             {
                 'name': 'delete',

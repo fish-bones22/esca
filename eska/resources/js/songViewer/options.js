@@ -4,15 +4,19 @@ import Pickr from '@simonwep/pickr/dist/pickr.es5.min';
 
     var defaults = {
         'toggler': '.options-toggler',
+        'imageSelector': '',
         'options': {
-            'mode': '',
-            'performancefontsize': '',
-            'performancefontfamily': '',
-            'displayfontsize': '',
-            'displayfontfamily': '',
-            'displayfontcolor': '',
-            'displayalignment': '',
-            'simplefontsize': ''
+            'mode': undefined,
+            'performancefontsize': undefined,
+            'performancefontfamily': undefined,
+            'displayfontsize': undefined,
+            'displayfontfamily': undefined,
+            'displayfontcolor': undefined,
+            'displayalignment': undefined,
+            'displaybgtype': undefined,
+            'displaybgcolor': undefined,
+            'displaybgimage': undefined,
+            'simplefontsize': undefined
         }
     }
 
@@ -70,6 +74,7 @@ import Pickr from '@simonwep/pickr/dist/pickr.es5.min';
         var defaultOptions =  getOption(obj, 'options');
         if (strOptions == null) return defaultOptions;
         var options = JSON.parse(strOptions);
+        options = $.extend({}, defaultOptions, options);
         setOption(obj, 'options', options);
         return options;
     }
@@ -101,10 +106,18 @@ import Pickr from '@simonwep/pickr/dist/pickr.es5.min';
                 // Options panel items
                 $(self).find('.option-item.group').on('click', function() {
                     if (!$(this).hasClass('selected')) {
-                        $(this).siblings('.selected').removeClass('selected');
-                        $(this).addClass('selected');
+                        $(this).siblings('.selected[data-target="' + $(this).attr('data-target') + '"]').removeClass('selected').trigger('optionitem:unselect');
+                        $(this).addClass('selected').trigger('optionitem:select');
                         $($(this).attr('data-target')).val($(this).attr('data-value')).trigger('change');
                     }
+                });
+
+                $(self).find('.option-item[data-toggle]').on('optionitem:unselect', function() {
+                    $($(this).attr('data-toggle')).removeClass('toggled');
+                });
+
+                $(self).find('.option-item[data-toggle]').on('optionitem:select', function() {
+                    $($(this).attr('data-toggle')).addClass('toggled');
                 });
 
                 // Options panel section toggler
@@ -120,9 +133,8 @@ import Pickr from '@simonwep/pickr/dist/pickr.es5.min';
                     $(self).find(listener.target).on(listener.event, listener.action);
                 })
 
-                // Color picker
-                var pickr = Pickr.create({
-                    'el': '#optionColorPicker',
+                var pickrDefault = {
+                    'el': '',
                     'theme': 'monolith',
                     'swatches': [
                         'rgba(0, 0, 0, 1)',
@@ -145,28 +157,65 @@ import Pickr from '@simonwep/pickr/dist/pickr.es5.min';
                     'i18n': {
                         'btn:save': 'Set',
                     }
+                };
+                // Image selector
+
+                $(settings.imageSelector).imageSelector({
+                    'loadingScreen': settings.loadingScreen,
+                    'category': 'Background Images',
+                    'select': function(event, target, images) {
+                        if (Array.isArray(images)) {
+                            var imagePath = images[0];
+                            $('#optionAudienceBackgroundImage').val(imagePath).trigger('change');
+                        }
+                        $(settings.imageSelector).imageSelector('hide');
+                    },
                 });
+
+                $('#optionBgImageSelector').on('click', function() {
+                    $(settings.imageSelector).imageSelector('show', $('#optionAudienceBackgroundImage'));
+                });
+                // Color pickers
+                var colPick = {
+                    'el': '#optionColorPicker'
+                };
+                var pickr = Pickr.create($.extend({}, pickrDefault, colPick));
                 pickr.on('save', function(color, instance) {
-                    $(self).find('#optionAudienceFontColor').val(color.toRGBA().toString(0)).trigger('change');
+                    $('#optionAudienceFontColor').val(color.toRGBA().toString(0)).trigger('change');
                     pickr.hide();
+                });
+                colPick = {
+                    'el': '#optionBgColor'
+                };
+                var pickr2 = Pickr.create($.extend({}, pickrDefault, colPick));
+                pickr2.on('save', function(color, instance) {
+                    $('#optionAudienceBackgroundColor').val(color.toRGBA().toString(0)).trigger('change');
+                    pickr2.hide();
                 });
 
                 $(self).removeClass('performance')
                 .removeClass('simple')
                 .removeClass('audience')
-                .addClass($(self).find('#optionView').val());
+                .addClass($('#optionView').val());
 
                 // Set default values
                 var defaultOptions = deserialize(self);
-                $(self).find('#optionView').val(defaultOptions.mode == '' ? settings.options.mode : defaultOptions.mode).trigger('change');
-                $(self).find('#optionPerformanceFontSize').children('option[value="' + (defaultOptions.performancefontsize == '' ? settings.options.performancefontsize : defaultOptions.performancefontsize)  + '"]').prop('selected', true);
-                $(self).find('#optionPerformanceFontFamily').children('option[value="' + (defaultOptions.performancefontfamily == '' ? settings.options.performancefontfamily : defaultOptions.performancefontfamily)  + '"]').prop('selected', true);
-                $(self).find('#optionAudienceFontSize').children('option[value="' + (defaultOptions.displayfontsize == '' ? settings.options.displayfontsize : defaultOptions.displayfontsize)  + '"]').prop('selected', true);
-                $(self).find('#optionAudienceFontFamily').children('option[value="' + (defaultOptions.displayfontfamily == '' ? settings.options.displayfontfamily : defaultOptions.displayfontfamily)  + '"]').prop('selected', true);
-                $(self).find('#optionAudienceFontColor').val(defaultOptions.displayfontcolor == '' ? settings.options.displayfontcolor : defaultOptions.displayfontcolor);
-                window.setTimeout(function() { pickr.setColor(defaultOptions.displayfontcolor == '' ? settings.options.displayfontcolor : defaultOptions.displayfontcolor)}, 500);
-                $(self).find('#optionAudienceAlignment').val(defaultOptions.displayalignment == '' ? settings.options.displayalignment : defaultOptions.displayalignment);
-                $(self).find('#optionSimpleFontSize').children('option[value="' + (defaultOptions.simplefontsize == '' ? settings.options.simplefontsize : defaultOptions.simplefontsize)  + '"]').prop('selected', true);
+                $('#optionView').val(defaultOptions.mode == undefined ? settings.options.mode : defaultOptions.mode).trigger('change');
+                $('#optionPerformanceFontSize').children('option[value="' + (defaultOptions.performancefontsize == undefined ? settings.options.performancefontsize : defaultOptions.performancefontsize)  + '"]').prop('selected', true);
+                $('#optionPerformanceFontFamily').children('option[value="' + (defaultOptions.performancefontfamily == undefined ? settings.options.performancefontfamily : defaultOptions.performancefontfamily)  + '"]').prop('selected', true);
+                $('#optionAudienceFontSize').children('option[value="' + (defaultOptions.displayfontsize == undefined ? settings.options.displayfontsize : defaultOptions.displayfontsize)  + '"]').prop('selected', true);
+                $('#optionAudienceFontFamily').children('option[value="' + (defaultOptions.displayfontfamily == undefined ? settings.options.displayfontfamily : defaultOptions.displayfontfamily)  + '"]').prop('selected', true);
+                $('#optionAudienceFontColor').val(defaultOptions.displayfontcolor == undefined ? settings.options.displayfontcolor : defaultOptions.displayfontcolor);
+                window.setTimeout(function() {
+                    pickr.setColor(defaultOptions.displayfontcolor == undefined ? settings.options.displayfontcolor : defaultOptions.displayfontcolor);
+                    pickr2.setColor(defaultOptions.displaybgcolor == undefined ? settings.options.displaybgcolor : defaultOptions.displaybgcolor);
+                }, 500);
+                $('#optionAudienceAlignment').val(defaultOptions.displayalignment == undefined ? settings.options.displayalignment : defaultOptions.displayalignment);
+                $('#optionAudienceBackgroundType').val(defaultOptions.displaybgtype == undefined ? settings.options.displaybgtype : defaultOptions.displaybgtype);
+                $('#optionAudienceBackgroundImage').val(defaultOptions.displaybgimage == undefined ? settings.options.displaybgimage : defaultOptions.displaybgimage);
+                $('#optionBgImage').css('background-image', 'url("' + (defaultOptions.displaybgimage == undefined ? settings.options.displaybgimage : defaultOptions.displaybgimage) + '")');
+                $('#optionAudienceBackgroundColor').val(defaultOptions.displaybgcolor == undefined ? settings.options.displaybgcolor : defaultOptions.displaybgcolor);
+                $('#optionSimpleFontSize').children('option[value="' + (defaultOptions.simplefontsize == undefined ? settings.options.simplefontsize : defaultOptions.simplefontsize)  + '"]').prop('selected', true);
 
                 $(self).find('.section-content').each(function() {
                     var section = this;

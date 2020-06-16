@@ -2,6 +2,7 @@
     background-color: white;
     border: 1px solid $dark;
     bottom: 0;
+    display: none;
     height: fit-content;
     left: 0;
     margin: auto auto;
@@ -11,6 +12,9 @@
     top: 0;
     width: 400px;
     z-index: 99;
+    &.shown {
+        display: block;
+    }
     .content {
         .header {
             font-weight: 600;
@@ -66,6 +70,7 @@
                 }
             }
             .image-selections {
+                margin-bottom: 20px;
                 .image-selections-content {
                     display: flex;
                     flex-wrap: wrap;
@@ -88,10 +93,35 @@
                                 }
                             }
                         }
+                        .image-name {
+                            font-size: 12px;
+                            overflow: hidden;
+                            text-align: center;
+                            text-overflow: ellipsis;
+                            user-select: none;
+                            white-space: nowrap;
+                            width: 60px;
+                        }
                         &.selected {
-                            outline: 3px solid $accent;
+                            .image-thumbnail {
+                                outline: 3px solid $accent;
+                                .image {
+                                    transform: scale(1.1);
+                                }
+                            }
+                        }
+                        &.context-menu-target {
+                            .image-thumbnail {
+                                outline: 3px solid $dark;
+                                .image {
+                                    transform: scale(1.1);
+                                }
+                            }
                         }
                     }
+                }
+                .btn-image-select {
+                    float: right;
                 }
             }
         }

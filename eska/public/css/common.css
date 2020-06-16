@@ -246,6 +246,18 @@ textarea::placeholder {
   color: lightgray;
 }
 
+input:-moz-read-only:focus, select:-moz-read-only:focus, textarea:-moz-read-only:focus {
+  border: 1px solid lightgray;
+  outline: none;
+}
+
+input:read-only:focus,
+select:read-only:focus,
+textarea:read-only:focus {
+  border: 1px solid lightgray;
+  outline: none;
+}
+
 select option {
   font-size: 14px;
   padding: 0;
@@ -266,7 +278,7 @@ select option:focus {
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
-  z-index: 2;
+  z-index: 99;
 }
 
 .context-menu ul {
@@ -383,6 +395,7 @@ select option:focus {
   background-color: white;
   border: 1px solid lightgray;
   bottom: 0;
+  display: none;
   height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
@@ -394,6 +407,10 @@ select option:focus {
   top: 0;
   width: 400px;
   z-index: 99;
+}
+
+.image-selector.shown {
+  display: block;
 }
 
 .image-selector .content .header {
@@ -458,6 +475,10 @@ select option:focus {
   display: block;
 }
 
+.image-selector .content .body .image-selections {
+  margin-bottom: 20px;
+}
+
 .image-selector .content .body .image-selections .image-selections-content {
   display: flex;
   flex-wrap: wrap;
@@ -487,7 +508,36 @@ select option:focus {
   transform: scale(1.1);
 }
 
-.image-selector .content .body .image-selections .image-selections-content .image-item.selected {
+.image-selector .content .body .image-selections .image-selections-content .image-item .image-name {
+  font-size: 12px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  white-space: nowrap;
+  width: 60px;
+}
+
+.image-selector .content .body .image-selections .image-selections-content .image-item.selected .image-thumbnail {
   outline: 3px solid #e9c46a;
+}
+
+.image-selector .content .body .image-selections .image-selections-content .image-item.selected .image-thumbnail .image {
+  transform: scale(1.1);
+}
+
+.image-selector .content .body .image-selections .image-selections-content .image-item.context-menu-target .image-thumbnail {
+  outline: 3px solid lightgray;
+}
+
+.image-selector .content .body .image-selections .image-selections-content .image-item.context-menu-target .image-thumbnail .image {
+  transform: scale(1.1);
+}
+
+.image-selector .content .body .image-selections .btn-image-select {
+  float: right;
 }
 

@@ -30,6 +30,7 @@
             .song-item {
                 margin: auto;
                 .song-details {
+                    background-color: transparent;
                     bottom: 0;
                     display: block;
                     left: 0;
@@ -67,6 +68,11 @@
     }
 }
 .songs-container {
+    &.bgimage {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
     .song-item {
         margin: 20px 0;
         display: none;

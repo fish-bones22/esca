@@ -754,15 +754,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 (function ($) {
   var defaults = {
     'toggler': '.options-toggler',
+    'imageSelector': '',
     'options': {
-      'mode': '',
-      'performancefontsize': '',
-      'performancefontfamily': '',
-      'displayfontsize': '',
-      'displayfontfamily': '',
-      'displayfontcolor': '',
-      'displayalignment': '',
-      'simplefontsize': ''
+      'mode': undefined,
+      'performancefontsize': undefined,
+      'performancefontfamily': undefined,
+      'displayfontsize': undefined,
+      'displayfontfamily': undefined,
+      'displayfontcolor': undefined,
+      'displayalignment': undefined,
+      'displaybgtype': undefined,
+      'displaybgcolor': undefined,
+      'displaybgimage': undefined,
+      'simplefontsize': undefined
     }
   };
   /**
@@ -816,6 +820,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var defaultOptions = getOption(obj, 'options');
     if (strOptions == null) return defaultOptions;
     var options = JSON.parse(strOptions);
+    options = $.extend({}, defaultOptions, options);
     setOption(obj, 'options', options);
     return options;
   }
@@ -841,10 +846,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         $(self).find('.option-item.group').on('click', function () {
           if (!$(this).hasClass('selected')) {
-            $(this).siblings('.selected').removeClass('selected');
-            $(this).addClass('selected');
+            $(this).siblings('.selected[data-target="' + $(this).attr('data-target') + '"]').removeClass('selected').trigger('optionitem:unselect');
+            $(this).addClass('selected').trigger('optionitem:select');
             $($(this).attr('data-target')).val($(this).attr('data-value')).trigger('change');
           }
+        });
+        $(self).find('.option-item[data-toggle]').on('optionitem:unselect', function () {
+          $($(this).attr('data-toggle')).removeClass('toggled');
+        });
+        $(self).find('.option-item[data-toggle]').on('optionitem:select', function () {
+          $($(this).attr('data-toggle')).addClass('toggled');
         }); // Options panel section toggler
 
         $(self).find('.fold').on('click', function () {
@@ -856,10 +867,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         settings.listeners.forEach(function (listener) {
           $(self).find(listener.target).on(listener.event, listener.action);
-        }); // Color picker
-
-        var pickr = _simonwep_pickr_dist_pickr_es5_min__WEBPACK_IMPORTED_MODULE_0___default.a.create({
-          'el': '#optionColorPicker',
+        });
+        var pickrDefault = {
+          'el': '',
           'theme': 'monolith',
           'swatches': ['rgba(0, 0, 0, 1)', 'rgba(255, 255, 255, 1)', 'rgba(216, 101, 96, 1)', 'rgba(83, 172, 138, 1)', 'rgba(80, 113, 180, 1)'],
           'components': {
@@ -876,25 +886,59 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           'i18n': {
             'btn:save': 'Set'
           }
+        }; // Image selector
+
+        $(settings.imageSelector).imageSelector({
+          'loadingScreen': settings.loadingScreen,
+          'category': 'Background Images',
+          'select': function select(event, target, images) {
+            if (Array.isArray(images)) {
+              var imagePath = images[0];
+              $('#optionAudienceBackgroundImage').val(imagePath).trigger('change');
+            }
+
+            $(settings.imageSelector).imageSelector('hide');
+          }
         });
+        $('#optionBgImageSelector').on('click', function () {
+          $(settings.imageSelector).imageSelector('show', $('#optionAudienceBackgroundImage'));
+        }); // Color pickers
+
+        var colPick = {
+          'el': '#optionColorPicker'
+        };
+        var pickr = _simonwep_pickr_dist_pickr_es5_min__WEBPACK_IMPORTED_MODULE_0___default.a.create($.extend({}, pickrDefault, colPick));
         pickr.on('save', function (color, instance) {
-          $(self).find('#optionAudienceFontColor').val(color.toRGBA().toString(0)).trigger('change');
+          $('#optionAudienceFontColor').val(color.toRGBA().toString(0)).trigger('change');
           pickr.hide();
         });
-        $(self).removeClass('performance').removeClass('simple').removeClass('audience').addClass($(self).find('#optionView').val()); // Set default values
+        colPick = {
+          'el': '#optionBgColor'
+        };
+        var pickr2 = _simonwep_pickr_dist_pickr_es5_min__WEBPACK_IMPORTED_MODULE_0___default.a.create($.extend({}, pickrDefault, colPick));
+        pickr2.on('save', function (color, instance) {
+          $('#optionAudienceBackgroundColor').val(color.toRGBA().toString(0)).trigger('change');
+          pickr2.hide();
+        });
+        $(self).removeClass('performance').removeClass('simple').removeClass('audience').addClass($('#optionView').val()); // Set default values
 
         var defaultOptions = deserialize(self);
-        $(self).find('#optionView').val(defaultOptions.mode == '' ? settings.options.mode : defaultOptions.mode).trigger('change');
-        $(self).find('#optionPerformanceFontSize').children('option[value="' + (defaultOptions.performancefontsize == '' ? settings.options.performancefontsize : defaultOptions.performancefontsize) + '"]').prop('selected', true);
-        $(self).find('#optionPerformanceFontFamily').children('option[value="' + (defaultOptions.performancefontfamily == '' ? settings.options.performancefontfamily : defaultOptions.performancefontfamily) + '"]').prop('selected', true);
-        $(self).find('#optionAudienceFontSize').children('option[value="' + (defaultOptions.displayfontsize == '' ? settings.options.displayfontsize : defaultOptions.displayfontsize) + '"]').prop('selected', true);
-        $(self).find('#optionAudienceFontFamily').children('option[value="' + (defaultOptions.displayfontfamily == '' ? settings.options.displayfontfamily : defaultOptions.displayfontfamily) + '"]').prop('selected', true);
-        $(self).find('#optionAudienceFontColor').val(defaultOptions.displayfontcolor == '' ? settings.options.displayfontcolor : defaultOptions.displayfontcolor);
+        $('#optionView').val(defaultOptions.mode == undefined ? settings.options.mode : defaultOptions.mode).trigger('change');
+        $('#optionPerformanceFontSize').children('option[value="' + (defaultOptions.performancefontsize == undefined ? settings.options.performancefontsize : defaultOptions.performancefontsize) + '"]').prop('selected', true);
+        $('#optionPerformanceFontFamily').children('option[value="' + (defaultOptions.performancefontfamily == undefined ? settings.options.performancefontfamily : defaultOptions.performancefontfamily) + '"]').prop('selected', true);
+        $('#optionAudienceFontSize').children('option[value="' + (defaultOptions.displayfontsize == undefined ? settings.options.displayfontsize : defaultOptions.displayfontsize) + '"]').prop('selected', true);
+        $('#optionAudienceFontFamily').children('option[value="' + (defaultOptions.displayfontfamily == undefined ? settings.options.displayfontfamily : defaultOptions.displayfontfamily) + '"]').prop('selected', true);
+        $('#optionAudienceFontColor').val(defaultOptions.displayfontcolor == undefined ? settings.options.displayfontcolor : defaultOptions.displayfontcolor);
         window.setTimeout(function () {
-          pickr.setColor(defaultOptions.displayfontcolor == '' ? settings.options.displayfontcolor : defaultOptions.displayfontcolor);
+          pickr.setColor(defaultOptions.displayfontcolor == undefined ? settings.options.displayfontcolor : defaultOptions.displayfontcolor);
+          pickr2.setColor(defaultOptions.displaybgcolor == undefined ? settings.options.displaybgcolor : defaultOptions.displaybgcolor);
         }, 500);
-        $(self).find('#optionAudienceAlignment').val(defaultOptions.displayalignment == '' ? settings.options.displayalignment : defaultOptions.displayalignment);
-        $(self).find('#optionSimpleFontSize').children('option[value="' + (defaultOptions.simplefontsize == '' ? settings.options.simplefontsize : defaultOptions.simplefontsize) + '"]').prop('selected', true);
+        $('#optionAudienceAlignment').val(defaultOptions.displayalignment == undefined ? settings.options.displayalignment : defaultOptions.displayalignment);
+        $('#optionAudienceBackgroundType').val(defaultOptions.displaybgtype == undefined ? settings.options.displaybgtype : defaultOptions.displaybgtype);
+        $('#optionAudienceBackgroundImage').val(defaultOptions.displaybgimage == undefined ? settings.options.displaybgimage : defaultOptions.displaybgimage);
+        $('#optionBgImage').css('background-image', 'url("' + (defaultOptions.displaybgimage == undefined ? settings.options.displaybgimage : defaultOptions.displaybgimage) + '")');
+        $('#optionAudienceBackgroundColor').val(defaultOptions.displaybgcolor == undefined ? settings.options.displaybgcolor : defaultOptions.displaybgcolor);
+        $('#optionSimpleFontSize').children('option[value="' + (defaultOptions.simplefontsize == undefined ? settings.options.simplefontsize : defaultOptions.simplefontsize) + '"]').prop('selected', true);
         $(self).find('.section-content').each(function () {
           var section = this;
           var inp = $(this).find('input[type="hidden"]');
@@ -1783,7 +1827,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     'previousSongControl': '',
     'sequenceListPanel': '',
     'sequenceList': '',
-    'sequenceListToggler': ''
+    'sequenceListToggler': '',
+    'bgType': 'color',
+    'bgImage': '',
+    'bgColor': 'white'
   };
   var songValues = [];
   /**
@@ -1915,6 +1962,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       songControl.show();
     } else if (songControl.is(':visible')) {
       songControl.hide();
+    } // Change background
+
+
+    if (getOption(obj, 'bgType') == 'image') {
+      $(obj).addClass('bgimage');
+      $(obj).css('background-image', 'url("' + getOption(obj, 'bgImage') + '")');
+    } else {
+      $(obj).removeClass('bgimage');
+      $(obj).css('background-image', 'none');
+      $(obj).css('background-color', getOption(obj, 'bgColor'));
     }
 
     getDimensions(obj); // Set new values
@@ -1952,6 +2009,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         $(settings.optionsPanel).optionsPanel({
           'toggler': settings.optionsToggler,
+          'imageSelector': settings.imageSelector,
+          'loadingScreen': settings.loadingScreen,
           'options': {
             'mode': settings.mode,
             'performancefontsize': settings.fontSize,
@@ -1960,7 +2019,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             'displayfontfamily': settings.displayFontFamily,
             'displayfontcolor': settings.displayColor,
             'displayalignment': settings.displayAlignment,
-            'simplefontsize': settings.simpleFontSize
+            'simplefontsize': settings.simpleFontSize,
+            'displaybgtype': settings.bgType,
+            'displaybgcolor': settings.bgColor,
+            'displaybgimage': settings.bgImage
           },
           'listeners': [{
             'event': 'change',
@@ -2060,6 +2122,43 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               $(settings.optionsPanel).optionsPanel('serialize');
               $(settings.loadingScreen).loadingScreen('hide');
             }
+          }, {
+            'event': 'change',
+            'target': '#optionAudienceBackgroundType',
+            'action': function action(event) {
+              var bgType = $(event.target).val();
+              $(settings.loadingScreen).loadingScreen('show');
+              setOption(self, 'bgType', bgType);
+              update(self);
+              $(settings.optionsPanel).optionsPanel('setOptionValue', 'displaybgtype', bgType);
+              $(settings.optionsPanel).optionsPanel('serialize');
+              $(settings.loadingScreen).loadingScreen('hide');
+            }
+          }, {
+            'event': 'change',
+            'target': '#optionAudienceBackgroundColor',
+            'action': function action(event) {
+              var bgColor = $(event.target).val();
+              $(settings.loadingScreen).loadingScreen('show');
+              setOption(self, 'bgColor', bgColor);
+              update(self);
+              $(settings.optionsPanel).optionsPanel('setOptionValue', 'displaybgcolor', bgColor);
+              $(settings.optionsPanel).optionsPanel('serialize');
+              $(settings.loadingScreen).loadingScreen('hide');
+            }
+          }, {
+            'event': 'change',
+            'target': '#optionAudienceBackgroundImage',
+            'action': function action(event) {
+              var bgImage = $(event.target).val();
+              $(settings.loadingScreen).loadingScreen('show');
+              setOption(self, 'bgImage', bgImage);
+              $('#optionBgImage').css('background-image', 'url("' + bgImage + '")');
+              update(self);
+              $(settings.optionsPanel).optionsPanel('setOptionValue', 'displaybgimage', bgImage);
+              $(settings.optionsPanel).optionsPanel('serialize');
+              $(settings.loadingScreen).loadingScreen('hide');
+            }
           }]
         }); // Get saved settings
 
@@ -2071,6 +2170,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         settings.displayColor = savedOptions.displayfontcolor;
         settings.displayAlignment = savedOptions.displayalignment;
         settings.simpleFontSize = savedOptions.simplefontsize;
+        settings.bgType = savedOptions.displaybgtype;
+        settings.bgColor = savedOptions.displaybgcolor;
+        settings.bgImage = savedOptions.displaybgimage;
         getDimensions(self);
         settings = $(self).data('songsContainer-options'); // Initialize dynamicpanel
 
@@ -2141,6 +2243,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }); // Set keyboard
 
         $(document).on('keyup', function (event) {
+          if (!$(event.target).is('body')) return false;
+
           if (event.which == 37 || event.which == 65) {
             event.preventDefault();
             event.stopPropagation();
@@ -2295,10 +2399,12 @@ var displayFontSize = '36px';
 var displayFontFamily = '\'Franklin Gothic Medium\', \'Arial Narrow\', Arial, sans-serif';
 var displayAlignment = 'center';
 var displayColor = 'rgb(83, 172, 138)';
+var bgType = 'color';
+var bgColor = 'white';
+var bgImage = '';
 $(function () {
   // Loading screen
   $(loadingScreen).loadingScreen();
-  $(imageSelector).imageSelector({});
   $(songsContainer).songsContainer({
     'keySelector': songMainKey,
     'scaleSelector': songMainScale,
@@ -2345,7 +2451,11 @@ $(function () {
     'prevSequenceControl': prevSequenceControl,
     'optionsPanel': optionsPanel,
     'optionsToggler': optionsToggler,
-    'loadingScreen': loadingScreen
+    'loadingScreen': loadingScreen,
+    'imageSelector': imageSelector,
+    'bgType': bgType,
+    'bgImage': bgImage,
+    'bgColor': bgColor
   });
   getSongs(['0e987bb3-5e32-41c7-b0a8-4e5b4866420b', '611c3248-7326-448b-b66c-5199f9009dc8']);
 });

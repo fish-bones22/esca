@@ -28,3 +28,7 @@ Route::get('/song/{id}', 'SongController@get');
 Route::get('/sequence/{id}', 'SequenceController@get');
 
 Route::get('/songpart/{id}/sequences', 'SongpartController@getSequences');
+
+Route::post('/image', 'ImageController@save');
+Route::delete('image/{id}', 'ImageController@delete');
+Route::post('/images', 'ImageController@getAll');

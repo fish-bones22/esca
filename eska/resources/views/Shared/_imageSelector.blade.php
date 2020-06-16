@@ -5,34 +5,30 @@
         <div class="body">
             <div class="image-selections">
                 <div class="label"><label>Select image</label></div>
-                <div class="image-selections-content">
-                    <div class="image-item" data-path='TEST 1'>
-                        <div class="image-thumbnail"><div class="image" style="background-image: url('{{ asset('storage/img/songviewer/view_audience.png') }}'"></div></div>
-                        <div class="image-description">
-                            <div class="image-name"></div>
-                        </div>
-                    </div>
-                    <div class="image-item" data-path='TEST 2'>
-                        <div class="image-thumbnail"><div class="image" style="background-image: url('{{ asset('storage/img/songviewer/view_performance.png') }}'"></div></div>
-                        <div class="image-description">
-                            <div class="image-name"></div>
-                        </div>
-                    </div>
-                </div>
+                <div class="image-selections-content"></div>
+                <button type="button" class="btn-primary btn-image-select" disabled=''>Select</button>
             </div>
             <div class="image-uploader">
-                <div class="label"><label>Upload an image</label></div>
-                <div class="file-selection">
-                    <input type="file" class="input-file-select" />
-                    <input type="text" class="input-file-path" value="no file selected" readonly='' />
-                    <button type="button" class="btn-secondary btn-file-chooser">Select File</button>
-                </div>
-                <div class="file-details">
-                    <input type="text" class="input-file-name" placeholder="Image name"/>
-                    <i class="error">Do not leave blank</i>
-                    <button type="button" class="btn-primary btn-file-uploader" disabled=''>Upload</button>
-                </div>
+                <form enctype="multipart/form-data">
+                    <div class="label"><label>Upload an image</label></div>
+                    <div class="file-selection">
+                        <input type="file" class="input-file-select" name="imagefile" accept="image/*" />
+                        <input type="text" class="input-file-path" value="no file selected" readonly='' />
+                        <button type="button" class="btn-secondary btn-file-chooser">Select File</button>
+                    </div>
+                    <div class="file-details">
+                        <input type="hidden" name="category" value="Background Images" />
+                        <input type="text" class="input-file-name" name="filename" placeholder="Image name"/>
+                        <i class="error">Do not leave blank</i>
+                        <button type="button" class="btn-primary btn-file-uploader" disabled=''>Upload</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+<div class="image-selector-context-menu context-menu" style="display: none">
+    <ul>
+        <li class="delete">Delete</li>
+    </ul>
 </div>

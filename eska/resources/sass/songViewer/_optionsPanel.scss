@@ -114,18 +114,38 @@
                         margin-left: 5px;
                     }
                     &.button {
+                        cursor: pointer;
                         margin: 0;
-                        padding-top: 0;
+                        padding: 4px;
+                        &:hover:not(.selected) {
+                            background-color: $dimmer;
+                        }
+                    }
+                    &.toggleable {
+                        display: none;
+                        &.toggled {
+                            display: flex;
+                        }
                     }
                     .pickr {
+                        border: 1px solid $dark;
                         margin: auto;
                         .pcr-button {
+                            height: 1em;
                             padding-top: 0;
                             position: unset;
                             &:focus {
                                 box-shadow: none;
                             }
                         }
+                    }
+                    #optionBgImage {
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        border: 1px solid $dark;
+                        height: 20px;
+                        width: 100%;
                     }
                 }
             }

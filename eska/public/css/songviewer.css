@@ -13,6 +13,7 @@ nav .rightside-menu {
 nav .rightside-menu .options-toggler {
   color: #eaeaea;
   margin: 4px;
+  opacity: 0.5;
   padding: 3px 6px;
 }
 
@@ -176,21 +177,45 @@ nav .rightside-menu .options-toggler:hover {
 }
 
 .options-panel .content .section .section-content .option-item.button {
+  cursor: pointer;
   margin: 0;
-  padding-top: 0;
+  padding: 4px;
+}
+
+.options-panel .content .section .section-content .option-item.button:hover:not(.selected) {
+  background-color: #eaeaea;
+}
+
+.options-panel .content .section .section-content .option-item.toggleable {
+  display: none;
+}
+
+.options-panel .content .section .section-content .option-item.toggleable.toggled {
+  display: flex;
 }
 
 .options-panel .content .section .section-content .option-item .pickr {
+  border: 1px solid lightgray;
   margin: auto;
 }
 
 .options-panel .content .section .section-content .option-item .pickr .pcr-button {
+  height: 1em;
   padding-top: 0;
   position: unset;
 }
 
 .options-panel .content .section .section-content .option-item .pickr .pcr-button:focus {
   box-shadow: none;
+}
+
+.options-panel .content .section .section-content .option-item #optionBgImage {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border: 1px solid lightgray;
+  height: 20px;
+  width: 100%;
 }
 
 .options-panel.performance .content .section .section-content .option-item:not([data-performance]) {
@@ -256,6 +281,7 @@ nav .rightside-menu .options-toggler:hover {
 }
 
 .song-viewer.audience .songs-container .song-item .song-details {
+  background-color: transparent;
   bottom: 0;
   display: block;
   left: 0;
@@ -289,6 +315,12 @@ nav .rightside-menu .options-toggler:hover {
 .song-viewer.simple .songs-container .song-item .song-details .song-name,
 .song-viewer.simple .songs-container .song-item .song-details .song-artist {
   text-transform: uppercase;
+}
+
+.songs-container.bgimage {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .songs-container .song-item {
@@ -635,6 +667,7 @@ nav .rightside-menu .options-toggler:hover {
   color: lightgray;
   display: block;
   font-weight: 600;
+  opacity: 0.5;
   position: fixed;
   bottom: 10px;
   right: 20px;
