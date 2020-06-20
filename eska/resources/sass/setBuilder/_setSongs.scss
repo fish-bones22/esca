@@ -1,0 +1,29 @@
+.set-builder-container {
+    .set-songs {
+        border: 1px solid $dark;
+        padding: 20px 30px 30px 30px;
+        .header {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .set-song-item {
+            display: flex;
+            .song-name {
+                cursor: pointer;
+                padding: 3px 10px;
+                width: 200px;
+                &:hover {
+                    background-color: $dimmer;
+                }
+            }
+            select {
+                width: 200px;
+                flex-shrink: 2;
+            }
+            .set-song-actions {
+                flex-grow: 2;
+                width: 80px;
+            }
+        }
+    }
+}

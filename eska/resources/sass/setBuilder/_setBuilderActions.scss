@@ -1,0 +1,38 @@
+//reference _variables.scss
+.set-builder-actions {
+    flex-grow: 2;
+    margin: 10px 0;
+    button {
+        background-color: $primary;
+        border: none;
+        color: white;
+        font-size: 14px;
+        font-weight: 100;
+        line-height: 2.6em;
+        &:hover {
+            background-color: $primary_dark;
+        }
+        span {
+            top: 7.4px;
+            position: relative;
+        }
+    }
+    #options {
+        // background-color: $primary_dark;
+        color: $primary_lighter;
+        border-left: 1px solid $primary_dark;
+        float: right;
+        padding: 0;
+        &:hover {
+            color: $primary_light;
+        }
+    }
+    #next {
+        float: right;
+        padding: 0 15px 0 20px;
+    }
+    #previous {
+        float: left;
+        padding: 0 20px 0 15px;
+    }
+}

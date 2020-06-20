@@ -1,11 +1,13 @@
 button {
     padding: 5px 12px;
-    cursor: pointer;
     &:focus {
         outline: none;
     }
     &:disabled {
         cursor: not-allowed;
+    }
+    &:hover {
+        cursor: pointer;
     }
 }
 .btn-primary {

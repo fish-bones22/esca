@@ -20,6 +20,9 @@ Route::get('/songbuilder', function() {
 Route::get('/songviewer', function() {
     return view('SongViewer/songViewer');
 });
+Route::get('/setbuilder', function() {
+    return view('SetBuilder/setBuilder');
+});
 
 Route::post('/songs', 'SongController@getList');
 Route::post('/song', 'SongController@upsert');

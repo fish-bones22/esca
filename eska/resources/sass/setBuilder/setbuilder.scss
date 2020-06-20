@@ -1,0 +1,10 @@
+@import '../variables';
+@import '_setDetails';
+@import '_setSongs';
+@import '_setBuilderActions';
+@import '_songSearch';
+
+.set-builder-container {
+    margin: auto;
+    width: 38em;
+}

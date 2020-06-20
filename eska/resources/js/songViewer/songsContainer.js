@@ -179,13 +179,19 @@ import { v4 as uuidv4 } from 'uuid';
         }
 
         // Change background
-        if (getOption(obj, 'bgType') == 'image') {
-            $(obj).addClass('bgimage');
-            $(obj).css('background-image','url("' + getOption(obj, 'bgImage') + '")');
+        if (mode == 'audience') {
+            if (getOption(obj, 'bgType') == 'image') {
+                $(obj).addClass('bgimage');
+                $(obj).css('background-image','url("' + getOption(obj, 'bgImage') + '")');
+            } else {
+                $(obj).removeClass('bgimage');
+                $(obj).css('background-image','none');
+                $(obj).css('background-color', getOption(obj, 'bgColor'));
+            }
         } else {
             $(obj).removeClass('bgimage');
             $(obj).css('background-image','none');
-            $(obj).css('background-color', getOption(obj, 'bgColor'));
+            $(obj).css('background-color', 'white');
         }
 
         getDimensions(obj);

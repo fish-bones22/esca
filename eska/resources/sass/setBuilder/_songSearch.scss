@@ -1,0 +1,88 @@
+.song-search-container {
+    display: flex;
+    position: fixed;
+    height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    .song-search {
+        background-color: white;
+        border: 1px solid $dark;
+        height: fit-content;
+        margin: auto;
+        min-height: 400px;
+        padding: 10px;
+        width: 600px;
+        .content {
+            margin: 30px 50px;
+            .header {
+                font-weight: 600;
+                margin-bottom: 20px;
+            }
+            .search-bar {
+                display: flex;
+                margin-bottom: 10px;
+                #songSearchBar {
+                    flex-grow: 2;
+                }
+                .search {
+                    padding: 0 10px;
+                }
+            }
+            .search-result {
+                height: 300px;
+                overflow-y: auto;
+                #songSearchResult {
+                    border: none;
+                    border-spacing: 0;
+                    border-collapse: collapse;
+                    width: 100%;
+                    thead {
+                        tr {
+                            td {
+                                border-bottom: 1px solid $dimmer;
+                                color: $darker;
+                                font-size: 14px;
+                                font-style: italic;
+                            }
+                        }
+                    }
+                    tbody {
+                        outline: none;
+                        .no-results-row {
+                            color: $darker;
+                            display: none;
+                        }
+                        tr:not(.no-results-row) {
+                            color: black;
+                            cursor: pointer;
+                            &:hover:not(.selected) {
+                                background-color: $dimmer;
+                            }
+                            td {
+                                padding: 5px 2px;
+                            }
+                            &.selected {
+                                color: white;
+                                background-color: $accent;
+                            }
+                        }
+                    }
+                    &.noresults {
+                        .no-results-row {
+                            display: block;
+                        }
+                    }
+                }
+            }
+            .search-actions {
+                display: flex;
+                flex-direction: row-reverse;
+                margin: 10px 0;
+                button:not(:last-child) {
+                    margin-left: 5px;
+                }
+            }
+        }
+    }
+}

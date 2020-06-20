@@ -1,0 +1,59 @@
+.set-builder-container {
+    .set-details {
+        border: 1px solid $dark;
+        padding: 20px 50px 30px 50px;
+        .header {
+            font-weight: 600;
+        }
+        .set-basic {
+            display: flex;
+            .input-container {
+                &.set-date {
+                    margin-right: 10px;
+                }
+                &.set-name {
+                    flex-grow: 2;
+                }
+            }
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            input {
+                height: 20px;
+            }
+            select {
+                min-width: 100px;
+            }
+            textarea {
+                resize: vertical;
+            }
+            .error {
+                color: $red;
+                display: none;
+                font-size: 12px;
+            }
+            &.haserror {
+                .error {
+                    display: block;
+                }
+            }
+        }
+        .set-roles {
+            display: flex;
+            flex-direction: row;
+            .input-container {
+                margin-right: 10px;
+            }
+        }
+        .set-other-roles {
+            .set-role-item {
+                display: flex;
+                select {
+                    margin-right: 10px;
+                    flex-grow: 2;
+                }
+            }
+        }
+    }
+}

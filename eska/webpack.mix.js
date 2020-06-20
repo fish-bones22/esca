@@ -13,6 +13,7 @@ const mix = require('laravel-mix');
 mix.js('resources/js/main.js', 'public/js')
 .js('resources/js/songBuilder/songbuilder.js', 'public/js')
 .js('resources/js/songViewer/songviewer.js', 'public/js')
+.js('resources/js/setBuilder/setbuilder.js', 'public/js')
 .sass('resources/sass/common/common.scss', 'public/css')
 .sass('resources/sass/songBuilder/songbuilder.scss', 'public/css')
-.sass('resources/sass/songViewer/songviewer.scss', 'public/css');
+.sass('resources/sass/setBuilder/setbuilder.scss', 'public/css');

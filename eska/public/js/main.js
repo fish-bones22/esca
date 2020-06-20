@@ -49702,6 +49702,17 @@ if (window.Array && !Array.prototype.forEach) {
 
 /***/ }),
 
+/***/ "./resources/sass/setBuilder/setbuilder.scss":
+/*!***************************************************!*\
+  !*** ./resources/sass/setBuilder/setbuilder.scss ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ "./resources/sass/songBuilder/songbuilder.scss":
 /*!*****************************************************!*\
   !*** ./resources/sass/songBuilder/songbuilder.scss ***!
@@ -49713,20 +49724,9 @@ if (window.Array && !Array.prototype.forEach) {
 
 /***/ }),
 
-/***/ "./resources/sass/songViewer/songviewer.scss":
-/*!***************************************************!*\
-  !*** ./resources/sass/songViewer/songviewer.scss ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
 /***/ 0:
 /*!******************************************************************************************************************************************************************!*\
-  !*** multi ./resources/js/main.js ./resources/sass/common/common.scss ./resources/sass/songBuilder/songbuilder.scss ./resources/sass/songViewer/songviewer.scss ***!
+  !*** multi ./resources/js/main.js ./resources/sass/common/common.scss ./resources/sass/songBuilder/songbuilder.scss ./resources/sass/setBuilder/setbuilder.scss ***!
   \******************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -49734,7 +49734,7 @@ if (window.Array && !Array.prototype.forEach) {
 __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\js\main.js */"./resources/js/main.js");
 __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\common\common.scss */"./resources/sass/common/common.scss");
 __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\songBuilder\songbuilder.scss */"./resources/sass/songBuilder/songbuilder.scss");
-module.exports = __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\songViewer\songviewer.scss */"./resources/sass/songViewer/songviewer.scss");
+module.exports = __webpack_require__(/*! E:\PrjFiles\Prj\eska\Source\eska\resources\sass\setBuilder\setbuilder.scss */"./resources/sass/setBuilder/setbuilder.scss");
 
 
 /***/ })

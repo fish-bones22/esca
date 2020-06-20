@@ -2,7 +2,8 @@
     "/js/main.js": "/js/main.js",
     "/css/common.css": "/css/common.css",
     "/css/songbuilder.css": "/css/songbuilder.css",
-    "/css/songviewer.css": "/css/songviewer.css",
+    "/css/setbuilder.css": "/css/setbuilder.css",
+    "/js/setbuilder.js": "/js/setbuilder.js",
     "/js/songbuilder.js": "/js/songbuilder.js",
     "/js/songviewer.js": "/js/songviewer.js"
 }
