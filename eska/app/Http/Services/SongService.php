@@ -20,13 +20,38 @@ class SongService {
         $this->sequenceService = $sequenceService;
     }
 
+    /**
+     * Gets song with ID
+     */
     public function getSong($id, $defaultSequenceOnly = true) {
 
         $song = Song::find($id);
+        return $this->mapToRequest($song, false, $defaultSequenceOnly);
+    }
+
+    /**
+     * Gets all song matching the term
+     */
+    public function getMatchedSong($term, $max = 10) {
+        $term = $this->cleanseTerm($term);
+        $songs = Song::where('title', 'like', '%'.$term.'%')->get();
+        $songList = [];
+
+        foreach ($songs as $song) {
+            $songList[] = $this->mapToRequest($song, true, true);
+        }
+
+        return $songList;
+    }
+
+    /**
+     * Maps the model to request
+     */
+    private function mapToRequest($song, $shallow = false, $defaultSequenceOnly = true) {
 
         $request = new SongRequest;
 
-        $request->id = $id;
+        $request->id = $song->id;
         $request->title = $song->title;
         $request->key = $song->key;
         $request->scale = $song->scale;
@@ -36,6 +61,8 @@ class SongService {
         foreach ($song->details as $detail) {
             $request->details[$detail->key] = $detail->value;
         }
+
+        if ($shallow) return $request;
 
         // Get song parts
         $request->songParts = [];
@@ -88,6 +115,18 @@ class SongService {
 
     }
 
+    /**
+     * Remove any none alphanumeric and replace spaces with % sign
+     */
+    private function cleanseTerm($term) {
+        $term = \preg_replace('/[^A-z0-9 ]+/', '', $term);
+        $term = \preg_replace('/[ ]+/', '%', $term);
+        return $term;
+    }
+
+    /**
+     * Saves song to database. If existing, it performs an update
+     */
     public function saveSong(SongRequest $request) {
 
         DB::transaction(function () use ($request) {

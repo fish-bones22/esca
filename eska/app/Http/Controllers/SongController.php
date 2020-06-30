@@ -45,6 +45,21 @@ class SongController extends Controller
         }
     }
 
+
+    /**
+     * Get songs by list of IDs enclosed in the request
+     */
+    public function getSongs(Request $request) {
+        try {
+            if(isset($request->term)) {
+                $songs = $this->songService->getMatchedSong($request->term);
+                return json_encode($songs);
+            }
+        } catch (\Exception $ex) {
+            return json_encode(['error' => $ex->getMessage()]);
+        }
+    }
+
     /**
      * Create or update a song
      */

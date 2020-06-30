@@ -231,6 +231,10 @@
   background-color: #e9c46a;
 }
 
+.song-search-container .song-search .content .search-result #songSearchResult.noresults tr:not(.no-results-row) {
+  display: none;
+}
+
 .song-search-container .song-search .content .search-result #songSearchResult.noresults .no-results-row {
   display: block;
 }

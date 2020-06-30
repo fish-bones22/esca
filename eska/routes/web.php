@@ -24,6 +24,7 @@ Route::get('/setbuilder', function() {
     return view('SetBuilder/setBuilder');
 });
 
+Route::get('/songs', 'SongController@getSongs');
 Route::post('/songs', 'SongController@getList');
 Route::post('/song', 'SongController@upsert');
 Route::get('/song/{id}', 'SongController@get');

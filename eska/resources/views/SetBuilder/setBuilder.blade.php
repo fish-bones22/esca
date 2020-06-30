@@ -22,7 +22,7 @@ Set Builder
             <div class="header">Search song</div>
             <div class="body">
                 <div class="search-bar">
-                    <input type="search" id="songSearchBar" />
+                    <input type="text" id="songSearchBar" autocomplete="off" />
                     <button type="button" class="btn-action search"><span class="material-icons">search</span></button>
                 </div>
                 <div class="search-result">
@@ -59,5 +59,5 @@ Set Builder
 @stop
 
 @section('script')
-
+<script src="{{ asset('js/setbuilder.js') }}"></script>
 @stop
